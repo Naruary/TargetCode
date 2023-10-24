@@ -72,9 +72,8 @@ extern "C" {
 	void UART_ServiceRxBuffer(void);
 	void UART_ProcessRxData(void);
 	BOOL UART_SendMessage(UART_CLIENT eClient,
-	const U_BYTE *pData, U_INT16 nDataLen );
-        U_INT16 UART_ReceiveMessage(UART_CLIENT eClient, 
-        U_BYTE *pData, U_INT16 nDataLen);
+		const U_BYTE* pData, U_INT16 nDataLen);
+	bool UART_ReceiveMessage(U_BYTE* pData);
 
 #ifdef __cplusplus
 }
