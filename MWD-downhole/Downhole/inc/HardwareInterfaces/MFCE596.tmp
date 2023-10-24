@@ -1,0 +1,109 @@
+/*!
+********************************************************************************
+*       @brief      Contains board-specific I/O pin and peripheral pin
+*                   assignment definitions. Documented by Josh Masters Nov. 2014
+*       @file       Downhole/inc/HardwareInterfaces/board.h
+*       @author     Bill Kamienik
+*       @date       July 2013
+*       @copyright  COPYRIGHT (c) 2014 Target Drilling Inc. All rights are
+*                   reserved.  Reproduction in whole or in part is prohibited
+*                   without the prior written consent of the copyright holder.
+*******************************************************************************/
+
+#ifndef BOARD_H
+#define BOARD_H
+
+//============================================================================//
+//      INCLUDES                                                              //
+//============================================================================//
+
+#include "main.h"
+
+//============================================================================//
+//      CONSTANTS                                                             //
+//============================================================================//
+
+// SPI Data Flash and FRAM Port and Pin assignments
+	#define DATAFLASH_CS_PORT		GPIOB
+    #define DATAFLASH_CS_PIN        GPIO_Pin_6
+
+	#define FRAM_CS_PORT			GPIOB
+    #define FRAM_CS_PIN             GPIO_Pin_5
+
+    #define SPI_DATA_PORT           GPIOA
+    #define SPI_SCK                 GPIO_Pin_5
+    #define SPI_MISO                GPIO_Pin_6
+    #define SPI_MOSI                GPIO_Pin_7
+
+    #define GAMMA_POWER_PORT        GPIOB
+    #define GAMMA_POWER_PIN         GPIO_Pin_9
+    #define GAMMA_TMR3_PORT			GPIOD
+    #define GAMMA_TMR3_PIN			GPIO_Pin_2
+
+    #define MODEM_RESET_PORT        GPIOB
+    #define MODEM_RESET_PIN         GPIO_Pin_12
+
+    #define MODEM_POWER_PORT        GPIOA
+    #define MODEM_POWER_PIN         GPIO_Pin_11
+
+    #define COMPASS_POWER_PORT		GPIOA
+    #define COMPASS_POWER_PIN		GPIO_Pin_12
+    #define COMPASS_UART_PORT		GPIOA
+    #define COMPASS_TX_PIN			GPIO_Pin_2	// to compass
+    #define COMPASS_RX_PIN			GPIO_Pin_3	// from compass
+
+    #define MODEM_RX_VOLT_PORT      GPIOB
+    #define MODEM_RX_VOLT_PIN       GPIO_Pin_13
+
+    #define GREEN_LED_PORT          GPIOA
+    #define GREEN_LED_PIN           GPIO_Pin_8
+
+    #define BATT_MEAS_POWER_PORT	GPIOC
+    #define BATT_MEAS_POWER_PIN		GPIO_Pin_2
+    #define BATT_MEAS_AIN_PORT		GPIOC
+    #define BATT_MEAS_AIN_PIN		GPIO_Pin_0
+
+    #define DATALINK_UART_PORT		GPIOA
+    #define DATALINK_TX_PIN			GPIO_Pin_9	// to uplink
+    #define DATALINK_RX_PIN			GPIO_Pin_10 // from uplink
+
+#if 0
+// SPI Data Flash and FRAM Port and Pin assignments
+    #define SPI_DATA_PORT           GPIOA
+    #define SPI_CS_PORT             GPIOB
+
+    #define DATAFLASH_CS_PIN        GPIO_Pin_6
+    #define FRAM_CS_PIN             GPIO_Pin_5
+
+    #define SPI_SCK                 GPIO_Pin_5
+    #define SPI_MISO                GPIO_Pin_6
+    #define SPI_MOSI                GPIO_Pin_7
+
+    #define MODEM_RESET_PORT        GPIOB
+    #define MODEM_RESET_PIN         GPIO_Pin_12
+
+    #define MODEM_POWER_PORT        GPIOA
+    #define MODEM_POWER_PIN         GPIO_Pin_11
+
+    #define MODEM_RX_VOLT_PORT      GPIOB
+    #define MODEM_RX_VOLT_PIN       GPIO_Pin_13
+
+    #define GREEN_LED_PORT          GPIOA
+    #define GREEN_LED_PIN           GPIO_Pin_8
+
+	#define WAKEUP_PORT				GPIOA
+    #define WAKEUP_PIN				GPIO_Pin_0
+#endif
+
+//============================================================================//
+//      FUNCTION PROTOTYPES                                                   //
+//============================================================================//
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#ifdef __cplusplus
+}
+#endif
+#endif

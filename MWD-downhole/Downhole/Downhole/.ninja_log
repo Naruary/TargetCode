@@ -1,0 +1,95 @@
+# ninja log v5
+1	192	7122561134329615	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/startup/startup_stm32f40_41xxx.o	a2d72becf1a719ac
+148	4281	7122561176165813	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/SerialProtocol/TargetProtocol.o	684503184cb6b75e
+168	4329	7122561176665831	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/RealTimeClock/SysTick.o	46662a8a0f34063a
+136	4402	7122561177390900	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/HardwareInterfaces/power.o	8709e812166a64c
+4283	4436	7122561177720940	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/STM-Periph-Drivers/stm32f4xx_dma.o	cdc4413c97491e0c
+142	4463	7122561178006131	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/HardwareInterfaces/testio.o	a736f9d8fc4d23a2
+4331	4510	7122561178476129	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/CommDrivers/CommDriver_UART.o	eb0bd5a550ffc546
+4438	4578	7122561179126233	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/CommDrivers/CommDriver_SPI.o	5d63e62cde18d8f8
+4406	4583	7122561179146236	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/CommDrivers/CommDriver_Flash.o	c5ac83212b4122e2
+132	4589	7122561179136235	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/HardwareInterfaces/led.o	27e391feb210d06f
+160	4662	7122561179966323	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/STM-Periph-Drivers/misc.o	c9d03758a7823032
+179	4667	7122561179966323	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/STM-Periph-Drivers/stm32f4xx_gpio.o	8d08bacd9024a643
+4512	4681	7122561180001322	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/STM-Periph-Drivers/stm32f4xx_it.o	b59f25374ae93557
+138	4704	7122561180391325	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/RealTimeClock/NV_Power.o	adbb6622a221873b
+4466	4721	7122561180481328	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/STM-Periph-Drivers/stm32f4xx_rtc.o	9a62a404c8aca253
+4592	4744	7122561180751967	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/STM-Periph-Drivers/stm32f4xx_pwr.o	1355a8c9eafff2e4
+4580	4757	7122561180902036	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/STM-Periph-Drivers/stm32f4xx_iwdg.o	3af9f3b20c1a6f2e
+4706	4772	7122561181067043	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/YitranModem/ModemDataHandler.o	5d2f84ffd69b49c8
+195	4777	7122561180957042	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/STM-Periph-Drivers/stm32f4xx_adc.o	53ed89cb5a204c51
+4586	4781	7122561181027037	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/STM-Periph-Drivers/stm32f4xx_spi.o	c175757a7f5a3271
+4668	4855	7122561181922195	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/STM-Periph-Drivers/stm32f4xx_syscfg.o	d3cfbd37913bcab
+4664	4909	7122561182432184	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/STM-Periph-Drivers/stm32f4xx_rcc.o	c020a7df38eafd1f
+188	4932	7122561182672221	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/STM-Periph-Drivers/stm32f4xx_crc.o	cc1265f07e0af9a1
+4724	4948	7122561182817270	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/YitranModem/ModemDataTxHandler.o	11915db6c3258b5f
+4746	4969	7122561182962269	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/STM-Periph-Drivers/stm32f4xx_usart.o	58f9539a2e68a4c2
+4760	4976	7122561182967268	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/YitranModem/ModemDataRxHandler.o	4b30a6dd3a1537d5
+4783	4982	7122561183072285	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/YitranModem/ModemDriver.o	fd37bf7d198913cf
+145	5001	7122561183322282	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/HardwareInterfaces/adc.o	7d6b3983b88b0114
+4682	5006	7122561183302274	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/STM-Periph-Drivers/stm32f4xx_tim.o	19689c6f6a165fce
+4779	5011	7122561183157304	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/YitranModem/ModemResponseHandler.o	ff3657234d42151a
+4774	5013	7122561183272278	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/YitranModem/ModemManager.o	51f08947cbb24ad3
+151	5015	7122561183277297	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/SerialFlash/FlashMemory.o	eb646d9895f7e77a
+183	5033	7122561183647270	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/STM-Periph-Drivers/stm32f4xx_exti.o	9f258bed4c31b176
+155	5037	7122561183697305	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/Sensors/SensorManager_Gamma.o	523be75265f7f6ca
+60	5058	7122561183887357	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/RealTimeClock/RealTimeClock.o	96dfa09ac53ec74b
+5008	5063	7122561183992359	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/version.o	da19195f9f76e565
+4857	5091	7122561184197366	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/YitranModem/ModemNetworkHandler.o	8c37242631c42388
+163	5109	7122561184422360	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/Sensors/compass.o	26b7344b3b7599a3
+4933	5128	7122561184647364	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/InterruptEnabling.o	6bf8f770832d43ff
+4912	5143	7122561184772556	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/YitranModem/ModemIndicationHandler.o	3934283d06b47844
+4985	5155	7122561184912591	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/UtilityFunctions.o	2f899e47f94e9fd2
+4979	5164	7122561184932586	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/system_stm32f4xx.o	ff93b919d0eb2182
+5003	5177	7122561185042595	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/wdt.o	a14c07bcd891c4d5
+4971	5179	7122561185057592	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/crc.o	57f87cb58993118f
+4950	5186	7122561185142593	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Obj/source/main.o	dc56fbf33e99de65
+5188	5322	7122561186632681	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Exe/Downhole.out	37669db87fbcd421
+5326	5375	7122561187185789	C:/Users/narua/OneDrive/Desktop/Uphole 4.2.1 code/MWD-downhole/Downhole/Exe/Downhole.bin	9d9f2b3b4301cc49
+1	52	7191826488963002	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/startup/startup_stm32f40_41xxx.o	d822ddc8e166651
+31	203	7191826490576857	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/RealTimeClock/RealTimeClock.o	2be3010ee5e69d55
+20	227	7191826490671880	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/RealTimeClock/SysTick.o	4daf786f3cbfabb1
+15	235	7191826490771878	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/HardwareInterfaces/testio.o	e161c405e38ab703
+12	241	7191826490691883	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/HardwareInterfaces/led.o	588861c63eab14b8
+5	246	7191826490756873	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/RealTimeClock/NV_Power.o	f5ef2ad29a579b57
+38	267	7191826490951889	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/STM-Periph-Drivers/stm32f4xx_crc.o	7ed57b7d5d49656a
+44	273	7191826490901858	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/STM-Periph-Drivers/misc.o	4d7ee17b84247853
+8	278	7191826491056930	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/HardwareInterfaces/power.o	45c4f82ff303f716
+56	284	7191826491006933	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/STM-Periph-Drivers/stm32f4xx_exti.o	415fe3a7bfd16f36
+42	288	7191826491116953	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/STM-Periph-Drivers/stm32f4xx_gpio.o	ae2968babff4f59c
+26	293	7191826491101946	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/Sensors/compass.o	b3cd4f0a26315569
+10	298	7191826490961883	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/HardwareInterfaces/adc.o	bb6f4c3561fb05bb
+23	319	7191826491312093	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/SerialProtocol/TargetProtocol.o	90818bb99089f36d
+47	325	7191826491477049	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/STM-Periph-Drivers/stm32f4xx_adc.o	88ab0c7a6757accd
+17	331	7191826491337162	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/SerialFlash/FlashMemory.o	5ed923c0c62b10c6
+322	383	7191826492412133	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/YitranModem/ModemDataHandler.o	712d4a2e759982c5
+35	398	7191826492447139	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/Sensors/SensorManager_Gamma.o	360d771a77110620
+280	458	7191826493112233	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/STM-Periph-Drivers/stm32f4xx_iwdg.o	8e2ce51e6c51e4ac
+275	479	7191826493327297	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/STM-Periph-Drivers/stm32f4xx_pwr.o	9b89ce624decdff3
+243	498	7191826493507296	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/CommDrivers/CommDriver_SPI.o	124205622397d694
+286	503	7191826493542301	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/STM-Periph-Drivers/stm32f4xx_it.o	e181658917041e7f
+295	510	7191826493477297	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/YitranModem/ModemDataRxHandler.o	6ed03d4d5e926cae
+290	532	7191826493822287	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/STM-Periph-Drivers/stm32f4xx_spi.o	7d3a860ce221443d
+205	538	7191826493667328	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/STM-Periph-Drivers/stm32f4xx_dma.o	329cfdfb40d4c65
+237	559	7191826493892299	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/CommDrivers/CommDriver_Flash.o	3d800aee2bea914a
+231	564	7191826494032313	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/CommDrivers/CommDriver_UART.o	7278925a73dfa3c6
+300	570	7191826493952324	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/STM-Periph-Drivers/stm32f4xx_usart.o	eee1eec94118cf4f
+270	592	7191826494372416	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/STM-Periph-Drivers/stm32f4xx_rcc.o	2ae348e97c33b0d0
+333	597	7191826494362416	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/STM-Periph-Drivers/stm32f4xx_syscfg.o	e95b9673ec99cd98
+248	601	7191826494407418	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/STM-Periph-Drivers/stm32f4xx_rtc.o	bbe33a6ef926ab8f
+572	624	7191826494833885	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/version.o	b6c7670e0d184ff5
+327	627	7191826494793884	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/STM-Periph-Drivers/stm32f4xx_tim.o	42c918a01501fdf6
+400	655	7191826495088915	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/YitranModem/ModemDriver.o	b952d282d5567afc
+385	668	7191826495133927	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/YitranModem/ModemManager.o	73a38e924b230e97
+461	714	7191826495694016	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/YitranModem/ModemIndicationHandler.o	b728725e94385f73
+539	719	7191826495699019	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/UtilityFunctions.o	93244a6b18a4b2b4
+481	739	7191826495759120	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/YitranModem/ModemDataTxHandler.o	313e534bfc9c31d0
+566	741	7191826495854013	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/crc.o	d1a284e55421dc6f
+500	743	7191826495779014	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/YitranModem/ModemNetworkHandler.o	fd19837c34bc1e81
+534	744	7191826495924028	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/system_stm32f4xx.o	758c1c649409d716
+505	763	7191826495939012	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/YitranModem/ModemResponseHandler.o	3a343d5733c52022
+561	764	7191826496044149	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/InterruptEnabling.o	395ce0c0dd39bfe5
+594	785	7191826496264203	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/wdt.o	3d87f8a91ca95e64
+513	786	7191826496284212	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Obj/source/main.o	67a646f51ce1a07e
+787	870	7191826497329266	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Exe/Downhole.out	59ebc522f53d4771
+872	886	7191826497519267	C:/Users/narua/OneDrive/Desktop/Uphole 5.0.2/MWD-downhole/Downhole/Exe/Downhole.bin	9989440d1e828efa

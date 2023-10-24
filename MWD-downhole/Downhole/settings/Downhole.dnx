@@ -1,0 +1,167 @@
+<?xml version="1.0"?>
+<settings>
+    <Stack>
+        <FillEnabled>0</FillEnabled>
+        <OverflowWarningsEnabled>1</OverflowWarningsEnabled>
+        <WarningThreshold>90</WarningThreshold>
+        <SpWarningsEnabled>1</SpWarningsEnabled>
+        <WarnLogOnly>1</WarnLogOnly>
+        <UseTrigger>1</UseTrigger>
+        <TriggerName>main</TriggerName>
+        <LimitSize>0</LimitSize>
+        <ByteLimit>50</ByteLimit>
+    </Stack>
+    <DebugChecksum>
+        <Checksum>3339068542</Checksum>
+    </DebugChecksum>
+    <CodeCoverage>
+        <Enabled>_ 0</Enabled>
+    </CodeCoverage>
+    <Exceptions>
+        <StopOnUncaught>_ 0</StopOnUncaught>
+        <StopOnThrow>_ 0</StopOnThrow>
+    </Exceptions>
+    <CallStack>
+        <ShowArgs>0</ShowArgs>
+    </CallStack>
+    <Disassembly>
+        <MixedMode>1</MixedMode>
+        <InstrCount>0</InstrCount>
+    </Disassembly>
+    <JLinkDriver>
+        <jlinkResetStyle>12</jlinkResetStyle>
+        <jlinkResetStrategy>0</jlinkResetStrategy>
+        <TraceBufferSize>0x10000</TraceBufferSize>
+        <TraceStallIfFIFOFull>0x0</TraceStallIfFIFOFull>
+        <TracePortSize>0x4</TracePortSize>
+        <LeaveTargetRunning>_ 0</LeaveTargetRunning>
+        <CStepIntDis>_ 0</CStepIntDis>
+    </JLinkDriver>
+    <Log_file>
+        <LoggingEnabled>_ 0</LoggingEnabled>
+        <LogFile>_ ""</LogFile>
+        <Category>_ 0</Category>
+    </Log_file>
+    <Disassemble_mode>
+        <mode>0</mode>
+    </Disassemble_mode>
+    <InterruptLog>
+        <LogEnabled>0</LogEnabled>
+        <GraphEnabled>0</GraphEnabled>
+        <ShowTimeLog>1</ShowTimeLog>
+        <SumEnabled>0</SumEnabled>
+        <ShowTimeSum>1</ShowTimeSum>
+        <SumSortOrder>0</SumSortOrder>
+    </InterruptLog>
+    <DataLog>
+        <LogEnabled>0</LogEnabled>
+        <GraphEnabled>0</GraphEnabled>
+        <ShowTimeLog>1</ShowTimeLog>
+        <SumEnabled>0</SumEnabled>
+        <ShowTimeSum>1</ShowTimeSum>
+    </DataLog>
+    <Interrupts>
+        <Enabled>1</Enabled>
+    </Interrupts>
+    <MemConfig>
+        <Base>1</Base>
+        <Manual>0</Manual>
+        <Ddf>1</Ddf>
+        <TypeViol>0</TypeViol>
+        <Stop>1</Stop>
+    </MemConfig>
+    <Simulator>
+        <Freq>10000000</Freq>
+        <FreqHi>0</FreqHi>
+        <MultiCoreRunAll>1</MultiCoreRunAll>
+    </Simulator>
+    <SfrWindow>
+        <Show>1 1</Show>
+        <Sort>4 0</Sort>
+    </SfrWindow>
+    <watch_formats>
+        <Fmt0>{W}42:DBGMCU_CR	4	0</Fmt0>
+        <Fmt1>{W}42:EXTI_EMR	4	0</Fmt1>
+        <Fmt2>{W}42:EXTI_FTSR	4	0</Fmt2>
+        <Fmt3>{W}42:EXTI_IMR	4	0</Fmt3>
+        <Fmt4>{W}42:EXTI_PR	4	0</Fmt4>
+        <Fmt5>{W}42:EXTI_RTSR	4	0</Fmt5>
+        <Fmt6>{W}42:GPIOD_AFRL	4	0</Fmt6>
+        <Fmt7>{W}42:GPIOD_MODER	4	0</Fmt7>
+        <Fmt8>{W}42:NVIC_IPR1	4	0</Fmt8>
+        <Fmt9>{W}42:NVIC_IPR14	4	0</Fmt9>
+        <Fmt10>{W}42:NVIC_IPR17	4	0</Fmt10>
+        <Fmt11>{W}42:NVIC_IPR2	4	0</Fmt11>
+        <Fmt12>{W}42:NVIC_IPR4	4	0</Fmt12>
+        <Fmt13>{W}42:NVIC_IPR9	4	0</Fmt13>
+        <Fmt14>{W}42:PWR_CR	4	0</Fmt14>
+        <Fmt15>{W}42:PWR_CSR	4	0</Fmt15>
+        <Fmt16>{W}42:RCC_BDCR	4	0</Fmt16>
+        <Fmt17>{W}42:RCC_CFGR	4	0</Fmt17>
+        <Fmt18>{W}42:RCC_CIR	4	0</Fmt18>
+        <Fmt19>{W}42:RCC_CR	4	0</Fmt19>
+        <Fmt20>{W}42:RCC_CSR	4	0</Fmt20>
+        <Fmt21>{W}42:RCC_PLLCFGR	4	0</Fmt21>
+        <Fmt22>{W}42:RTC_CR	4	0</Fmt22>
+        <Fmt23>{W}42:RTC_ISR	4	0</Fmt23>
+        <Fmt24>{W}42:RTC_PRER	4	0</Fmt24>
+        <Fmt25>{W}42:RTC_WUTR	4	0</Fmt25>
+        <Fmt26>{W}42:SCB_SCR	4	0</Fmt26>
+        <Fmt27>{W}42:TIM3_SMCR	4	0</Fmt27>
+        <Fmt28>{W}42:WWDG_CFR	4	0</Fmt28>
+        <Fmt29>{W}42:WWDG_CR	4	0</Fmt29>
+    </watch_formats>
+    <Trace1>
+        <Enabled>0</Enabled>
+        <ShowSource>1</ShowSource>
+    </Trace1>
+    <CallStackLog>
+        <Enabled>0</Enabled>
+    </CallStackLog>
+    <CallStackStripe>
+        <ShowTiming>1</ShowTiming>
+    </CallStackStripe>
+    <PlDriver>
+        <FirstRun>0</FirstRun>
+        <MemConfigValue>C:\Program Files\IAR Systems\Embedded Workbench 9.1\arm\CONFIG\debugger\ST\STM32F405RG.ddf</MemConfigValue>
+    </PlDriver>
+    <ArmDriver>
+        <EnableCache>0</EnableCache>
+        <EnforceMemoryConfiguration>1</EnforceMemoryConfiguration>
+    </ArmDriver>
+    <Trace2>
+        <Enabled>0</Enabled>
+        <ShowSource>0</ShowSource>
+    </Trace2>
+    <TermIOLog>
+        <LoggingEnabled>_ 0</LoggingEnabled>
+        <LogFile>_ ""</LogFile>
+    </TermIOLog>
+    <DriverProfiling>
+        <Enabled>0</Enabled>
+        <Mode>1</Mode>
+        <Graph>0</Graph>
+        <Symbiont>0</Symbiont>
+    </DriverProfiling>
+    <LogFile>
+        <LoggingEnabled>_ 0</LoggingEnabled>
+        <LogFile>_ ""</LogFile>
+        <Category2>_ 0</Category2>
+    </LogFile>
+    <DisassembleMode>
+        <mode>0</mode>
+    </DisassembleMode>
+    <Breakpoints2>
+        <Count>0</Count>
+    </Breakpoints2>
+    <Aliases>
+        <A0>_ "C:\Users\Luke Shroyer\Documents\TargetDrilling\code\MWD-downhole\Downhole\src\main.c" ""</A0>
+        <A1>_ "C:\Users\WHS.000\Documents\Target Mag Chris Sep to Nov  2021\MWD-downhole\Downhole\src\CommDrivers\CommDriver_UART.c" ""</A1>
+        <A2>_ "C:\Users\WHS.000\Documents\Target Mag Chris Sep to Nov  2021\MWD-downhole\Downhole\src\Sensors\compass.c" ""</A2>
+        <A3>_ "C:\Users\WHS.000\Documents\Target Mag Chris Sep to Nov  2021\MWD-downhole\Downhole\src\main.c" ""</A3>
+        <A4>_ "C:\Users\WHS.000\Documents\Target Mag latest code 14Dec2022\MWD-downhole\Downhole\src\CommDrivers\CommDriver_UART.c" ""</A4>
+        <A5>_ "C:\Users\WHS.000\Documents\Target Mag latest code 14Dec2022\MWD-downhole\Downhole\src\main.c" ""</A5>
+        <Count>6</Count>
+        <SuppressDialog>0</SuppressDialog>
+    </Aliases>
+</settings>

@@ -1,0 +1,778 @@
+/*!
+********************************************************************************
+*       @brief      This file contains the implementation for the Record 
+*                   Manager.
+*       @file       Uphole/src/DataManagers/RecordManager.c
+*       @author     Bill Kamienik
+*       @author     Josh Masters
+*       @date       July 2014
+*       @copyright  COPYRIGHT (c) 2014 Target Drilling Inc. All rights are
+*                   reserved.  Reproduction in whole or in part is prohibited
+*                   without the prior written consent of the copyright holder.
+*******************************************************************************/
+
+//============================================================================//
+//      INCLUDES                                                              //
+//============================================================================//
+
+#include <string.h>
+#include <stdio.h>
+#include "portable.h"
+#include "CommDriver_UART.h"
+#include "LED.h"
+#include "RecordManager.h"
+#include "rtc.h"
+#include "SecureParameters.h"
+#include "CommDriver_Flash.h"
+#include "RASP.h"
+#include "Manager_DataLink.h"
+
+//============================================================================//
+//      CONSTANTS                                                             //
+//============================================================================//
+
+#define RECORD_AREA_BASE_ADDRESS    128
+#define RECORDS_PER_PAGE            (U_INT32)((FLASH_PAGE_SIZE-4)/sizeof(STRUCT_RECORD_DATA))
+#define FLASH_PAGE_FILLER           ((FLASH_PAGE_SIZE - 4) - (sizeof(STRUCT_RECORD_DATA) * RECORDS_PER_PAGE))
+
+#define NULL_PAGE 0xFFFFFFFF
+#define NORMALIZE_AZIMUTH(raw) ((raw - 1800))
+#define NORMALIZE_DECLINATION_AZIMUTH(raw) ((NORMALIZE_AZIMUTH(raw) - GetDeclination()))
+#define NORMALIZE_DESIRED_AZIMUTH(raw) ((NORMALIZE_DECLINATION_AZIMUTH(raw) - boreholeStatistics.DesiredAzimuth) / 10.)
+
+//============================================================================//
+//      DATA DECLARATIONS                                                     //
+//============================================================================//
+
+typedef struct _RECORD_PAGE
+{
+    U_INT32 number;
+    STRUCT_RECORD_DATA records[RECORDS_PER_PAGE];
+    U_BYTE filler[FLASH_PAGE_FILLER];
+} RECORD_PAGE;
+
+typedef struct _BOREHOLE_STATISTICS
+{
+    char BoreholeName[16];
+    U_INT32 RecordCount;
+    U_INT32 TotalLength;
+    INT32 TotalDepth;
+    INT32 TotalNorthings;
+    INT32 TotalEastings;
+    STRUCT_RECORD_DATA LastSurvey;
+    STRUCT_RECORD_DATA PreviousSurvey;
+    U_INT32 MergeIndex;
+    BOOL recordRetrieved;
+} BOREHOLE_STATISTICS;
+#pragma diag_suppress=Pe550
+#pragma section="RECORD_STORAGE_BBRAM"
+
+//============================================================================//
+//      DATA DEFINITIONS                                                      //
+//============================================================================//
+
+__no_init static BOREHOLE_STATISTICS boreholeStatistics
+@ "RECORD_STORAGE_BBRAM";
+__no_init static RECORD_PAGE m_WritePage
+@ "RECORD_STORAGE_BBRAM";
+
+static RECORD_PAGE m_ReadPage = { NULL_PAGE };
+
+static char boreholeName[16];
+
+static STRUCT_RECORD_DATA selectedSurveyRecord;
+static EASTING_NORTHING_DATA_STRUCT lastResult;
+static U_INT32 nNewHoleRecordCount = 0;
+
+//============================================================================//
+//      FUNCTION IMPLEMENTATIONS                                              //
+//============================================================================//
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+static void PageInit(RECORD_PAGE* page)
+{
+    memset(page, 0, sizeof(RECORD_PAGE));
+    page->number = NULL_PAGE;
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+static U_BYTE PageOffset(U_INT32 recordCount)
+{
+    return recordCount % RECORDS_PER_PAGE ;
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+static U_BYTE PageNumber(U_INT32 recordCount)
+{
+    return recordCount / RECORDS_PER_PAGE ;
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+static BOOL IsPageFull(U_INT32 recordCount)
+{
+    return (PageOffset(recordCount) == 0) && (PageNumber(recordCount) != 0);
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+static FLASH_PAGE page;
+static void PageWrite(U_INT32 pageNumber)
+{
+    memcpy(&page, m_WritePage.records, sizeof(m_WritePage.records));
+    FLASH_WritePage(&page, pageNumber + RECORD_AREA_BASE_ADDRESS);
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+static void PageWritePartial(U_INT32 recordNumber)
+{
+    while (!IsPageFull(recordNumber))
+    {
+        memset((void *) &m_WritePage.records[PageOffset(recordNumber++)], 0, sizeof(STRUCT_RECORD_DATA));
+    }
+    if(IsBDL())
+    {
+        PageWrite(PageNumber(recordNumber));
+    }
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+static void PageRead(U_INT32 pageNumber)
+{
+    FLASH_ReadPage(&page, pageNumber + RECORD_AREA_BASE_ADDRESS);
+    memcpy(m_ReadPage.records, &page, sizeof(m_WritePage.records));
+    m_ReadPage.number = pageNumber;
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+static void RecordInit(STRUCT_RECORD_DATA *record)
+{
+    memset(record, 0, sizeof(STRUCT_RECORD_DATA));
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+static void RecordWrite(STRUCT_RECORD_DATA *record)
+{
+    memcpy(&m_WritePage.records[PageOffset(record->nRecordNumber)], record, sizeof(STRUCT_RECORD_DATA));
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+static BOOL RecordRead(STRUCT_RECORD_DATA *record, U_INT32 nRecord)
+{
+    if (nRecord < boreholeStatistics.RecordCount)
+    {
+        memcpy(record, &m_ReadPage.records[PageOffset(nRecord)], sizeof(STRUCT_RECORD_DATA));
+        return TRUE;
+    }
+    return FALSE;
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+char* GetBHName(void)
+{
+    BOOL endFound = FALSE;
+    for(int i=0; i<16; i++)
+    {
+        if (boreholeName[i] == 0)
+        {
+            endFound = TRUE;
+        }
+    }
+    if (!endFound || boreholeName[0] == 0)
+    {
+        strcpy(boreholeName, "HOLE");
+    }
+    return boreholeName;
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+void SetBHName(char* newValue)
+{
+    strcpy(boreholeName, newValue);
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+U_INT32 GetRecordCount(void)
+{
+    return boreholeStatistics.RecordCount;
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+REAL32 GetTotalLength(void)
+{
+    return boreholeStatistics.TotalLength / 10.;
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+REAL32 GetTotalDepth(void)
+{
+    return boreholeStatistics.TotalDepth / 10.;
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+REAL32 GetTotalNorthings(void)
+{
+    return boreholeStatistics.TotalNorthings / 10.;
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+REAL32 GetTotalEastings(void)
+{
+    return boreholeStatistics.TotalEastings / 10.;
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+REAL32 GetLastAzimuth(void)
+{
+    return boreholeStatistics.LastSurvey.nAzimuth / 10.;
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+REAL32 GetLastPitch(void)
+{
+    return boreholeStatistics.LastSurvey.nPitch / 10.;
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+REAL32 GetLastRoll(void)
+{
+    return boreholeStatistics.LastSurvey.nRoll / 10.;
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+REAL32 GetLastLength(void)
+{
+    return boreholeStatistics.LastSurvey.nTotalLength / 10.;
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+REAL32 GetLastNorthing(void)
+{
+    return boreholeStatistics.LastSurvey.Y / 10.;
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+REAL32 GetLastEasting(void)
+{
+    return boreholeStatistics.LastSurvey.X / 10.;
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+INT16 GetLastGamma(void)
+{
+    return boreholeStatistics.LastSurvey.nGamma;
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+REAL32 GetLastDepth(void)
+{
+    return boreholeStatistics.LastSurvey.Z / 10.;
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+U_INT32 GetLastRecordNumber(void)
+{
+    //return boreholeStatistics.LastSurvey.nRecordNumber;
+    return ++nNewHoleRecordCount;
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+void RECORD_OpenLoggingFile(void)
+{
+    //STRUCT_RECORD_DATA record;
+    PageInit(&m_WritePage);
+    PageInit(&m_ReadPage);
+    //RecordInit(&record);
+    //record.tSurveyTimeStamp = RTC_GetSeconds();
+    //RTC_GetDate(RTC_Format_BIN, &record.date);
+    //record.nTotalLength = 0;
+    //record.nAzimuth = 0;
+    //record.nPitch = 0;
+    //RecordWrite(&record);
+
+    memset((void *) &boreholeStatistics, 0, sizeof(boreholeStatistics));
+    //memcpy(&boreholeStatistics.LastSurvey, &record, sizeof(STRUCT_RECORD_DATA));
+    //boreholeStatistics.TotalLength = record.nTotalLength;
+    boreholeStatistics.RecordCount++;
+    ++nNewHoleRecordCount;
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+void RECORD_CloseMergeFile(void)
+{
+    if (boreholeStatistics.MergeIndex != 0 && IsBDL())
+    {
+        PageWrite(PageNumber(boreholeStatistics.MergeIndex));
+    }
+    m_ReadPage.number = NULL_PAGE;
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+void RECORD_CloseLoggingFile(void)
+{
+    PageWritePartial(boreholeStatistics.RecordCount);
+    PageInit(&m_ReadPage);
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+void RECORD_TakeSurvey(void)
+{
+    STRUCT_RECORD_DATA record;
+    RecordInit(&record);
+    record.tSurveyTimeStamp = (TIME_RT) RTC_GetSeconds();
+    RTC_GetDate(RTC_Format_BIN, &record.date);
+    record.nTotalLength = boreholeStatistics.TotalLength;
+    record.nRecordNumber = boreholeStatistics.RecordCount;
+    RECORD_StoreSurvey(&record);
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+void RECORD_TakeSurveyMWD(void)
+{
+    memcpy(&boreholeStatistics.PreviousSurvey, &boreholeStatistics.LastSurvey, sizeof(STRUCT_RECORD_DATA));
+    RecordInit(&boreholeStatistics.LastSurvey);
+    boreholeStatistics.LastSurvey.tSurveyTimeStamp = (TIME_RT) RTC_GetSeconds();
+    RTC_GetDate(RTC_Format_BIN, &boreholeStatistics.LastSurvey.date);
+    boreholeStatistics.LastSurvey.nTotalLength = boreholeStatistics.TotalLength;
+    boreholeStatistics.LastSurvey.nRecordNumber = boreholeStatistics.RecordCount;
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+void RECORD_StoreSurvey(STRUCT_RECORD_DATA *record)
+{
+    boreholeStatistics.TotalLength += GetDefaultPipeLength();
+    boreholeStatistics.RecordCount++;
+    ++nNewHoleRecordCount;
+    RecordWrite(record);
+    if(IsBDL())
+    {
+        if (IsPageFull(boreholeStatistics.RecordCount))
+        {
+            PageWrite(PageNumber(boreholeStatistics.RecordCount) - 1);
+        }
+        else
+        {
+            PageWrite(PageNumber(boreholeStatistics.RecordCount));
+        }
+    }
+}
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+BOOL RECORD_RequestNextMergeRecord(void)
+{
+    if (boreholeStatistics.MergeIndex < GetRecordCount())
+    {
+        if(IsMWD())
+        {
+            //RASPRequest(HOLE_MANAGER, 0x04, (U_BYTE const*) &boreholeStatistics.LastSurvey.tSurveyTimeStamp, 4);
+            return TRUE;
+        }
+        else
+        {
+            //NOTE: this if-statement was causing the survey box to read all 0 after refreshing data tab
+            if (RecordRead(&boreholeStatistics.LastSurvey, boreholeStatistics.MergeIndex))
+            {
+                RASPRequest(HOLE_MANAGER, 0x04, (U_BYTE const*) &boreholeStatistics.LastSurvey.tSurveyTimeStamp, 4);
+                return TRUE;
+            }
+        }
+    }
+    return FALSE;
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+BOOL RECORD_BeginMergeRecords(void)
+{
+    boreholeStatistics.recordRetrieved = FALSE;
+    boreholeStatistics.MergeIndex = 0;
+    PageRead(0);
+    return RECORD_RequestNextMergeRecord();
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+static void DetermineUpDownLeftRight(STRUCT_RECORD_DATA* record, STRUCT_RECORD_DATA* before, EASTING_NORTHING_DATA_STRUCT* result)
+{
+    POSITION_DATA_STRUCT start, end;
+    start.nPipeLength = before->nTotalLength;
+    start.nAzimuth.fDeg = before->nAzimuth / 10.;
+    start.nInclination.fDeg = (before->nPitch / 10.);
+    end.nPipeLength = record->nTotalLength;
+    end.nAzimuth.fDeg = record->nAzimuth / 10;
+    end.nInclination.fDeg = (record->nPitch / 10.);    
+    Calc_AveAngleMinCurve(result, &start, &end);
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+static void MergeRecordCommon(STRUCT_RECORD_DATA* record)
+{
+    boreholeStatistics.recordRetrieved = TRUE;
+    boreholeStatistics.LastSurvey.nAzimuth = record->nAzimuth;
+    boreholeStatistics.LastSurvey.nPitch = record->nPitch;
+    boreholeStatistics.LastSurvey.nRoll = record->nRoll;
+    boreholeStatistics.LastSurvey.nTemperature = record->nTemperature;
+    boreholeStatistics.LastSurvey.nGamma = record->nGamma;
+    if (boreholeStatistics.LastSurvey.nRecordNumber > 0)
+    {
+        EASTING_NORTHING_DATA_STRUCT result;
+        DetermineUpDownLeftRight(&boreholeStatistics.LastSurvey, &boreholeStatistics.PreviousSurvey, &result);
+        if(GetLoggingState() == LOGGING)
+        {
+            boreholeStatistics.TotalDepth += result.fDepth;
+            boreholeStatistics.TotalNorthings += result.fNorthing;
+            boreholeStatistics.TotalEastings += result.fEasting;
+        
+            boreholeStatistics.LastSurvey.X = boreholeStatistics.TotalEastings;
+            boreholeStatistics.LastSurvey.Y = boreholeStatistics.TotalNorthings;
+            boreholeStatistics.LastSurvey.Z = boreholeStatistics.TotalDepth;
+            
+            lastResult.fDepth = result.fDepth;
+            lastResult.fNorthing = result.fNorthing;
+            lastResult.fEasting = result.fEasting;
+        }
+    }
+    else
+    {
+        boreholeStatistics.LastSurvey.X = 0;
+        boreholeStatistics.LastSurvey.Y = 0;
+        boreholeStatistics.LastSurvey.Z = 0;
+    }
+    RecordWrite(&boreholeStatistics.LastSurvey);
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+void RECORD_MergeRecord(STRUCT_RECORD_DATA* record)
+{
+    MergeRecordCommon(record);
+    boreholeStatistics.MergeIndex++;
+    if(IsBDL())
+    {
+        if (IsPageFull(boreholeStatistics.MergeIndex))
+        {
+            PageRead(PageNumber(boreholeStatistics.MergeIndex));
+            PageWrite(PageNumber(boreholeStatistics.MergeIndex) - 1);
+        }
+        else
+        {
+            PageWrite(PageNumber(boreholeStatistics.MergeIndex));
+        }
+    }
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+void RECORD_MergeRecordMWD(STRUCT_RECORD_DATA* record)
+{
+    MergeRecordCommon(record);
+    if(boreholeStatistics.RecordCount > 0)
+    {
+        boreholeStatistics.TotalLength += GetDefaultPipeLength();
+    }
+    boreholeStatistics.RecordCount++;
+    ++nNewHoleRecordCount;
+    PageWrite(PageNumber(boreholeStatistics.RecordCount));
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+void RECORD_NextMergeRecord(EASTING_NORTHING_DATA_STRUCT* result)
+{
+    boreholeStatistics.recordRetrieved = FALSE;
+    RECORD_MergeRecord(&boreholeStatistics.LastSurvey);
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+BOOL RECORD_GetRecord(STRUCT_RECORD_DATA *record, U_INT32 recordNumber)
+{
+    U_INT32 pageNumber = PageNumber(recordNumber);
+    if (m_ReadPage.number != pageNumber)
+    {
+        PageRead(pageNumber);
+    }
+    return RecordRead(record, recordNumber);
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+void RECORD_StoreSelectSurvey(U_INT32 index)
+{
+    RECORD_GetRecord(&selectedSurveyRecord, index);
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+U_INT32 RECORD_getSelectSurveyRecordNumber(void)
+{
+    return selectedSurveyRecord.nRecordNumber;
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+REAL32 RECORD_GetSelectSurveyAzimuth(void)
+{
+    return selectedSurveyRecord.nAzimuth / 10.;
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+REAL32 RECORD_GetSelectSurveyPitch(void)
+{
+    return selectedSurveyRecord.nPitch / 10.;
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+  
+REAL32 RECORD_GetSelectSurveyRoll(void)
+{
+    return selectedSurveyRecord.nRoll / 10.;
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+  
+REAL32 RECORD_GetSelectSurveyLength(void)
+{
+    return selectedSurveyRecord.nTotalLength / 10.;
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+  
+REAL32 RECORD_GetSelectSurveyNorthing(void)
+{
+    return selectedSurveyRecord.Y / 10.;
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+  
+REAL32 RECORD_GetSelectSurveyEasting(void)
+{
+    return selectedSurveyRecord.X / 10.;
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+  
+REAL32 RECORD_GetSelectSurveyGamma(void)
+{
+    return selectedSurveyRecord.nGamma / 10.;
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+  
+REAL32 RECORD_GetSelectSurveyDepth(void)
+{
+    return selectedSurveyRecord.Z / 10.;
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+void RECORD_removeLastRecord(void)
+{
+    STRUCT_RECORD_DATA record;
+    RecordInit(&record);
+    memcpy(&m_WritePage.records[PageOffset(boreholeStatistics.RecordCount--)], &record, sizeof(STRUCT_RECORD_DATA));
+    RECORD_GetRecord(&record, GetRecordCount() - 1);
+    memcpy(&boreholeStatistics.LastSurvey, &record, sizeof(STRUCT_RECORD_DATA));
+    boreholeStatistics.TotalLength -= GetDefaultPipeLength();
+    boreholeStatistics.TotalNorthings -= lastResult.fNorthing;
+    boreholeStatistics.TotalEastings -= lastResult.fEasting;
+    boreholeStatistics.TotalDepth -= lastResult.fDepth;
+}
+
+/*!
+********************************************************************************
+*       @details
+*******************************************************************************/
+
+void RECORD_InitNewHole(void)
+{
+    U_INT32 nRecordCountTemp = boreholeStatistics.RecordCount;
+    memset((void *) &boreholeStatistics, 0, sizeof(boreholeStatistics));
+    boreholeStatistics.RecordCount = nRecordCountTemp;
+    nNewHoleRecordCount = 0;
+}

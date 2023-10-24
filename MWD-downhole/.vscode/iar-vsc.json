@@ -1,0 +1,18 @@
+{
+  "workspace": {
+    "path": "${workspaceFolder}\\Downhole.eww"
+  },
+  "workspaces": {
+    "${workspaceFolder}\\Downhole.eww": {
+      "configs": {
+        "${workspaceFolder}\\Downhole\\Downhole.ewp": "Downhole"
+      },
+      "selected": {
+        "path": "${workspaceFolder}\\Downhole\\Downhole.ewp"
+      }
+    }
+  },
+  "workbench": {
+    "path": "C:\\Program Files\\IAR Systems\\Embedded Workbench 9.1"
+  }
+}
