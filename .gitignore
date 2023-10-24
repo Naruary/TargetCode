@@ -55,6 +55,8 @@ Backup*
 *.ninja_deps
 *.out
 *.dnx
+*.pbd
+*.pbw
 
 # Trash files
 *.bak
