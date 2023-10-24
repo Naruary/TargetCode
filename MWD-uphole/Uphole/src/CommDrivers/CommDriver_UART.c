@@ -443,7 +443,7 @@ bool UART_ReceiveMessage(U_BYTE* pData)
 	tempTail = pUARTx->nRxTail;
 
 	// Check if there's a CR in the RX buffer
-	while (pUARTx->nRxHead != pUARTx->nRxTail && !crFound)
+	while (pUARTx->nRxHead != tempTail && !crFound)
 	{
 		if (pUARTx->nRxBuffer[tempTail] == '\n')
 		{

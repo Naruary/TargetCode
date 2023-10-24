@@ -51,7 +51,10 @@ Backup*
 *.pbi
 *.zip
 *.xcl
-
+*.ninja_log
+*.ninja_deps
+*.out
+*.dnx
 
 # Trash files
 *.bak

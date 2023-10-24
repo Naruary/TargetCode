@@ -438,9 +438,9 @@ int CSVmain()
   return 0;
 }
 
+char uart_message_buffer[256];  // A buffer to temporarily store received UART messages
 void PCPORT_UPLOAD_StateMachine(void)
 {
-  char uart_message_buffer[128];  // A buffer to temporarily store received UART messages
   bool fullLine;
   switch (RetrieveLogFromPC_state)
   {
@@ -474,7 +474,7 @@ void PCPORT_UPLOAD_StateMachine(void)
 
     case PCDTU_STATE_FILE_RETRIEVAL:
       fullLine = UART_ReceiveMessage((U_BYTE*)csv_buffer + csv_buffer_index);
-      if (fullLine > 0)
+      if (fullLine)
       {
         if (!CSV_FIRST_LINE_FLAG)
         {
@@ -500,16 +500,20 @@ void PCPORT_UPLOAD_StateMachine(void)
 
           // Transition to the verification state after processing remaining CSV lines
           RetrieveLogFromPC_state = PCDTU_STATE_FILE_VERIFICATION;
-        }
 
+        }
+        else
+        {
         // Continue with processing the CSV lines as before
       //  WE HAVE SOMETHING IN THE BUFFER
       // AS LONG AS IT IS SOMETHING, OUR CSV PARSER WILL PARES FOR US ULESS ITS THE END OF THE FILE
-        add_data_row((char*)csv_buffer, '\n');  // delimiter is "\n"
+        add_data_row((char*)csv_buffer, '\r');  // delimiter is "\r"
 
         // reset buffer
         memset(csv_buffer, '\0', sizeof(csv_buffer));
+        }
       }
+
       break;
 
     case PCDTU_STATE_FILE_VERIFICATION:

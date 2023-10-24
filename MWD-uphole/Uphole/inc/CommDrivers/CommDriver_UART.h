@@ -36,14 +36,14 @@
 // The RX buffer is twice the size of the RX_DMA buffer because some UART
 // clients are serviced on the alternate cycle (i.e. every 20ms)
 // and the RX_DMA buffer is transferred to the RX buffer every 10ms cycle.
-#define BUFFER_SIZE_RX_DMA  64
-#define BUFFER_SIZE_RX     128
+#define BUFFER_SIZE_RX_DMA  256
+#define BUFFER_SIZE_RX     256
 
 // UART transmit buffer of 128 bytes provides enough space to transmit most
 // messages in full. The Data Link is capable of sending a message larger
 // than bytes using the callback from the UART to send successive pieces
 // of a message to generate a complete message.
-#define UART_BUFFER_SIZE_TX 128
+#define UART_BUFFER_SIZE_TX 256
 
 //============================================================================//
 //      DATA DECLARATIONS                                                     //
