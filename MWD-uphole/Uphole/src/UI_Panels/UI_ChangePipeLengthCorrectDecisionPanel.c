@@ -29,6 +29,7 @@
 #include "UI_GroupBox.h"
 #include "SysTick.h"
 #include "UI_EnterNewPipeLength.h"
+#include "UI_EnterSurvey.h"
 
 //============================================================================//
 //      FUNCTION PROTOTYPES                                                   //

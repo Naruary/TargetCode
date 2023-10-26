@@ -184,6 +184,8 @@ extern "C" {
 	U_INT16 CurrentBoreholeNumber(void);
 	void Get_Hole_Info_To_PC(void);
         extern volatile BOOL USBDownloadFlag;
+		void RECORD_removeLastRecord(void);
+
 
 #ifdef __cplusplus
 }

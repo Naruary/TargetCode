@@ -30,6 +30,7 @@
 #include "UI_GroupBox.h"
 #include "SysTick.h"
 #include "UI_SurveyEditPanel.h"
+#include "UI_EnterSurvey.h"
 
 //============================================================================//
 //      FUNCTION PROTOTYPES                                                   //
@@ -216,15 +217,6 @@ static void Yes_DeleteLastSurvey_Decision(MENU_ITEM* item)
             RECORD_removeLastRecord();
             SetLoggingState(DELETE_LAST_SURVEY_SUCCESS);
         }
-    }
-    else 
-    {
-        if(GetLastRecordNumber() > 1) 
-        {
-            RECORD_StoreSelectSurvey(GetLastRecordNumber() - 2);
-        }
-        RECORD_removeLastRecord();
-        SetLoggingState(DELETE_LAST_SURVEY_NOT_SUCCESS);
     }
     setDeleteLastSurveyDecisionPanelActive(false);
     tCallDeleteLastSurvey = ElapsedTimeLowRes(0);

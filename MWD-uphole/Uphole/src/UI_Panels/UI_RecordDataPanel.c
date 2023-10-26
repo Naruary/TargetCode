@@ -321,7 +321,7 @@ static void RecordData_Paint(TAB_ENTRY* tab)
 			if(0)
 //			if (GetDefaultPipeLength() % 10)
 			{
-				snprintf(strValue, 100, "%5.1f", (float) (record.nTotalLength / 10.));
+				snprintf(strValue, 100, "%5.1f", (double) (record.nTotalLength / 10.));
 				RecordData_DisplayColumn(strValue, &lengthColumn);
 				RecordData_IncrementColumn(&lengthColumn);
 			}
@@ -351,7 +351,7 @@ static void RecordData_Paint(TAB_ENTRY* tab)
 			snprintf(strValue, 100, "%4.1f", RealValue(record.X));
 			RecordData_DisplayColumn(strValue, &leftRightColumn);
 			RecordData_IncrementColumn(&leftRightColumn);
-			snprintf(strValue, 100, "%4.1f", RealValue(record.Y)/10);
+			snprintf(strValue, 100, "%4.1f", RealValue(record.Y)/(double)10.0);
 			RecordData_DisplayColumn(strValue, &upDownColumn);
 			RecordData_IncrementColumn(&upDownColumn);
 		}

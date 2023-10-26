@@ -53,7 +53,7 @@
 #define PCDT_DELAY ((TIME_LR) 300ul) // 300
 #define PCDT_DELAY2 ((TIME_LR) 100ul) // 100
 #define PCDT_DELAY3 ((TIME_LR) 10ul) // 10
-INT16 PrintedHeader = 0, FinishedMessage = 0;
+INT16 PrintedHeader = 0, FinishedMessage = 0, UploadFinishedMessage = 0;
 
 #define CSV_BUFFER_SIZE 500  // Define the size of your CSV buffer
 char csv_buffer[500]; // Buffer to store uploaded CSV lines
@@ -148,6 +148,7 @@ typedef struct Date
 char nBuffer[500];
 void DownloadData(void);
 void ShowFinishedMessage(void);
+void ShowUploadFinishedMessage(void);
 //============================================================================//
 //      FUNCTION PROTOTYPES                                                   //
 //============================================================================//
@@ -168,7 +169,11 @@ void UploadFile(MENU_ITEM* item) //ZD 21September2023 This is the first action w
 
 void ShowFinishedMessage(void)
 {
-  ShowStatusMessage("Xfer done - if LED off - Remove USB Cable"); //ZDD 2Oct2023 changed
+  ShowStatusMessage("Xfer done - Please Remove USB Cable"); //ZDD 2Oct2023 changed
+}
+void ShowUploadFinishedMessage(void)
+{
+  ShowStatusMessage("Upload Finished - Please Remove USB Cable"); //ZDD 25Oct2023
 }
 /*******************************************************************************
 *   PCPORT is called from Main.c and above -- last line of DownloadData()
@@ -180,7 +185,6 @@ void PCPORT_StateMachine(void)  // whs 26Jan2022 should be ThumbDrivePort
   static STRUCT_RECORD_DATA record;
   static NEWHOLE_INFO HoleInfoRecord;
   static U_INT32 HoleNum = 0;
-  static char I;
   static U_INT16 recordNumber = 1;
   // whs 26Jan2022 this should say SendLogToThumbDrive because this is where it happens
   switch (SendLogToPC_state) // Switch statement to handle different states
@@ -266,8 +270,8 @@ void PCPORT_StateMachine(void)  // whs 26Jan2022 should be ThumbDrivePort
               if (HoleNum == HoleInfoRecord.BoreholeNumber + 1)
               {
                 NewHole_Info_Read(&HoleInfoRecord, HoleNum); // Read new hole information based on the incremented HoleNum
-                SendLogToPC_state = Holdon; // Update the state to 'Holdon' (possibly a waiting state)
-                //SendLogToPC_state = PCDT_STATE_SEND_LOG1;
+                //SendLogToPC_state = Holdon; // Update the state to 'Holdon' (possibly a waiting state)
+                SendLogToPC_state = PCDT_STATE_SEND_LOG1;
                 tPCDTGapTimer = ElapsedTimeLowRes((TIME_LR)0); // Reset the timer
                 flag_start_dump = true; // Set flag to start the dumping process again
                 break;
@@ -333,9 +337,9 @@ void PCPORT_StateMachine(void)  // whs 26Jan2022 should be ThumbDrivePort
       if (ElapsedTimeLowRes(tPCDTGapTimer) >= PCDT_DELAY2) // Check if enough time has elapsed based on the low-res timer
       {
         snprintf(nBuffer, 500, "%.1f, %.1f, %.1f, %d, %d, %d, %d, ", // Create the message for the second part of the log data
-          (REAL32)record.X / 10,
-          (REAL32)record.Y / 100,
-          (REAL32)record.Z / 10,
+          (REAL32)(record.X) / 10.0,
+          (REAL32)(record.Y / 100),
+          (REAL32)(record.Z / 10),
           record.nGamma,
           record.tSurveyTimeStamp,
           record.date.RTC_WeekDay,
@@ -442,7 +446,10 @@ char uart_message_buffer[256];  // A buffer to temporarily store received UART m
 void PCPORT_UPLOAD_StateMachine(void)
 {
   bool fullLine;
-  switch (RetrieveLogFromPC_state)
+  CSVRowStructure* current_row_pointer;
+  int expected_column_length = 14;
+
+      switch (RetrieveLogFromPC_state)
   {
     case PCDTU_STATE_FILE_IDLE:
       if (flag_start_upload == true)
@@ -450,6 +457,13 @@ void PCPORT_UPLOAD_StateMachine(void)
         flag_start_upload = false;
         UART_SendMessage(CLIENT_PC_COMM, (U_BYTE const*)"Awaiting CSV start command...\n\r", strlen("Awaiting CSV start command...\n\r"));
         RetrieveLogFromPC_state = PCDTU_STATE_AWAIT_BEGIN_CSV;
+      if (UploadFinishedMessage == 1) // If FinishedMessage is set, show the message and reset flag
+      {
+        UploadFinishedMessage = 0;
+        ShowUploadFinishedMessage();
+      }
+      break;
+
       }
       break;
 
@@ -478,7 +492,7 @@ void PCPORT_UPLOAD_StateMachine(void)
       {
         if (!CSV_FIRST_LINE_FLAG)
         {
-// initiates the file structure
+          // initiates the file structure
           initCSVStructure();
           CSV_FIRST_LINE_FLAG = true;
         }
@@ -506,7 +520,7 @@ void PCPORT_UPLOAD_StateMachine(void)
         {
         // Continue with processing the CSV lines as before
       //  WE HAVE SOMETHING IN THE BUFFER
-      // AS LONG AS IT IS SOMETHING, OUR CSV PARSER WILL PARES FOR US ULESS ITS THE END OF THE FILE
+      // AS LONG AS IT IS SOMETHING, OUR CSV PARSER WILL PARSE FOR US UNLESS IT'S THE END OF THE FILE
         add_data_row((char*)csv_buffer, '\r');  // delimiter is "\r"
 
         // reset buffer
@@ -518,12 +532,10 @@ void PCPORT_UPLOAD_StateMachine(void)
 
     case PCDTU_STATE_FILE_VERIFICATION:
         // Verify header here
-      CSVRowStructure* current_row_pointer;
       current_row_pointer = &getFileStructure()->csvrows[0];
       csv_header_verified = current_row_pointer->isheader;
       // any custom implementation will do
       // lets assume its right by using size
-      int expected_column_length = 14;
       // replace with expected column length
       csv_header_verified = current_row_pointer->size >= expected_column_length;
 
@@ -534,6 +546,9 @@ void PCPORT_UPLOAD_StateMachine(void)
       }
       else
       {
+        //RepaintNow(&WindowFrame);
+        //ShowStatusMessage("Data Upload Failed - Please Try Again");
+       // DelayHalfSecond();
         UART_SendMessage(CLIENT_PC_COMM, (U_BYTE const*)"Incorrect CSV format.\n\r", strlen("Incorrect CSV format.\n\r"));
         RetrieveLogFromPC_state = PCDTU_STATE_FILE_IDLE;
       }
@@ -541,6 +556,9 @@ void PCPORT_UPLOAD_StateMachine(void)
 
     case PCDTU_STATE_COMPLETED:
       UART_SendMessage(CLIENT_PC_COMM, (U_BYTE const*)"File received successfully.\n\r", strlen("File received successfully.\n\r"));
+      RepaintNow(&WindowFrame);
+      ShowStatusMessage("Data Upload Success - Please Wait...");
+      DelayHalfSecond();
       RetrieveLogFromPC_state = PCDTU_STATE_FILE_IDLE;
       // process csv lines
       for (int i = 0; i < getFileStructure()->size; i++)
@@ -548,7 +566,7 @@ void PCPORT_UPLOAD_StateMachine(void)
         ProcessCsvLine(&(getFileStructure()->csvrows[i]));
       }
       RepaintNow(&WindowFrame); // Repaint the window frame to update the UI
-      FinishedMessage = 1;
+      UploadFinishedMessage = 1;
       break;
   }
 }
@@ -562,7 +580,7 @@ void ProcessCsvLine(const CSVRowStructure* line)
     return;
   }
   STRUCT_RECORD_DATA record;
-  sscanf(line->items[0], "%d", &record.nRecordNumber);
+  sscanf(line->items[0], "%u",&record.nRecordNumber);
   sscanf(line->items[1], "%d", &record.nTotalLength);
   sscanf(line->items[2], "%d", &record.nAzimuth);
   sscanf(line->items[3], "%.1f", &record.nPitch);

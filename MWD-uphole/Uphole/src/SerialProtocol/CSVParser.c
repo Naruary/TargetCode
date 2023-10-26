@@ -66,7 +66,6 @@ void init_CSVFileStructure(CSVFileStructure* fs) {
     fs->size = 0;        // Initialize the size to 0
     fs->current_row = 0; // Initialize current_row to 0
 }
-
 // Function to add a row to the CSVFileStructure
 void add_row(CSVFileStructure* fs, const char* line, char delimiter) {
     for (int i = 0; line[i] != '\0'; i++) { // Loop through the characters in the line
@@ -79,7 +78,8 @@ void add_row(CSVFileStructure* fs, const char* line, char delimiter) {
         if (fs->size == fs->current_row) {
             // Resize the csvrows array
             fs->csvrows = (CSVRowStructure*)realloc(fs->csvrows, (fs->size + 1) * sizeof(CSVRowStructure));
-            if (fs->csvrows == NULL) {
+            if (fs->csvrows == NULL) 
+            {
                 //fprintf(stderr, "Memory allocation error\n");
                 exit(1);
             }

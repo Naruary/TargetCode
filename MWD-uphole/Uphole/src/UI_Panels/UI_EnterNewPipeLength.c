@@ -33,6 +33,8 @@
 #include "UI_FixedField.h"
 #include "UI_StringField.h"
 #include "UI_ChangePipeLengthCorrectDecisionPanel.h"
+#include "UI_ChangePipeLengthDecisionPanel.h"
+#include "UI_EnterSurvey.h"
 
 //============================================================================//
 //      FUNCTION PROTOTYPES                                                   //
@@ -198,8 +200,7 @@ static void ReturnToMain(MENU_ITEM* item)
     if(ManualChangePipeLengthFlag)
     {
       	setEnterSurveyPanelActive(true);
-//      setEnterSurveyPanelActive(true);
-	PaintNow(&HomeFrame);
+	    PaintNow(&HomeFrame);
         ManualChangePipeLengthFlag = false;
     }
     else

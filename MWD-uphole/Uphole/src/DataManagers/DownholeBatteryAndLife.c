@@ -23,7 +23,6 @@
 static U_INT16 m_nBatteryVoltage = 0;
 static U_INT16 m_nBatteryVoltage2 = 0;
 static U_INT16 m_nSignalStrength = 0;
-static U_INT32 m_nTotalOnTime = 0;
 static U_INT16 m_nAwakeTimeSetting = 0;
 static U_INT16 m_nCurrentAwakeTime = 0;
 //static TIME_LR g_tAwakeTimer;

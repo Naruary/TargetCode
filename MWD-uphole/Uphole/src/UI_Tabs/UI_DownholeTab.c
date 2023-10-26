@@ -48,7 +48,6 @@ static void TableShow(TAB_ENTRY* tab);
 static void TableTimeElapsed(TAB_ENTRY* tab);
 static void TableKeyPressed(TAB_ENTRY* tab, BUTTON_VALUE key);
 void ShowStatusMessageTabDiag(char* message1, char* message2);
-static void ShowDownholeVoltageTabDiag(char* message1, int rowbit);
 
 //============================================================================//
 //      DATA DECLARATIONS                                                     //
@@ -70,18 +69,7 @@ const TAB_ENTRY DownholeTab = {
 	TableKeyPressed
 };
 
-// will move to panel
-static MENU_ITEM menu[] = {
-//	CREATE_FIXED_FIELD(TXT_DOWNHOLE_OFF_TIME,		&LabelFrame1, &ValueFrame1,
-//		CurrrentLabelFrame,	GetDownholeOffTime,		SetDownholeOffTime, 4, 0, 0, 9999), //1000
-//	CREATE_YESNO_FIELD(TXT_DOWNHOLE_DEEP_SLEEP,	&LabelFrame3, &ValueFrame3,
-//		CurrrentLabelFrame,	GetDeepSleepMode,		SetDeepSleepMode),
-	CREATE_BOOLEAN_FIELD(TXT_GAMMA_ON_OFF,			&LabelFrame1, &ValueFrame1,
-		CurrrentLabelFrame,	GetGammaPoweredState,	TargProtocol_RequestSendGammaEnable),
-//	CREATE_FIXED_FIELD(TXT_DOWNHOLE_ON_TIME,		&LabelFrame2, &ValueFrame2,
-//		CurrrentLabelFrame,	GetAwakeTimeSetting,	SetAwakeTimeSetting,  4, 0, 0, 9999),
-//	CREATE_MENU_ITEM(TXT_UPDATE_DOWNHOLE, &LabelFrame5, UpdateDownHoleSettings),
-};
+
 
 //============================================================================//
 //      CONSTANTS                                                             //
@@ -273,14 +261,3 @@ void ShowStatusMessageTabDiag(char* message1, char* message2)
 /*******************************************************************************
 *       @details
 *******************************************************************************/
-static void ShowDownholeVoltageTabDiag(char* message1, int rowbit)
-{
-    RECT area;
-    const FRAME* frame = &WindowFrame;
-    area.ptTopLeft.nCol = frame->area.ptTopLeft.nCol + 2;
-    area.ptTopLeft.nRow = frame->area.ptTopLeft.nRow + rowbit;
-    area.ptBottomRight.nCol = frame->area.ptBottomRight.nCol - 5;
-    area.ptBottomRight.nRow = area.ptTopLeft.nRow + 15;
-    UI_DisplayStringLeftJustified(message1, &area);
-}
-

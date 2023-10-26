@@ -26,7 +26,6 @@
 #include "UI_LCDScreenInversion.h"
 #include "UI_Primitives.h"
 #include "BMP.h"
-static void UI_DisplayImage(const UIBITMAP* pImage, RECT* area);
 
 //============================================================================//
 //      FUNCTION IMPLEMENTATIONS                                              //
@@ -76,15 +75,9 @@ void StatusPaint(FRAME* thisFrame)
 	RTC_TimeTypeDef time;
 	RTC_DateTypeDef date;
 	char string[100];
-    INT16 SingleDigitLocator = 124;
-    INT16 DoubleDigitLocator = 131;
     REAL32 DHBatteryV;
     REAL32 DHBatteryV2;
     
-	const UIBITMAP* pImage;
-	REAL32 thisBatteryVoltage;
-	U_INT16 downholeBatteryVoltage;
-        U_INT16 downholeBatteryVoltage2;
         //U_INT16 downholeBatteryVoltage;
 
 	FRAME newFrame = *thisFrame;
@@ -124,36 +117,3 @@ void StatusPaint(FRAME* thisFrame)
     snprintf(string, 100, "U:%3.1fv D1:%3.1fv D2:%3.1fv", GetUpholeBatteryLife(), DHBatteryV, DHBatteryV2);
     UI_DisplayStringLeftJustified(string, &pNewFrame->area);
 }
-
-#if 1
-static void UI_DisplayImage(const UIBITMAP* pImage, RECT* area)
-{
-#define BITS_IN_UINT32  32
-#define BYTES_IN_UINT32  4
-#define BITS_IN_BYTE  8
-
-	U_BYTE nLineIndex = 0;
-	U_BYTE* pData = (U_BYTE *)pImage->pData;
-	U_INT32 nScanLineTotalBytes = 0;
-	U_INT32 nScanLineVisibleBytes = 0;
-
-	InitLineBuffer();
-	nScanLineTotalBytes = pImage->nXSize / BITS_IN_UINT32;
-	if((pImage->nXSize % BITS_IN_UINT32) != 0)
-	{
-		nScanLineTotalBytes++;
-	}
-	nScanLineTotalBytes *= BYTES_IN_UINT32;
-	nScanLineVisibleBytes = pImage->nXSize / BITS_IN_BYTE;
-	if((pImage->nXSize % BITS_IN_BYTE) != 0)
-	{
-		nScanLineVisibleBytes++;
-	}
-	while(nLineIndex < pImage->nYSize)
-	{
-		AddLineDataToBuffer(&pData[(nLineIndex * nScanLineTotalBytes)], nScanLineVisibleBytes);
-		nLineIndex++;
-	}
-	UI_PrintLine(area->ptTopLeft.nRow+1, area->ptTopLeft.nCol, pImage->nYSize, pImage->nXSize);
-}
-#endif

@@ -62,3 +62,10 @@ Backup*
 *.bak
 /Libraries/Libraries/CMSIS/Documentation
 /Libraries/Libraries/CMSIS/DSP_Lib/Examples
+MWD-uphole/.vscode/settings.json
+MWD-uphole/Uphole/Exe/BDL_Uphole.out
+MWD-uphole/Uphole/settings/UpHole.dnx
+MWD-uphole/Uphole/Uphole/.ninja_deps
+MWD-uphole/Uphole/Uphole/.ninja_log
+MWD-uphole/Uphole/Uphole/BrowseInfo/UpHole.pbd
+MWD-uphole/Uphole/Uphole/BrowseInfo/UpHole.pbd.browse

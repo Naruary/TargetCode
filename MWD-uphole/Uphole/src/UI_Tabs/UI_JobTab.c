@@ -43,7 +43,6 @@ static void JobTabMakeRequest(TAB_ENTRY* tab);
 static void JobTabShow(TAB_ENTRY* tab);
 //void ShowJobTabInfoMessage(char* message1, char* message2, char* message3);
 //static void ShowStatusMessageTabJob(char* message);
-static void ShowStatusMessageTabJobLocate(char* message1, int rowbit);
 ANGLE_TIMES_TEN GetCorrectToolFaceValue(void);
 //============================================================================//
 //      DATA DECLARATIONS                                                     //
@@ -104,19 +103,17 @@ static U_BYTE GetJobMenuSize(TAB_ENTRY* tab)
 *******************************************************************************/
 static void JobTabPaint(TAB_ENTRY* tab)
 {
-	U_BYTE nMenuCount;
 	char text[100];
 
 	TabWindowPaint(tab);
-	nMenuCount = tab->MenuSize(tab);
         
-	if (((float)GetToolFaceValue()/10.0) > 360)     
+	if (((float)GetToolFaceValue()/10.0f) > 360.0f)     
 	{   // the above line and below .. if else statement was added 19Nov2019 whs
-        snprintf(text, 100, "%.1f",((float)GetToolFaceValue()/10.0) - 360);
+        snprintf(text, 100, "%.1f",((double)GetToolFaceValue()/10.0f) - 360.0f);
 	}
 	else
 	{   //previously only the below line was here before 19Nov2019 whs
-		snprintf(text, 100, "%.1f",(float)GetToolFaceValue()/10.0);
+		snprintf(text, 100, "%.1f",(double)GetToolFaceValue()/10.0f);
 	}   // without the added statements the Uphole Job Tab LCD would show > 360 degrees
 //	ShowStatusMessageTabJobLocate(text, (nMenuCount * 15)+4 );
 }
@@ -159,19 +156,6 @@ void ShowStatusMessageTabJob(char* message)
 }
 #endif
 
-/*******************************************************************************
-*       @details
-*******************************************************************************/
-void ShowStatusMessageTabJobLocate(char* message1, int rowbit)
-{
-    RECT area;
-    const FRAME* frame = &WindowFrame;
-    area.ptTopLeft.nCol = frame->area.ptTopLeft.nCol + 169; //was 2
-    area.ptTopLeft.nRow = frame->area.ptTopLeft.nRow + rowbit - 30; //take off - 30
-    area.ptBottomRight.nCol = frame->area.ptBottomRight.nCol - 5;
-    area.ptBottomRight.nRow = area.ptTopLeft.nRow + 15;
-    UI_DisplayStringLeftJustified(message1, &area);
-}
 
 /*******************************************************************************
 *       @details

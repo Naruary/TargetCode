@@ -87,11 +87,11 @@ typedef struct _NEWHOLE_INFO_PAGE
 //      DATA DEFINITIONS                                                      //
 //============================================================================//
 
-__no_init static BOREHOLE_STATISTICS boreholeStatistics
+__no_init static BOREHOLE_STATISTICS boreholeStatistics1
 @ "RECORD_STORAGE_BBRAM";
 __no_init static RECORD_PAGE m_WritePage
 @ "RECORD_STORAGE_BBRAM";
-__no_init static NEWHOLE_INFO newHole_tracker
+__no_init static NEWHOLE_INFO newHole_tracker1
 @ "RECORD_STORAGE_BBRAM";
 __no_init static NEWHOLE_INFO_PAGE m_New_hole_info_WritePage
 @ "RECORD_STORAGE_BBRAM";
@@ -214,7 +214,7 @@ static void RecordWrite(STRUCT_RECORD_DATA *record, U_INT32 nRecord)
 *******************************************************************************/
 static BOOL RecordRead(STRUCT_RECORD_DATA *record, U_INT32 nRecord)
 {
-	if (nRecord < boreholeStatistics.RecordCount)
+	if (nRecord < boreholeStatistics1.RecordCount)
 	{
 		memcpy(record, &m_ReadPage.records[PageOffset(nRecord)], sizeof(STRUCT_RECORD_DATA));
 		return true;
@@ -227,7 +227,7 @@ static BOOL RecordRead(STRUCT_RECORD_DATA *record, U_INT32 nRecord)
 *******************************************************************************/
 U_INT32 GetRecordCount(void)
 {
-	return boreholeStatistics.RecordCount;
+	return boreholeStatistics1.RecordCount;
 }
 
 /*******************************************************************************
@@ -235,7 +235,7 @@ U_INT32 GetRecordCount(void)
 *******************************************************************************/
 U_INT32 GetTotalLength(void)
 {
-	return boreholeStatistics.TotalLength;
+	return boreholeStatistics1.TotalLength;
 }
 
 /*******************************************************************************
@@ -243,7 +243,7 @@ U_INT32 GetTotalLength(void)
 *******************************************************************************/
 REAL32 GetLastAzimuth(void)
 {
-	return boreholeStatistics.LastSurvey.nAzimuth / 10.0;
+	return boreholeStatistics1.LastSurvey.nAzimuth / 10.0;
 }
 
 /*******************************************************************************
@@ -251,7 +251,7 @@ REAL32 GetLastAzimuth(void)
 *******************************************************************************/
 REAL32 GetLastPitch(void)
 {
-	return boreholeStatistics.LastSurvey.nPitch / 10.0;
+	return boreholeStatistics1.LastSurvey.nPitch / 10.0;
 }
 
 /*******************************************************************************
@@ -259,7 +259,7 @@ REAL32 GetLastPitch(void)
 *******************************************************************************/
 REAL32 GetLastRoll(void)
 {
-	return boreholeStatistics.LastSurvey.nRoll / 10.0;
+	return boreholeStatistics1.LastSurvey.nRoll / 10.0;
 }
 
 /*******************************************************************************
@@ -267,7 +267,7 @@ REAL32 GetLastRoll(void)
 *******************************************************************************/
 REAL32 GetLastLength(void)
 {
-	return boreholeStatistics.LastSurvey.nTotalLength;// / 10.;
+	return boreholeStatistics1.LastSurvey.nTotalLength;// / 10.;
 }
 
 /*******************************************************************************
@@ -275,7 +275,7 @@ REAL32 GetLastLength(void)
 *******************************************************************************/
 U_INT32 GetLastLengthuInt32(void)
 {
-	return (U_INT32)boreholeStatistics.LastSurvey.nTotalLength;
+	return (U_INT32)boreholeStatistics1.LastSurvey.nTotalLength;
 }
 
 /*******************************************************************************
@@ -283,7 +283,7 @@ U_INT32 GetLastLengthuInt32(void)
 *******************************************************************************/
 REAL32 GetLastNorthing(void)
 {
-	return boreholeStatistics.LastSurvey.Y / 100.0;
+	return boreholeStatistics1.LastSurvey.Y / 100.0;
 }
 
 /*******************************************************************************
@@ -291,7 +291,7 @@ REAL32 GetLastNorthing(void)
 *******************************************************************************/
 REAL32 GetLastEasting(void)
 {
-	return boreholeStatistics.LastSurvey.X / 10.0;
+	return boreholeStatistics1.LastSurvey.X / 10.0;
 }
 
 /*******************************************************************************
@@ -299,12 +299,12 @@ REAL32 GetLastEasting(void)
 *******************************************************************************/
 INT16 GetLastGamma(void)
 {
-	return boreholeStatistics.LastSurvey.nGamma;
+	return boreholeStatistics1.LastSurvey.nGamma;
 }
 
 INT16 GetLastGTF(void)
 {
-	return boreholeStatistics.LastSurvey.nGTF;
+	return boreholeStatistics1.LastSurvey.nGTF;
 }
 
 /*******************************************************************************
@@ -312,7 +312,7 @@ INT16 GetLastGTF(void)
 *******************************************************************************/
 REAL32 GetLastDepth(void)
 {
-	return boreholeStatistics.LastSurvey.Z / 10.0;
+	return boreholeStatistics1.LastSurvey.Z / 10.0;
 }
 
 /*******************************************************************************
@@ -320,12 +320,12 @@ REAL32 GetLastDepth(void)
 *******************************************************************************/
 U_INT32 GetLastRecordNumber(void)
 {
-	return boreholeStatistics.LastSurvey.nRecordNumber;
+	return boreholeStatistics1.LastSurvey.nRecordNumber;
 }
 
 U_INT32 getLastRecordNumber(void)
 {
-	return boreholeStatistics.LastSurvey.nRecordNumber - boreholeStatistics.LastSurvey.GammaShotNumCorrected;
+	return boreholeStatistics1.LastSurvey.nRecordNumber - boreholeStatistics1.LastSurvey.GammaShotNumCorrected;
 }
 /*******************************************************************************
 *       @details
@@ -337,10 +337,10 @@ void RECORD_OpenLoggingFile(void)
     NewHole_Info_PageInit(&m_New_hole_info_WritePage);
     NewHole_Info_PageInit(&m_New_hole_info_ReadPage);
 
-    memset((void *)&boreholeStatistics, 0, sizeof(boreholeStatistics));
-    boreholeStatistics.RecordCount++;
+    memset((void *)&boreholeStatistics1, 0, sizeof(boreholeStatistics1));
+    boreholeStatistics1.RecordCount++;
     nNewHoleRecordCount = 1;
-    memset((void *)&newHole_tracker, 0, sizeof(newHole_tracker));
+    memset((void *)&newHole_tracker1, 0, sizeof(newHole_tracker1));
     memset((void *)&selectedSurveyRecord, 0, sizeof(selectedSurveyRecord));
     RecordData_StoreSelectSurveyIndex(0);
 
@@ -360,7 +360,7 @@ void RECORD_CloseMergeFile(void)
 *******************************************************************************/
 void RECORD_CloseLoggingFile(void)
 {
-	PageWritePartial(boreholeStatistics.RecordCount);
+	PageWritePartial(boreholeStatistics1.RecordCount);
 	PageInit(&m_ReadPage);
 }
 
@@ -370,35 +370,35 @@ void RECORD_CloseLoggingFile(void)
 void RECORD_TakeSurveyMWD(void)
 {
 	U_INT32 nRecordNumberTemp;
-	nRecordNumberTemp = GetRecordCount() - newHole_tracker.EndingRecordNumber - 1;
-	memcpy(&boreholeStatistics.PreviousSurvey, &boreholeStatistics.LastSurvey, sizeof(STRUCT_RECORD_DATA));
-	RecordInit(&boreholeStatistics.LastSurvey);
-	boreholeStatistics.LastSurvey.tSurveyTimeStamp = (TIME_RT) RTC_GetSeconds();
-	RTC_GetDate(RTC_Format_BIN, &boreholeStatistics.LastSurvey.date);
-	if(boreholeStatistics.LastSurvey.date.RTC_Date == 0 || boreholeStatistics.LastSurvey.date.RTC_Month == 0 || boreholeStatistics.LastSurvey.date.RTC_WeekDay == 0 || boreholeStatistics.LastSurvey.date.RTC_Year == 0)
+	nRecordNumberTemp = GetRecordCount() - newHole_tracker1.EndingRecordNumber - 1;
+	memcpy(&boreholeStatistics1.PreviousSurvey, &boreholeStatistics1.LastSurvey, sizeof(STRUCT_RECORD_DATA));
+	RecordInit(&boreholeStatistics1.LastSurvey);
+	boreholeStatistics1.LastSurvey.tSurveyTimeStamp = (TIME_RT) RTC_GetSeconds();
+	RTC_GetDate(RTC_Format_BIN, &boreholeStatistics1.LastSurvey.date);
+	if(boreholeStatistics1.LastSurvey.date.RTC_Date == 0 || boreholeStatistics1.LastSurvey.date.RTC_Month == 0 || boreholeStatistics1.LastSurvey.date.RTC_WeekDay == 0 || boreholeStatistics1.LastSurvey.date.RTC_Year == 0)
 	{
-		boreholeStatistics.LastSurvey.date.RTC_Year = 1;
-		boreholeStatistics.LastSurvey.date.RTC_Month = 1;
-		boreholeStatistics.LastSurvey.date.RTC_Date = 1;
-		boreholeStatistics.LastSurvey.date.RTC_WeekDay = 1;
+		boreholeStatistics1.LastSurvey.date.RTC_Year = 1;
+		boreholeStatistics1.LastSurvey.date.RTC_Month = 1;
+		boreholeStatistics1.LastSurvey.date.RTC_Date = 1;
+		boreholeStatistics1.LastSurvey.date.RTC_WeekDay = 1;
 	}
-	boreholeStatistics.LastSurvey.StatusCode =  boreholeStatistics.PreviousSurvey.StatusCode;
+	boreholeStatistics1.LastSurvey.StatusCode =  boreholeStatistics1.PreviousSurvey.StatusCode;
 	if(IsBranchSet())
 	{
-		boreholeStatistics.LastSurvey.PreviousBranchLoc = boreholeStatistics.PreviousSurvey.nRecordNumber + newHole_tracker.EndingRecordNumber;
+		boreholeStatistics1.LastSurvey.PreviousBranchLoc = boreholeStatistics1.PreviousSurvey.nRecordNumber + newHole_tracker1.EndingRecordNumber;
 		BranchSet = false;
 	}
-	if(boreholeStatistics.RecordCount > 0)
+	if(boreholeStatistics1.RecordCount > 0)
 	{
 		if(GetChangePipeLengthFlag() == true)
 		{
-			boreholeStatistics.TotalLength += GetNewPipeLength();
+			boreholeStatistics1.TotalLength += GetNewPipeLength();
 			SetChangePipeLengthFlag(false);
 			SetNewPipeLength(0);
  //// Can delete if removing shift function                      
 			if(Shift_Button_Pushed_Flag)
 			{
-				boreholeStatistics.TotalLength += 0;
+				boreholeStatistics1.TotalLength += 0;
 				SetNewPipeLength(0);
 //				Shift_Button_Pushed_Flag = 0;
 				TakeSurvey_Time_Out_Seconds = 0;
@@ -411,7 +411,7 @@ void RECORD_TakeSurveyMWD(void)
  //// Can delete if removing shift function                    
 			if(Shift_Button_Pushed_Flag)
 			{
-				boreholeStatistics.TotalLength += 0;
+				boreholeStatistics1.TotalLength += 0;
 				SetNewPipeLength(0);
 //				Shift_Button_Pushed_Flag = 0;
 				TakeSurvey_Time_Out_Seconds = 0;
@@ -420,27 +420,27 @@ void RECORD_TakeSurveyMWD(void)
 			}
 			else
 			{
-				boreholeStatistics.TotalLength += GetDefaultPipeLength();
+				boreholeStatistics1.TotalLength += GetDefaultPipeLength();
  //// delete outter most bracket below                       
 			}
 		}
 	}
-	boreholeStatistics.LastSurvey.nTotalLength = boreholeStatistics.TotalLength;
+	boreholeStatistics1.LastSurvey.nTotalLength = boreholeStatistics1.TotalLength;
 	if(!nNewHoleRecordCount)
 	{
 		nNewHoleRecordCount = nRecordNumberTemp + 1;
 	}
-	boreholeStatistics.LastSurvey.nRecordNumber = nNewHoleRecordCount;
+	boreholeStatistics1.LastSurvey.nRecordNumber = nNewHoleRecordCount;
 	if(Shift_Button_Pushed_Flag == 1)
 	{
 		GammaTemp += 1;
-		boreholeStatistics.LastSurvey.GammaShotNumCorrected = GammaTemp;
-		boreholeStatistics.LastSurvey.GammaShotLock = 1;
+		boreholeStatistics1.LastSurvey.GammaShotNumCorrected = GammaTemp;
+		boreholeStatistics1.LastSurvey.GammaShotLock = 1;
 		Shift_Button_Pushed_Flag = 0;
 	}
 	else
 	{
-		boreholeStatistics.LastSurvey.GammaShotNumCorrected = GammaTemp;
+		boreholeStatistics1.LastSurvey.GammaShotNumCorrected = GammaTemp;
 	}
 	RECORD_SetRefreshSurveys(true);
 	ClearHoleDataSet = false;
@@ -451,10 +451,10 @@ void RECORD_TakeSurveyMWD(void)
 *******************************************************************************/
 void RECORD_StoreSurvey(STRUCT_RECORD_DATA *record)
 {
-//	boreholeStatistics.TotalLength += GetDefaultPipeLength();
-//	boreholeStatistics.RecordCount++;
+//	boreholeStatistics1.TotalLength += GetDefaultPipeLength();
+//	boreholeStatistics1.RecordCount++;
 //	++nNewHoleRecordCount;
-//	RecordWrite(record, boreholeStatistics.RecordCount);
+//	RecordWrite(record, boreholeStatistics1.RecordCount);
 }
 
 /*******************************************************************************
@@ -462,7 +462,7 @@ void RECORD_StoreSurvey(STRUCT_RECORD_DATA *record)
 *******************************************************************************/
 BOOL RECORD_RequestNextMergeRecord(void)
 {
-	if (boreholeStatistics.MergeIndex < GetRecordCount())
+	if (boreholeStatistics1.MergeIndex < GetRecordCount())
 	{
 		return true;
 	}
@@ -474,8 +474,8 @@ BOOL RECORD_RequestNextMergeRecord(void)
 *******************************************************************************/
 BOOL RECORD_BeginMergeRecords(void)
 {
-	boreholeStatistics.recordRetrieved = false;
-	boreholeStatistics.MergeIndex = 0;
+	boreholeStatistics1.recordRetrieved = false;
+	boreholeStatistics1.MergeIndex = 0;
 	PageRead(0);
 	return RECORD_RequestNextMergeRecord();
 }
@@ -502,27 +502,27 @@ static void MergeRecordCommon(STRUCT_RECORD_DATA* record)
 {
 	INT32 m, b, n, e, c, l;
 
-	boreholeStatistics.recordRetrieved = true;
-	boreholeStatistics.LastSurvey.nAzimuth = record->nAzimuth;
-	boreholeStatistics.LastSurvey.nPitch = record->nPitch;
-	boreholeStatistics.LastSurvey.nRoll = record->nRoll;
-	boreholeStatistics.LastSurvey.nTemperature = record->nTemperature;
-	boreholeStatistics.LastSurvey.nGamma = record->nGamma;
-	boreholeStatistics.LastSurvey.nGTF = record->nGTF;        
-	if (boreholeStatistics.LastSurvey.nRecordNumber > 0)
+	boreholeStatistics1.recordRetrieved = true;
+	boreholeStatistics1.LastSurvey.nAzimuth = record->nAzimuth;
+	boreholeStatistics1.LastSurvey.nPitch = record->nPitch;
+	boreholeStatistics1.LastSurvey.nRoll = record->nRoll;
+	boreholeStatistics1.LastSurvey.nTemperature = record->nTemperature;
+	boreholeStatistics1.LastSurvey.nGamma = record->nGamma;
+	boreholeStatistics1.LastSurvey.nGTF = record->nGTF;        
+	if (boreholeStatistics1.LastSurvey.nRecordNumber > 0)
 	{
 		EASTING_NORTHING_DATA_STRUCT result;
-		DetermineUpDownLeftRight(&boreholeStatistics.LastSurvey, &boreholeStatistics.PreviousSurvey, &result);
+		DetermineUpDownLeftRight(&boreholeStatistics1.LastSurvey, &boreholeStatistics1.PreviousSurvey, &result);
 		if(GetLoggingState() == SURVEY_REQUEST_SUCCESS) // changed from Logging as state machine is modified
 		{
 			m = (result.fDepth + 0.5)*1;
 			m = m/1;    
-			boreholeStatistics.TotalDepth += m; //result.fDepth;
-			boreholeStatistics.TotalNorthings += result.fNorthing;
-			boreholeStatistics.TotalEastings += result.fEasting;
-			b = (boreholeStatistics.TotalDepth + 5)/10;
+			boreholeStatistics1.TotalDepth += m; //result.fDepth;
+			boreholeStatistics1.TotalNorthings += result.fNorthing;
+			boreholeStatistics1.TotalEastings += result.fEasting;
+			b = (boreholeStatistics1.TotalDepth + 5)/10;
 			b = b*10;
-			n = boreholeStatistics.TotalNorthings*10;
+			n = boreholeStatistics1.TotalNorthings*10;
 			c = llabs(n%10);
 			//n = n/10;
 			if(c >= 5)
@@ -539,7 +539,7 @@ static void MergeRecordCommon(STRUCT_RECORD_DATA* record)
 				}
 			}
 			n = (float)n/10;
-			e = boreholeStatistics.TotalEastings*10;
+			e = boreholeStatistics1.TotalEastings*10;
 			c = llabs(e%10);
 			//e = e/10;
 			if(c >= 5)
@@ -556,9 +556,9 @@ static void MergeRecordCommon(STRUCT_RECORD_DATA* record)
 				}
 			}
 			e = (float)e/10;
-			boreholeStatistics.LastSurvey.X = e; //boreholeStatistics.TotalEastings;
-			boreholeStatistics.LastSurvey.Y = n; //boreholeStatistics.TotalNorthings;
-			boreholeStatistics.LastSurvey.Z = b/10; //boreholeStatistics.TotalDepth/10;
+			boreholeStatistics1.LastSurvey.X = e; //boreholeStatistics1.TotalEastings;
+			boreholeStatistics1.LastSurvey.Y = n; //boreholeStatistics1.TotalNorthings;
+			boreholeStatistics1.LastSurvey.Z = b/10; //boreholeStatistics1.TotalDepth/10;
 			lastResult.fDepth = result.fDepth;
 			lastResult.fNorthing = result.fNorthing;
 			lastResult.fEasting = result.fEasting;
@@ -566,11 +566,11 @@ static void MergeRecordCommon(STRUCT_RECORD_DATA* record)
 	}
 	else
 	{
-		boreholeStatistics.LastSurvey.X = 0;
-		boreholeStatistics.LastSurvey.Y = 0;
-		boreholeStatistics.LastSurvey.Z = 0;
+		boreholeStatistics1.LastSurvey.X = 0;
+		boreholeStatistics1.LastSurvey.Y = 0;
+		boreholeStatistics1.LastSurvey.Z = 0;
 	}
-	RecordWrite(&boreholeStatistics.LastSurvey, boreholeStatistics.RecordCount);
+	RecordWrite(&boreholeStatistics1.LastSurvey, boreholeStatistics1.RecordCount);
 }
 
 /*******************************************************************************
@@ -579,7 +579,7 @@ static void MergeRecordCommon(STRUCT_RECORD_DATA* record)
 void RECORD_MergeRecord(STRUCT_RECORD_DATA* record)
 {
 	MergeRecordCommon(record);
-	boreholeStatistics.MergeIndex++;
+	boreholeStatistics1.MergeIndex++;
 }
 
 /*******************************************************************************
@@ -589,15 +589,15 @@ void RECORD_MergeRecordMWD(STRUCT_RECORD_DATA* record)
 {
 	MergeRecordCommon(record);
 //	moved to RECORD_TakeSurveyMWD to correct the displayed pipe length
-//	if(boreholeStatistics.RecordCount > 0)
+//	if(boreholeStatistics1.RecordCount > 0)
 //	{
-//		boreholeStatistics.TotalLength += GetDefaultPipeLength();
+//		boreholeStatistics1.TotalLength += GetDefaultPipeLength();
 //	}
-//	boreholeStatistics.RecordCount++;
+//	boreholeStatistics1.RecordCount++;
 //	++nNewHoleRecordCount;
 //	The next statement is rearragned since the write pointer was different from read pointer
-	PageWrite(PageNumber(boreholeStatistics.RecordCount));
-	boreholeStatistics.RecordCount++;
+	PageWrite(PageNumber(boreholeStatistics1.RecordCount));
+	boreholeStatistics1.RecordCount++;
 	++nNewHoleRecordCount;
 }
 
@@ -606,8 +606,8 @@ void RECORD_MergeRecordMWD(STRUCT_RECORD_DATA* record)
 *******************************************************************************/
 void RECORD_NextMergeRecord(EASTING_NORTHING_DATA_STRUCT* result)
 {
-	boreholeStatistics.recordRetrieved = false;
-	RECORD_MergeRecord(&boreholeStatistics.LastSurvey);
+	boreholeStatistics1.recordRetrieved = false;
+	RECORD_MergeRecord(&boreholeStatistics1.LastSurvey);
 }
 
 /*******************************************************************************
@@ -713,32 +713,32 @@ void RECORD_removeLastRecord(void)
 	STRUCT_RECORD_DATA ParentBranchSurvey;
 	EASTING_NORTHING_DATA_STRUCT result;
 
-	if(boreholeStatistics.LastSurvey.PreviousBranchLoc)
+	if(boreholeStatistics1.LastSurvey.PreviousBranchLoc)
 	{
-		RECORD_GetRecord(&ParentBranchSurvey, boreholeStatistics.LastSurvey.PreviousBranchLoc);
+		RECORD_GetRecord(&ParentBranchSurvey, boreholeStatistics1.LastSurvey.PreviousBranchLoc);
 		//The exact page specified by PreviousBranchLoc was read (We perform a read-modify-write of the flash page where the barnch is set)
 		memcpy(m_WritePage.records, m_ReadPage.records, sizeof(m_WritePage.records));
 		ParentBranchSurvey.NextBranchLoc = 0;
 		ParentBranchSurvey.NumOfBranch = ParentBranchSurvey.NumOfBranch - 1;
-		RecordWrite(&ParentBranchSurvey, boreholeStatistics.LastSurvey.PreviousBranchLoc);
-		PageWrite(PageNumber(boreholeStatistics.LastSurvey.PreviousBranchLoc));
-		PageRead(PageNumber(boreholeStatistics.RecordCount));
+		RecordWrite(&ParentBranchSurvey, boreholeStatistics1.LastSurvey.PreviousBranchLoc);
+		PageWrite(PageNumber(boreholeStatistics1.LastSurvey.PreviousBranchLoc));
+		PageRead(PageNumber(boreholeStatistics1.RecordCount));
 		memcpy(m_WritePage.records, m_ReadPage.records, sizeof(m_WritePage.records));
 	}
 
-	DetermineUpDownLeftRight(&boreholeStatistics.LastSurvey, &boreholeStatistics.PreviousSurvey, &result);
-	boreholeStatistics.TotalLength    -= (boreholeStatistics.LastSurvey.nTotalLength - boreholeStatistics.PreviousSurvey.nTotalLength);  // corrected(what if pipe length was other than default?)
-	boreholeStatistics.TotalNorthings -= result.fNorthing;
-	boreholeStatistics.TotalEastings  -= result.fEasting;
-	boreholeStatistics.TotalDepth     -= result.fDepth;
-        GammaTemp = boreholeStatistics.PreviousSurvey.GammaShotNumCorrected;//
+	DetermineUpDownLeftRight(&boreholeStatistics1.LastSurvey, &boreholeStatistics1.PreviousSurvey, &result);
+	boreholeStatistics1.TotalLength    -= (boreholeStatistics1.LastSurvey.nTotalLength - boreholeStatistics1.PreviousSurvey.nTotalLength);  // corrected(what if pipe length was other than default?)
+	boreholeStatistics1.TotalNorthings -= result.fNorthing;
+	boreholeStatistics1.TotalEastings  -= result.fEasting;
+	boreholeStatistics1.TotalDepth     -= result.fDepth;
+        GammaTemp = boreholeStatistics1.PreviousSurvey.GammaShotNumCorrected;//
         
 	RecordInit(&MostRecentSurvey);
-	memcpy(&m_WritePage.records[PageOffset(boreholeStatistics.RecordCount--)], &MostRecentSurvey, sizeof(STRUCT_RECORD_DATA));
+	memcpy(&m_WritePage.records[PageOffset(boreholeStatistics1.RecordCount--)], &MostRecentSurvey, sizeof(STRUCT_RECORD_DATA));
 	RECORD_GetRecord(&MostRecentSurvey, GetRecordCount() - 1);
-	memcpy(&boreholeStatistics.LastSurvey, &MostRecentSurvey, sizeof(STRUCT_RECORD_DATA));
+	memcpy(&boreholeStatistics1.LastSurvey, &MostRecentSurvey, sizeof(STRUCT_RECORD_DATA));
 	RECORD_GetRecord(&MostRecentSurvey, GetRecordCount() - 2);
-	memcpy(&boreholeStatistics.PreviousSurvey, &MostRecentSurvey, sizeof(STRUCT_RECORD_DATA));
+	memcpy(&boreholeStatistics1.PreviousSurvey, &MostRecentSurvey, sizeof(STRUCT_RECORD_DATA));
 
 	if(nNewHoleRecordCount)
 	{
@@ -752,9 +752,9 @@ void RECORD_removeLastRecord(void)
 	// This is to clear the Survey Panel on the MainTab when all records are deleted
 	if(nNewHoleRecordCount == 1)
 	{
-		U_INT32 nRecordCountTemp = boreholeStatistics.RecordCount;
-		memset((void *) &boreholeStatistics, 0, sizeof(boreholeStatistics));
-		boreholeStatistics.RecordCount = nRecordCountTemp;
+		U_INT32 nRecordCountTemp = boreholeStatistics1.RecordCount;
+		memset((void *) &boreholeStatistics1, 0, sizeof(boreholeStatistics1));
+		boreholeStatistics1.RecordCount = nRecordCountTemp;
 	}
 
 	memset((void *)&selectedSurveyRecord, 0, sizeof(selectedSurveyRecord));
@@ -764,22 +764,22 @@ void RECORD_removeLastRecord(void)
 }
 
 void RECORD_deleteRecord(U_INT32 index) {
-    if (index >= boreholeStatistics.RecordCount || index < 0) {
+    if (index >= boreholeStatistics1.RecordCount || index < 0) {
         // Invalid index
         return;
     }
 
     // Shift all records after the given index back by one
-    for (U_INT32 i = index; i < boreholeStatistics.RecordCount - 1; i++) {
+    for (U_INT32 i = index; i < boreholeStatistics1.RecordCount - 1; i++) {
         RECORD_GetRecord(&m_WritePage.records[i], i + 1);
     }
 
-    boreholeStatistics.RecordCount--;
+    boreholeStatistics1.RecordCount--;
     // Clear the last record (which is now duplicate)
-    memset(&m_WritePage.records[boreholeStatistics.RecordCount], 0, sizeof(STRUCT_RECORD_DATA));
+    memset(&m_WritePage.records[boreholeStatistics1.RecordCount], 0, sizeof(STRUCT_RECORD_DATA));
 
     // Optionally, if you want to immediately save the changes to flash or a database:
-    // PageWrite(PageNumber(boreholeStatistics.RecordCount));
+    // PageWrite(PageNumber(boreholeStatistics1.RecordCount));
 }
 /*******************************************************************************
 *       @details
@@ -788,10 +788,10 @@ void RECORD_InitNewHole(void)
 {
 	if(!InitNewHole_KeyPress())
 	{
-		U_INT32 nRecordCountTemp = boreholeStatistics.RecordCount;
+		U_INT32 nRecordCountTemp = boreholeStatistics1.RecordCount;
 		Get_Save_NewHole_Info();
-		memset((void *) &boreholeStatistics, 0, sizeof(boreholeStatistics));
-		boreholeStatistics.RecordCount = nRecordCountTemp;
+		memset((void *) &boreholeStatistics1, 0, sizeof(boreholeStatistics1));
+		boreholeStatistics1.RecordCount = nRecordCountTemp;
 		nNewHoleRecordCount = 1;  // changed same as clear all hole
 		memset((void *)&selectedSurveyRecord, 0, sizeof(selectedSurveyRecord));
 		RecordData_StoreSelectSurveyIndex(0);
@@ -804,14 +804,14 @@ void RECORD_InitNewHole(void)
 *******************************************************************************/
 BOOL InitNewHole_KeyPress(void)
 {
-	if(boreholeStatistics.LastSurvey.nRecordNumber)
+	if(boreholeStatistics1.LastSurvey.nRecordNumber)
 		return 0; // No New Hole requested
 	return 1; // New Hole requested
 }
 
 U_INT16 PreviousHoleEndingRecordNumber(void)
 {
-  return(newHole_tracker.EndingRecordNumber);
+  return(newHole_tracker1.EndingRecordNumber);
 }
 
 /*******************************************************************************
@@ -822,23 +822,23 @@ U_INT16 PreviousHoleEndingRecordNumber(void)
 static FLASH_PAGE New_Hole_page;
 void Get_Save_NewHole_Info(void)
 {
-	strcpy(newHole_tracker.BoreholeName, GetBoreholeName());
-	newHole_tracker.StartingRecordNumber = GetRecordCount() - boreholeStatistics.LastSurvey.nRecordNumber;
-	newHole_tracker.EndingRecordNumber = GetRecordCount()-1;
-	newHole_tracker.DefaultPipeLength = GetDefaultPipeLength();
-	newHole_tracker.Declination = GetDeclination();
-	newHole_tracker.DesiredAzimuth = GetDesiredAzimuth();
-	newHole_tracker.Toolface = GetToolface();
-	if(newHole_tracker.EndingRecordNumber)
-	newHole_tracker.BoreholeNumber++;
-	if(newHole_tracker.BoreholeNumber)
+	strcpy(newHole_tracker1.BoreholeName, GetBoreholeName());
+	newHole_tracker1.StartingRecordNumber = GetRecordCount() - boreholeStatistics1.LastSurvey.nRecordNumber;
+	newHole_tracker1.EndingRecordNumber = GetRecordCount()-1;
+	newHole_tracker1.DefaultPipeLength = GetDefaultPipeLength();
+	newHole_tracker1.Declination = GetDeclination();
+	newHole_tracker1.DesiredAzimuth = GetDesiredAzimuth();
+	newHole_tracker1.Toolface = GetToolface();
+	if(newHole_tracker1.EndingRecordNumber)
+	newHole_tracker1.BoreholeNumber++;
+	if(newHole_tracker1.BoreholeNumber)
 	{
-		if(newHole_tracker.BoreholeNumber % NEW_HOLE_RECORDS_PER_PAGE == 0 && newHole_tracker.BoreholeNumber != 1)
+		if(newHole_tracker1.BoreholeNumber % NEW_HOLE_RECORDS_PER_PAGE == 0 && newHole_tracker1.BoreholeNumber != 1)
 		NewHole_Info_PageInit(&m_New_hole_info_WritePage);
-		memcpy(&m_New_hole_info_WritePage.NewHole_record[newHole_tracker.BoreholeNumber % NEW_HOLE_RECORDS_PER_PAGE], &newHole_tracker, sizeof(NEWHOLE_INFO));
+		memcpy(&m_New_hole_info_WritePage.NewHole_record[newHole_tracker1.BoreholeNumber % NEW_HOLE_RECORDS_PER_PAGE], &newHole_tracker1, sizeof(NEWHOLE_INFO));
 		memcpy(&New_Hole_page, m_New_hole_info_WritePage.NewHole_record, sizeof(m_New_hole_info_WritePage.NewHole_record));
-		FLASH_WritePage(&New_Hole_page, (newHole_tracker.BoreholeNumber / NEW_HOLE_RECORDS_PER_PAGE));
-		//NewHole_Info_Read(&selectedNewHoleInfo, newHole_tracker.BoreholeNumber);
+		FLASH_WritePage(&New_Hole_page, (newHole_tracker1.BoreholeNumber / NEW_HOLE_RECORDS_PER_PAGE));
+		//NewHole_Info_Read(&selectedNewHoleInfo, newHole_tracker1.BoreholeNumber);
 	}
 }
 
@@ -850,15 +850,15 @@ void Get_Hole_Info_To_PC(void)
 {
 	NEWHOLE_INFO TempBoreholeInfo;
 	strcpy(TempBoreholeInfo.BoreholeName,GetBoreholeName());
-	TempBoreholeInfo.StartingRecordNumber = GetRecordCount() - boreholeStatistics.LastSurvey.nRecordNumber;
+	TempBoreholeInfo.StartingRecordNumber = GetRecordCount() - boreholeStatistics1.LastSurvey.nRecordNumber;
 	TempBoreholeInfo.EndingRecordNumber = GetRecordCount()-1;
 	TempBoreholeInfo.DefaultPipeLength = GetDefaultPipeLength();
 	TempBoreholeInfo.Declination = GetDeclination();
 	TempBoreholeInfo.DesiredAzimuth = GetDesiredAzimuth();
 	TempBoreholeInfo.Toolface = GetToolface();
 	if(TempBoreholeInfo.EndingRecordNumber)
-		TempBoreholeNumber = newHole_tracker.BoreholeNumber + 1;
-	TempBoreholeInfo.BoreholeNumber = newHole_tracker.BoreholeNumber + 1;
+		TempBoreholeNumber = newHole_tracker1.BoreholeNumber + 1;
+	TempBoreholeInfo.BoreholeNumber = newHole_tracker1.BoreholeNumber + 1;
 	if(TempBoreholeNumber)
 	{
 		if(TempBoreholeNumber % NEW_HOLE_RECORDS_PER_PAGE == 0 && TempBoreholeNumber != 1)
@@ -888,7 +888,7 @@ BOOL NewHole_Info_Read(NEWHOLE_INFO *NewHoleInfo, U_INT32 HoleNumber)
 	U_INT32 pageNumber = HoleNumber / NEW_HOLE_RECORDS_PER_PAGE;
 	NewHole_Info_ReadPage(pageNumber);
 	// TempBoreholeNumber is to to download data on PC without closing hole
-	if (HoleNumber <= newHole_tracker.BoreholeNumber || HoleNumber <= TempBoreholeNumber)
+	if (HoleNumber <= newHole_tracker1.BoreholeNumber || HoleNumber <= TempBoreholeNumber)
 	{
 		memcpy(NewHoleInfo, &m_New_hole_info_ReadPage.NewHole_record[HoleNumber % NEW_HOLE_RECORDS_PER_PAGE], sizeof(NEWHOLE_INFO));
 		return true;
@@ -939,30 +939,30 @@ U_INT32 RECORD_GetBranchPointIndex(void)
     count = RECORD_GetBranchPointIndex();
 
     // Read the previous and current survey records
-    RECORD_GetRecord(&boreholeStatistics.PreviousSurvey, count - 1);
-    RECORD_GetRecord(&boreholeStatistics.LastSurvey, count+1);
+    RECORD_GetRecord(&boreholeStatistics1.PreviousSurvey, count - 1);
+    RECORD_GetRecord(&boreholeStatistics1.LastSurvey, count+1);
 
     // Update the total Eastings, Northings, Depth, and Length
-    boreholeStatistics.TotalEastings = boreholeStatistics.LastSurvey.X;
-    boreholeStatistics.TotalNorthings = boreholeStatistics.LastSurvey.Y;
-    boreholeStatistics.TotalDepth = boreholeStatistics.LastSurvey.Z * 10;
-    boreholeStatistics.TotalLength = boreholeStatistics.LastSurvey.nTotalLength;
+    boreholeStatistics1.TotalEastings = boreholeStatistics1.LastSurvey.X;
+    boreholeStatistics1.TotalNorthings = boreholeStatistics1.LastSurvey.Y;
+    boreholeStatistics1.TotalDepth = boreholeStatistics1.LastSurvey.Z * 10;
+    boreholeStatistics1.TotalLength = boreholeStatistics1.LastSurvey.nTotalLength;
 
     // Update branch-related fields
-    boreholeStatistics.LastSurvey.NumOfBranch++;
-    boreholeStatistics.LastSurvey.NextBranchLoc = boreholeStatistics.RecordCount;
+    boreholeStatistics1.LastSurvey.NumOfBranch++;
+    boreholeStatistics1.LastSurvey.NextBranchLoc = boreholeStatistics1.RecordCount;
 
     // Perform a read-modify-write of the flash page where the branch is set
     memcpy(m_WritePage.records, m_ReadPage.records, sizeof(m_WritePage.records));
-    RecordWrite(&boreholeStatistics.LastSurvey, count);
+    RecordWrite(&boreholeStatistics1.LastSurvey, count);
     PageWrite(PageNumber(count));
 
     // Update the StatusCode to indicate the branch point
-    boreholeStatistics.LastSurvey.StatusCode += BranchStatusCode;
+    boreholeStatistics1.LastSurvey.StatusCode += BranchStatusCode;
     BranchSet = true;
 
     // Restore the original content of the Write_Page because of partial filled pages
-    PageRead(PageNumber(boreholeStatistics.RecordCount));
+    PageRead(PageNumber(boreholeStatistics1.RecordCount));
     memcpy(m_WritePage.records, m_ReadPage.records, sizeof(m_WritePage.records));
 
 }
@@ -979,17 +979,17 @@ void RECORD_InitBranchParam(void)
     RECORD_GetRecord(&tempLastSurvey, count);
 
     // Read the previous survey record
-    RECORD_GetRecord(&boreholeStatistics.PreviousSurvey, count - 1);
+    RECORD_GetRecord(&boreholeStatistics1.PreviousSurvey, count - 1);
 
     // Update the total Eastings, Northings, Depth, and Length
-    boreholeStatistics.TotalEastings = tempLastSurvey.X;
-    boreholeStatistics.TotalNorthings = tempLastSurvey.Y;
-    boreholeStatistics.TotalDepth = tempLastSurvey.Z * 10;
-    boreholeStatistics.TotalLength = tempLastSurvey.nTotalLength;
+    boreholeStatistics1.TotalEastings = tempLastSurvey.X;
+    boreholeStatistics1.TotalNorthings = tempLastSurvey.Y;
+    boreholeStatistics1.TotalDepth = tempLastSurvey.Z * 10;
+    boreholeStatistics1.TotalLength = tempLastSurvey.nTotalLength;
 
     // Update branch-related fields
     tempLastSurvey.NumOfBranch++;
-    tempLastSurvey.NextBranchLoc = boreholeStatistics.RecordCount;
+    tempLastSurvey.NextBranchLoc = boreholeStatistics1.RecordCount;
 
     // Perform a read-modify-write of the flash page where the branch is set
     memcpy(m_WritePage.records, m_ReadPage.records, sizeof(m_WritePage.records));
@@ -1001,7 +1001,7 @@ void RECORD_InitBranchParam(void)
     BranchSet = true;
 
     // Restore the original content of the Write_Page because of partial filled pages
-    PageRead(PageNumber(boreholeStatistics.RecordCount));
+    PageRead(PageNumber(boreholeStatistics1.RecordCount));
     memcpy(m_WritePage.records, m_ReadPage.records, sizeof(m_WritePage.records));
 }
 
@@ -1054,10 +1054,10 @@ void SetClearHoleFlag(void)
 *******************************************************************************/
 U_INT16 CurrentBoreholeNumber(void)
 {
-//        if (newHole_tracker.BoreholeNumber == 0)
+//        if (newHole_tracker1.BoreholeNumber == 0)
 //        {
-//            newHole_tracker.BoreholeNumber += 1;
+//            newHole_tracker1.BoreholeNumber += 1;
 //        }
   
-	return(newHole_tracker.BoreholeNumber);
+	return(newHole_tracker1.BoreholeNumber);
 }

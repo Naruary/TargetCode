@@ -34,6 +34,9 @@
 #include "UI_FixedField.h"
 #include "UI_StringField.h"
 #include "UI_ChangePipeLengthCorrectDecisionPanel.h"
+#include "UI_ChangePipeLengthDecisionPanel.h"
+#include "GammaSensor.h"
+
 
 //============================================================================//
 //      FUNCTION PROTOTYPES                                                   //
@@ -232,7 +235,7 @@ INT16 GetEnterAzimuth(void)
 INT16 GetEnterPitch(void)
 {
     INT16 value;
-    value = ManualPitch;
+    value = (INT16)ManualPitch;
     return value;
 }
 
@@ -272,7 +275,7 @@ static void FinishEditing(MENU_ITEM* item)
       STRUCT_RECORD_DATA record;
   
       record.nAzimuth = ManualAzimuth;
-      record.nPitch = ManualPitch;
+      record.nPitch = (INT16)ManualPitch;
       record.nRoll = ManualToolface;
       record.nGamma = 0;
 //      RECORD_TakeSurveyMWD();

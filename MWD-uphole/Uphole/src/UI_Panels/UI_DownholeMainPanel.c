@@ -142,10 +142,10 @@ static void Paint(TAB_ENTRY* tab)
 //	snprintf(text, 100, "Downhole Run Time:     %lu Hours", GetDownholeTotalOnTime()/3600ul);
 //	ShowDownholeVoltageTabDiag(text, ((nMenuCount+0) * 15)+4 );
 
-	snprintf(text, 100, "Downhole Voltage:         %.2f", (float)GetDownholeBatteryVoltage()/1000);
+	snprintf(text, 100, "Downhole Voltage:         %.2f", (double)GetDownholeBatteryVoltage()/1000);
 	ShowDownholeVoltageTabDiag(text, ((nMenuCount+0) * 15)+4 );
         
-        snprintf(text, 100, "Downhole Batt 2 Voltage:         %.2f", (float)GetDownholeBattery2Voltage()/1000);
+    snprintf(text, 100, "Downhole Batt 2 Voltage:         %.2f", (double)GetDownholeBattery2Voltage()/1000);
 	ShowDownholeVoltageTabDiag2(text, ((nMenuCount+1) * 15)+4 );
 
 	snprintf(text, 100, "Downhole Signal Strength:        %d", GetDownholeSignalStrength());

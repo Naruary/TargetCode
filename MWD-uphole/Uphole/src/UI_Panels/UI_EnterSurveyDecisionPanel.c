@@ -26,6 +26,7 @@
 #include "UI_api.h"
 //#include "UI_ChangePipeLengthDecisionPanel.h"
 #include "UI_EnterSurveyDecisionPanel.h"
+#include "UI_EnterSurvey.h"
 #include "UI_RecordDataPanel.h"
 #include "UI_DataTab.h"
 #include "UI_GroupBox.h"
@@ -57,8 +58,6 @@ static MENU_ITEM EnterSurvey_DecisionMenu[] =
 };
 
 BOOL EnterSurvey_DecisionPanelActive = false;
-
-static TIME_LR tCallEnterSurvey = 0;
 
 PANEL EnterSurvey_DecisionPanel = {EnterSurvey_Decision_Menu, sizeof(EnterSurvey_DecisionMenu) / sizeof(MENU_ITEM), EnterSurvey_Decision_Paint, EnterSurvey_Decision_Show, EnterSurvey_Decision_KeyPressed, EnterSurvey_Decision_TimerElapsed};
 
