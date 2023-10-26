@@ -46,7 +46,7 @@ const CMD_VALIDATION g_statusCmdVal0008[] =
 static U_INT16 nDownholeOnTime = 0;
 static U_INT16 nDownholeOffTime = 0;
 static BOOL bDownholeOnStatus = FALSE;
-static BOOL bDownholeOfStatus = FALSE;
+static BOOL bDownholeOffStatus = FALSE;
 static TIME_LR tDownholeStatus = 0;
 REAL32 DownholeVoltage;
 
@@ -67,7 +67,7 @@ void SetDownholeOnTimeStatus(U_BYTE *pHeader, U_BYTE *pData, U_INT16 nDataLen)
     DownholeVoltage = GetREAL32(&pData[2]);
 
     bDownholeOnStatus = TRUE;
-    bDownholeOfStatus = FALSE;
+    bDownholeOffStatus = FALSE;
 
     tDownholeStatus = ElapsedTimeLowRes(0);
 //    SetDownholeBatteryLife(DownholeVoltage);
@@ -85,7 +85,7 @@ void SetDownholeOffTimeStatus(U_BYTE *pHeader, U_BYTE *pData, U_INT16 nDataLen)
     nDownholeOnTime = 0;
     DownholeVoltage = GetREAL32(&pData[2]);
 
-    bDownholeOfStatus = TRUE;
+    bDownholeOffStatus = TRUE;
     bDownholeOnStatus = FALSE;
 
     tDownholeStatus = ElapsedTimeLowRes(0);
@@ -174,7 +174,7 @@ BOOL GetDownholeOnStatus(void)
 
 BOOL GetDownholeOffStatus(void)
 {
-  return bDownholeOfStatus;
+  return bDownholeOffStatus;
 }
 
 /*!
@@ -195,7 +195,7 @@ void SetDownholeOnStatus(BOOL Status)
 
 void SetDownholeOffStatus(BOOL Status)
 {
-  bDownholeOfStatus = Status;
+  bDownholeOffStatus = Status;
 }
 
 

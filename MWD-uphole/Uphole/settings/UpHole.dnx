@@ -33,13 +33,13 @@
         <Sort>4 0</Sort>
     </SfrWindow>
     <JLinkDriver>
+        <TraceBufferSize>0x10000</TraceBufferSize>
+        <TraceStallIfFIFOFull>0x0</TraceStallIfFIFOFull>
+        <TracePortSize>0x4</TracePortSize>
         <LeaveTargetRunning>_ 0</LeaveTargetRunning>
         <CStepIntDis>_ 0</CStepIntDis>
         <jlinkResetStyle>12</jlinkResetStyle>
         <jlinkResetStrategy>0</jlinkResetStrategy>
-        <TraceBufferSize>0x10000</TraceBufferSize>
-        <TraceStallIfFIFOFull>0x0</TraceStallIfFIFOFull>
-        <TracePortSize>0x4</TracePortSize>
     </JLinkDriver>
     <Log_file>
         <LoggingEnabled>_ 0</LoggingEnabled>
@@ -97,52 +97,33 @@
         <EnableCache>0</EnableCache>
         <EnforceMemoryConfiguration>1</EnforceMemoryConfiguration>
     </ArmDriver>
-    <LogFile>
-        <LoggingEnabled>_ 0</LoggingEnabled>
-        <LogFile>_ ""</LogFile>
-        <Category2>_ 0</Category2>
-    </LogFile>
-    <Trace2>
-        <Enabled>0</Enabled>
-        <ShowSource>0</ShowSource>
-    </Trace2>
-    <DisassembleMode>
-        <mode>0</mode>
-    </DisassembleMode>
-    <Breakpoints2>
-        <Bp0>_ 0 "EMUL_CODE" "{$PROJ_DIR$\src\HardwareInterfaces\keypad.c}.113.15" 0 0 1 "" 0 "" 0</Bp0>
-        <Bp1>_ 1 "EMUL_CODE" "{$PROJ_DIR$\src\DataManagers\RecordManager.c}.789.6" 0 0 1 "" 0 "" 0</Bp1>
-        <Bp2>_ 1 "EMUL_CODE" "{$PROJ_DIR$\src\DataManagers\RecordManager.c}.789.6" 0 0 1 "" 0 "" 0</Bp2>
-        <Count>3</Count>
-    </Breakpoints2>
     <TermIOLog>
         <LoggingEnabled>_ 0</LoggingEnabled>
         <LogFile>_ ""</LogFile>
     </TermIOLog>
-    <Aliases>
-        <A0>_ "C:\Users\WHS.000\Documents\Target Mag Chris Sep to Nov  2021\Libraries\Libraries\CMSIS\Device\ST\STM32F4xx\Source\Templates\iar\startup_stm32f40_41xxx.s" ""</A0>
-        <A1>_ "C:\Users\WHS.000\Documents\Target Mag Chris Sep to Nov  2021\Libraries\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_gpio.c" ""</A1>
-        <A2>_ "C:\Users\WHS.000\Documents\Target Mag Chris Sep to Nov  2021\MWD-uphole\Uphole\src\CommDrivers\CommDriver_UART.c" ""</A2>
-        <A3>_ "C:\Users\WHS.000\Documents\Target Mag Chris Sep to Nov  2021\MWD-uphole\Uphole\src\Graph_Plot\Graph_Plot.c" ""</A3>
-        <A4>_ "C:\Users\WHS.000\Documents\Target Mag Chris Sep to Nov  2021\MWD-uphole\Uphole\src\Graph_Plot\SideGamma_Graph_Plot.c" ""</A4>
-        <A5>_ "C:\Users\WHS.000\Documents\Target Mag Chris Sep to Nov  2021\MWD-uphole\Uphole\src\HardwareInterfaces\buzzer.c" ""</A5>
-        <A6>_ "C:\Users\WHS.000\Documents\Target Mag Chris Sep to Nov  2021\MWD-uphole\Uphole\src\HardwareInterfaces\lcd.c" ""</A6>
-        <A7>_ "C:\Users\WHS.000\Documents\Target Mag Chris Sep to Nov  2021\MWD-uphole\Uphole\src\UI_Frame\UI_FrameStartup.c" ""</A7>
-        <A8>_ "C:\Users\WHS.000\Documents\Target Mag Chris Sep to Nov  2021\MWD-uphole\Uphole\src\timer.c" ""</A8>
-        <A9>_ "C:\Users\WHS.000\Documents\Target Mag latest code 14Dec2022\MWD-uphole\Uphole\src\main.c" ""</A9>
-        <A10>_ "C:\Users\WHS.000\Documents\Target Mag latest code\MWD-uphole\Uphole\src\main.c" ""</A10>
-        <A11>_ "C:\Users\WHS.000\Documents\Target MagneStar Debug\code\libraries\Libraries\CMSIS\Device\ST\STM32F4xx\Source\Templates\iar\startup_stm32f40_41xxx.s" ""</A11>
-        <A12>_ "C:\Users\WHS.000\Documents\Target MagneStar Debug\code\libraries\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_gpio.c" ""</A12>
-        <A13>_ "C:\Users\WHS\Documents\Target\MagneStar\Code\magnestar\trunk\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_adc.c" ""</A13>
-        <A14>_ "C:\Users\WHS\Documents\Target\MagneStar\Code\magnestar\trunk\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_gpio.c" ""</A14>
-        <A15>_ "C:\Users\WHS\Documents\Target\MagneStar\Code\magnestar\trunk\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_rtc.c" ""</A15>
-        <Count>16</Count>
-        <SuppressDialog>1</SuppressDialog>
-    </Aliases>
+    <Trace2>
+        <Enabled>0</Enabled>
+        <ShowSource>0</ShowSource>
+    </Trace2>
     <DriverProfiling>
         <Enabled>0</Enabled>
         <Mode>1</Mode>
         <Graph>0</Graph>
         <Symbiont>0</Symbiont>
     </DriverProfiling>
+    <LogFile>
+        <LoggingEnabled>_ 0</LoggingEnabled>
+        <LogFile>_ ""</LogFile>
+        <Category2>_ 0</Category2>
+    </LogFile>
+    <DisassembleMode>
+        <mode>0</mode>
+    </DisassembleMode>
+    <Aliases>
+        <Count>0</Count>
+        <SuppressDialog>0</SuppressDialog>
+    </Aliases>
+    <Breakpoints2>
+        <Count>0</Count>
+    </Breakpoints2>
 </settings>

@@ -30,7 +30,7 @@
 *******************************************************************************/
 static char* BooleanFormat(MENU_ITEM* item)
 {
-//	return GetTxtString(item->boolean.value ? TXT_ON : TXT_OFF);
+	return GetTxtString(item->boolean.value ? TXT_ON : TXT_OFF);
 }
 
 /*******************************************************************************

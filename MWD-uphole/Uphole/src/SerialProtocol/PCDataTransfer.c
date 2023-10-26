@@ -421,21 +421,22 @@ int CSVmain()
   initCSVStructure();
 
   // Use pointer arrays
-  const char* input_string = "BoreName, Rec#, PipeLength, Azimuth, Pitch, Roll, X, Y, Z, Gamma, TimeStamp, WeekDay, Month, Day, Year, DefltPipeLeDeclin, DesiredAz, ToolFace, Statcode, #Branch, #BoreHole \n\nHOLE           , 1, 0, 161.9, 0.8, 0.0, 0.0, 0.0, 0.0, 0, 715229643, 2, 9, 1, 23, 0, 0, 0, 0, 0";
+  //const char* input_string = "BoreName, Rec#, PipeLength, Azimuth, Pitch, Roll, X, Y, Z, Gamma, TimeStamp, WeekDay, Month, Day, Year, DefltPipeLeDeclin, DesiredAz, ToolFace, Statcode, #Branch, #BoreHole \n\nHOLE           , 1, 0, 161.9, 0.8, 0.0, 0.0, 0.0, 0.0, 0, 715229643, 2, 9, 1, 23, 0, 0, 0, 0, 0";
 
   // Assuming ',' as the delimiter
 
   // Add rows to the CSVFileStructure
-  add_row_data(input_string, '\n');
+/*  
+add_row_data(input_string, '\n'); 
+*/
   // file split into different chunks to simulate serial send.
-  const char* input_string2 = ", 0, 0\n\nHOLE           , 2, 10, 161.9, 1.1, 0.0, -5.3, 0.2, 8.5, 0, 715229721, 2, 9, 1, 23, 0, 0, 0, 0, 0, 0, 0";
+  //const char* input_string2 = ", 0, 0\n\nHOLE           , 2, 10, 161.9, 1.1, 0.0, -5.3, 0.2, 8.5, 0, 715229721, 2, 9, 1, 23, 0, 0, 0, 0, 0, 0, 0";
 
-  add_row_data(input_string2, '\n');
-  // add_data_row(, '/n');
+  //add_row_data(input_string2, '\n');
 
   // not really necessary here
   print_CSVFileStructure(getFileStructure());
-  freeCSV();
+  //freeCSV();
 
   //
 
@@ -579,6 +580,7 @@ void ProcessCsvLine(const CSVRowStructure* line)
   {
     return;
   }
+  /*
   STRUCT_RECORD_DATA record;
   sscanf(line->items[0], "%u",&record.nRecordNumber);
   sscanf(line->items[1], "%d", &record.nTotalLength);
@@ -596,4 +598,5 @@ void ProcessCsvLine(const CSVRowStructure* line)
   sscanf(line->items[13], "%d", &record.date.RTC_Year);
 
    //RECORD_SetRecord(&record);
+   */
 }

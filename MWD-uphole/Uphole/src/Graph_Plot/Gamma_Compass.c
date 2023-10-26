@@ -61,13 +61,12 @@
 static MENU_ITEM* GetGammaCompassMenuItem(TAB_ENTRY* tab, U_BYTE index);
 static U_BYTE GetGammaCompassMenuSize(TAB_ENTRY* tab);
 static void GammaCompassTabPaint(TAB_ENTRY* tab);
-static void GammaCompassTabMakeRequest(TAB_ENTRY* tab);
 static void GammaCompassTabShow(TAB_ENTRY* tab);
 void DrawGammaRadarCompass(void);
 void DrawGammaCompass(void);
 
 
-static MENU_ITEM* GetMenu(U_BYTE index);
+//static MENU_ITEM* GetMenu(U_BYTE index);
 static void TableTimeElapsed(TAB_ENTRY* tab);
 static void TimerElapsed(TAB_ENTRY* tab);
 static void TableKeyPressed(TAB_ENTRY* tab, BUTTON_VALUE key);
@@ -223,14 +222,6 @@ static void GammaCompassTabPaint(TAB_ENTRY* tab)
 	CurrentState()->Paint(tab);
 	DrawGammaCompass();
 }
-
-/*******************************************************************************
-*       @details
-*******************************************************************************/
-static void GammaCompassTabMakeRequest(TAB_ENTRY* tab)
-{
-}
-
 /*******************************************************************************
 *       @details
 *******************************************************************************/

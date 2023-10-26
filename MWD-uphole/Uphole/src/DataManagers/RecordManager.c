@@ -15,6 +15,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <stdio.h>
+#include <math.h>
 #include "portable.h"
 #include "CommDriver_UART.h"
 #include "LED.h"
@@ -30,7 +31,6 @@
 #include "SysTick.h"
 #include "math.h"
 #include "stdlib.h"
-
 
 //============================================================================//
 //      CONSTANTS                                                             //
@@ -112,6 +112,8 @@ static U_INT32 nBranchRecordNumber = 0;
 static BOOL ClearHoleDataSet = false;
 static INT16 TempBoreholeNumber = 0;
 INT16 GammaTemp = 0;
+//n = roundf((float)n / 10.0f);
+//e = roundf((float)e / 10.0f);
 
 STRUCT_RECORD_DATA record;
 
@@ -500,8 +502,9 @@ static void DetermineUpDownLeftRight(STRUCT_RECORD_DATA* record, STRUCT_RECORD_D
 *******************************************************************************/
 static void MergeRecordCommon(STRUCT_RECORD_DATA* record)
 {
-	INT32 m, b, n, e, c, l;
-
+	INT32 b, n, c, e, l;
+	float m;
+	
 	boreholeStatistics1.recordRetrieved = true;
 	boreholeStatistics1.LastSurvey.nAzimuth = record->nAzimuth;
 	boreholeStatistics1.LastSurvey.nPitch = record->nPitch;
@@ -522,8 +525,10 @@ static void MergeRecordCommon(STRUCT_RECORD_DATA* record)
 			boreholeStatistics1.TotalEastings += result.fEasting;
 			b = (boreholeStatistics1.TotalDepth + 5)/10;
 			b = b*10;
-			n = boreholeStatistics1.TotalNorthings*10;
-			c = llabs(n%10);
+			//n = boreholeStatistics1.TotalNorthings*10;
+			n = roundf(boreholeStatistics1.TotalNorthings * 10.0f);
+			//c = llabs(n%10);
+			c = llabs(n % 10);
 			//n = n/10;
 			if(c >= 5)
 			{
@@ -538,10 +543,12 @@ static void MergeRecordCommon(STRUCT_RECORD_DATA* record)
 					n = n - l;     
 				}
 			}
-			n = (float)n/10;
-			e = boreholeStatistics1.TotalEastings*10;
-			c = llabs(e%10);
-			//e = e/10;
+			//n = (float)n/10;
+			n = roundf((float)n / 10.0f);
+			//e = boreholeStatistics1.TotalEastings*10;
+			e = roundf(boreholeStatistics1.TotalEastings * 10.0f);
+			//c = llabs(e%10);
+			c = llabs(e % 10);
 			if(c >= 5)
 			{
 				if(e >= 0)
@@ -555,7 +562,8 @@ static void MergeRecordCommon(STRUCT_RECORD_DATA* record)
 					e = e - l;     
 				}
 			}
-			e = (float)e/10;
+			//e = (float)e/10;
+			e = roundf((float)e / 10.0f);
 			boreholeStatistics1.LastSurvey.X = e; //boreholeStatistics1.TotalEastings;
 			boreholeStatistics1.LastSurvey.Y = n; //boreholeStatistics1.TotalNorthings;
 			boreholeStatistics1.LastSurvey.Z = b/10; //boreholeStatistics1.TotalDepth/10;

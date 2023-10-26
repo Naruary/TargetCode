@@ -40,6 +40,7 @@
 #include "UI_BranchPointSetDecisionPanel.h"
 #include "UI_ClearAllHoleDecisionPanel.h"
 #include "UI_UpdateDiagnosticDownholeDecisionPanel.h"
+#include "GammaSensor.h"
 
 //============================================================================//
 //      DATA DEFINITIONS                                                      //

@@ -54,9 +54,9 @@ void DrawCompass(void)
   LCD_Refresh(LCD_BACKGROUND_PAGE);
   drawScreenBorder();
   PaintNow(&StatusFrame);  //StatusFrame
-  HomePaint();
+  int HomePaint();
   
-  DrawGammaCompass();
+  int DrawGammaCompass();
   
   
   //DrawAzimuthCompass();

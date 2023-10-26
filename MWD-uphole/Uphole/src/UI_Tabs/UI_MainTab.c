@@ -293,18 +293,6 @@ MENU_ITEM* GetEmptyMenu(U_BYTE index)
 /*******************************************************************************
 *       @details
 *******************************************************************************/
-#if 0
-void ShowNumberOfHoleMessage(char* message)
-{
-	RECT area;
-	const FRAME* frame = &WindowFrame;
-	area.ptTopLeft.nCol = frame->area.ptTopLeft.nCol + 5;
-	area.ptTopLeft.nRow = frame->area.ptBottomRight.nRow - 32;
-	area.ptBottomRight.nCol = frame->area.ptBottomRight.nCol - 5;
-	area.ptBottomRight.nRow = area.ptTopLeft.nRow + 15;
-	UI_DisplayStringCentered(message, &area);
-}
-#endif 
 ///1
 void ShowArmedStatusMessage(char* message)
 {

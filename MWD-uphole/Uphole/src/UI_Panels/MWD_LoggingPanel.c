@@ -59,7 +59,6 @@ static void LoggingShow(TAB_ENTRY* tab);
 static void TimerElapsed(TAB_ENTRY* tab);
 //static BOOL GetDownholeOnStatus(void);
 //static BOOL GetDownholeOffStatus(void);
-static void ShowNumberOfHoleMessage(char* message);
 INT16 GetToolfaceOffset(void);
 static void EnterSurvey(MENU_ITEM* item);
 

@@ -202,9 +202,12 @@ static void Yes_DeleteLastSurvey_Decision(MENU_ITEM* item)
 */
 static void Yes_DeleteLastSurvey_Decision(MENU_ITEM* item)
 {
+    STRUCT_RECORD_DATA lastRecoord;
+
     if(GetLastRecordNumber() == RECORD_getSelectSurveyRecordNumber()) 
     {
-        if(IsSurveyBranchFirstNode() == true && IsBranchSet()==true) 
+        RECORD_GetRecord(&lastRecoord, GetLastRecordNumber());
+        if (lastRecoord.NumOfBranch != 0)
         {
             // If the survey is a branch point, show the error panel and do not delete it.
             // Assuming there's a function to show the DeleteLastSurveyUnsuccessful panel:

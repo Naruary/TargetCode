@@ -22,6 +22,7 @@
 //============================================================================//
 
 //static BOOL bModemIsPresent = false;
+extern void SetStatusLEDState(BOOL state);
 
 //============================================================================//
 //      FUNCTION IMPLEMENTATIONS                                              //
