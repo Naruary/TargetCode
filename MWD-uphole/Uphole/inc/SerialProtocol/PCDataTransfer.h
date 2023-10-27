@@ -24,7 +24,7 @@ extern "C" {
 	void PCPORT_StateMachine(void);
         void PCPORT_ReceiveDataUSB(void);
 	void PCPORT_UPLOAD_StateMachine(void);
-        void ProcessCsvLine(const CSVRowStructure* line);
+        void ProcessCsvLine(CSVRowStructure* row);
 #ifdef __cplusplus
 }
 #endif

@@ -401,45 +401,20 @@ void PCPORT_StateMachine(void)  // whs 26Jan2022 should be ThumbDrivePort
 
 int CSVmain()
 {
-    // char line[] = "BH1, 1, 10, 0.5, 0.2, 0.1, 1.1, 2.2, 3.3, 100, 101, 5, 8, 23, 2022, 30, 15, 45, 12, 5, 1, 25";
-
-    // CSVRowStructure* parsedLine = parseCsvString(line);
-    // ProcessCsvLine(parsedLine);
-
-    // free_CSVRowStructure(parsedLine); // remember to free memory after processing
-    // free(parsedLine);
-
-
-
-
-
-    // Another way to do this.
-    // It parses without knowing if the row is complete.
-    // Hence add_row
-
-    //initialise the file in memory structure
+  char line[] = "BH1, 1, 10, 0.5, 0.2, 0.1, 1.1, 2.2, 3.3, 100, 101, 5, 8, 23, 2022, 30, 15, 45, 12, 5, 1, 25";
+  //initialise the file in memory structure
   initCSVStructure();
-
   // Use pointer arrays
-  //const char* input_string = "BoreName, Rec#, PipeLength, Azimuth, Pitch, Roll, X, Y, Z, Gamma, TimeStamp, WeekDay, Month, Day, Year, DefltPipeLeDeclin, DesiredAz, ToolFace, Statcode, #Branch, #BoreHole \n\nHOLE           , 1, 0, 161.9, 0.8, 0.0, 0.0, 0.0, 0.0, 0, 715229643, 2, 9, 1, 23, 0, 0, 0, 0, 0";
-
+  const char* input_string = "BoreName, Rec#, PipeLength, Azimuth, Pitch, Roll, X, Y, Z, Gamma, TimeStamp, WeekDay, Month, Day, Year, DefltPipeLeDeclin, DesiredAz, ToolFace, Statcode, #Branch, #BoreHole \n\nHOLE           , 1, 0, 161.9, 0.8, 0.0, 0.0, 0.0, 0.0, 0, 715229643, 2, 9, 1, 23, 0, 0, 0, 0, 0";
   // Assuming ',' as the delimiter
-
   // Add rows to the CSVFileStructure
-/*  
 add_row_data(input_string, '\n'); 
-*/
   // file split into different chunks to simulate serial send.
-  //const char* input_string2 = ", 0, 0\n\nHOLE           , 2, 10, 161.9, 1.1, 0.0, -5.3, 0.2, 8.5, 0, 715229721, 2, 9, 1, 23, 0, 0, 0, 0, 0, 0, 0";
-
-  //add_row_data(input_string2, '\n');
-
+  const char* input_string2 = ", 0, 0\n\nHOLE           , 2, 10, 161.9, 1.1, 0.0, -5.3, 0.2, 8.5, 0, 715229721, 2, 9, 1, 23, 0, 0, 0, 0, 0, 0, 0";
+  add_row_data(input_string2, '\n');
   // not really necessary here
   print_CSVFileStructure(getFileStructure());
-  //freeCSV();
-
-  //
-
+  freeCSV();
   return 0;
 }
 
@@ -488,48 +463,31 @@ void PCPORT_UPLOAD_StateMachine(void)
       break;
 
     case PCDTU_STATE_FILE_RETRIEVAL:
-      fullLine = UART_ReceiveMessage((U_BYTE*)csv_buffer + csv_buffer_index);
-      if (fullLine)
-      {
-        if (!CSV_FIRST_LINE_FLAG)
-        {
-          // initiates the file structure
-          initCSVStructure();
-          CSV_FIRST_LINE_FLAG = true;
-        }
-        //  WE HAVE SOMETHING IN THE BUFFER
-        // AS LONG AS IT IS SOMETHING, OUR CSV PARSER WILL PARES FOR US ULESS ITS THE END OF THE FILE
-
-        // IT DOESN'T MATTER IF THE CSV BUFFER RESETS BECAUSE WE ONLY NEED A FRESH BUFFER EACH TIME
-        // csv_buffer_index += n;
-        // csv_buffer[csv_buffer_index] = '\0';  // Null-terminate the buffer
-
-        // Check for END_CSV signal in the buffer
-        char* endCsvPos = strstr(csv_buffer, END_CSV);
-        if (endCsvPos != NULL)
-        {
-          // Truncate the csv_buffer to remove END_CSV and anything after it
-          *endCsvPos = '\0';
-          // we know the end is here
-          csv_buffer_index = endCsvPos - csv_buffer;
-
-          // Transition to the verification state after processing remaining CSV lines
-          RetrieveLogFromPC_state = PCDTU_STATE_FILE_VERIFICATION;
-
-        }
-        else
-        {
-        // Continue with processing the CSV lines as before
-      //  WE HAVE SOMETHING IN THE BUFFER
-      // AS LONG AS IT IS SOMETHING, OUR CSV PARSER WILL PARSE FOR US UNLESS IT'S THE END OF THE FILE
-        add_data_row((char*)csv_buffer, '\r');  // delimiter is "\r"
-
-        // reset buffer
-        memset(csv_buffer, '\0', sizeof(csv_buffer));
-        }
-      }
-
-      break;
+         fullLine = UART_ReceiveMessage((U_BYTE*)csv_buffer + csv_buffer_index);
+        if (fullLine) {
+          if (!CSV_FIRST_LINE_FLAG) 
+          {
+              CSV_FIRST_LINE_FLAG = true;
+              if (verify_csv_header(csv_buffer)) 
+                {
+                // Go to verification state to handle subsequent lines
+                RetrieveLogFromPC_state = PCDTU_STATE_FILE_VERIFICATION;
+                } else 
+                      {
+                        UART_SendMessage(CLIENT_PC_COMM, (U_BYTE const*)"Incorrect CSV header format.\n\r", strlen("Incorrect CSV header format.\n\r"));
+                        RetrieveLogFromPC_state = PCDTU_STATE_FILE_IDLE;
+                      }
+                      memset(csv_buffer, 0, sizeof(csv_buffer)); // Clear the buffer after processing
+          } else 
+                {
+                  CSVRowStructure row;
+                  parseCsvString(csv_buffer, &row);
+                  // Now process the row immediately and send it wherever it needs to go
+                  ProcessCsvLine(&row);
+                  memset(csv_buffer, 0, sizeof(csv_buffer)); // Clear the buffer for the next line
+                }
+    }
+    break;
 
     case PCDTU_STATE_FILE_VERIFICATION:
         // Verify header here
@@ -539,8 +497,6 @@ void PCPORT_UPLOAD_StateMachine(void)
       // lets assume its right by using size
       // replace with expected column length
       csv_header_verified = current_row_pointer->size >= expected_column_length;
-
-
       if (csv_header_verified)
       {
         RetrieveLogFromPC_state = PCDTU_STATE_COMPLETED;
@@ -573,6 +529,21 @@ void PCPORT_UPLOAD_StateMachine(void)
 }
 
 
+void ProcessCsvLine(CSVRowStructure* row) {
+     if (row == NULL)
+  {
+    return;
+  }
+    for (int i = 0; i <= row->current_column; i++) {
+        UART_SendMessage(CLIENT_PC_COMM, (U_BYTE*)row->items[i], strlen(row->items[i]));
+        if (i < row->current_column) {
+            UART_SendMessage(CLIENT_PC_COMM, (U_BYTE const*)",", 1); // Column delimiter
+        }
+    }
+    UART_SendMessage(CLIENT_PC_COMM, (U_BYTE const*)"\r", 1); // Row delimiter
+}
+
+/*
 void ProcessCsvLine(const CSVRowStructure* line)
 {
 // Assuming you have verified the header
@@ -580,7 +551,7 @@ void ProcessCsvLine(const CSVRowStructure* line)
   {
     return;
   }
-  /*
+  
   STRUCT_RECORD_DATA record;
   sscanf(line->items[0], "%u",&record.nRecordNumber);
   sscanf(line->items[1], "%d", &record.nTotalLength);
@@ -598,5 +569,5 @@ void ProcessCsvLine(const CSVRowStructure* line)
   sscanf(line->items[13], "%d", &record.date.RTC_Year);
 
    //RECORD_SetRecord(&record);
-   */
 }
+*/
