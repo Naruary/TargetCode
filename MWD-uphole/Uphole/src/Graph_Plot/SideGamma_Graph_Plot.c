@@ -103,7 +103,7 @@ void DrawPositiveQuadSideGammaGraph(INT16 X_max, INT16 X_min, INT16 Y_max, INT16
       ScaleInt += X_Scale_Resolution;
       if(ScaleLoop%5 == 0)
       {
-        snprintf(Scale, 20, "%.0f", 10*ScaleInt);
+        snprintf(Scale, 20, "%.0f", (double)10*ScaleInt);
         UI_DisplayXScaleGraphFrame(Scale, &ScaleNewFrame.area, StatingPosition-10);
         GLCD_Line(StatingPosition, 183, StatingPosition, 188);
       }
@@ -122,7 +122,7 @@ void DrawPositiveQuadSideGammaGraph(INT16 X_max, INT16 X_min, INT16 Y_max, INT16
       ScaleInt += Y_Scale_Resolution;
       if(ScaleLoop%2 == 0)
       {
-        snprintf(Scale, 20, "%.1f", ScaleInt/10);
+        snprintf(Scale, 20, "%.1f", (double)ScaleInt/10);
         UI_DisplayYScaleGraphFrame(Scale, &ScaleNewFrame.area, StatingPosition-5);
         GLCD_Line(37, StatingPosition, 42, StatingPosition);
       }
@@ -201,7 +201,7 @@ void DrawPositiveNegativeQuadSideGammaGraph(INT16 X_max, INT16 X_min, INT16 Y_ma
       ScaleInt += X_Scale_Resolution;
       if(ScaleLoop%5 == 0)
       {
-        snprintf(Scale, 20, "%.0f", 10*ScaleInt);
+        snprintf(Scale, 20, "%.0f", (double)10*ScaleInt);
         UI_DisplayXScaleGraphFrame(Scale, &ScaleNewFrame.area, StatingPosition-10);
         GLCD_Line(StatingPosition, 188, StatingPosition, 193);
       }
@@ -220,7 +220,7 @@ void DrawPositiveNegativeQuadSideGammaGraph(INT16 X_max, INT16 X_min, INT16 Y_ma
       ScaleInt += Y_Scale_Resolution;
       if(ScaleLoop%2 == 0)
       {
-        snprintf(Scale, 20, "%.1f", ScaleInt/10);
+        snprintf(Scale, 20, "%.1f", (double)ScaleInt/10);
         UI_DisplayYScaleGraphFrame(Scale, &ScaleNewFrame.area, StatingPosition-5);
         GLCD_Line(37, StatingPosition, 42, StatingPosition);
       }
@@ -301,7 +301,7 @@ void DrawNegativeQuadSideGammaGraph(INT16 X_max, INT16 X_min, INT16 Y_max, INT16
       ScaleInt += X_Scale_Resolution;
       if(ScaleLoop%5 == 0)
       {
-        snprintf(Scale, 20, "%.0f", 10*ScaleInt);
+        snprintf(Scale, 20, "%.0f", (double)10*ScaleInt);
         UI_DisplayXScaleGraphFrame(Scale, &ScaleNewFrame.area, StatingPosition-10);
         GLCD_Line(StatingPosition, 188, StatingPosition, 193);
       }
@@ -320,7 +320,7 @@ void DrawNegativeQuadSideGammaGraph(INT16 X_max, INT16 X_min, INT16 Y_max, INT16
       ScaleInt += Y_Scale_Resolution;
       if(ScaleLoop%2 == 0)
       {
-        snprintf(Scale, 20, "%.1f", ScaleInt/10);
+        snprintf(Scale, 20, "%.1f", (double)ScaleInt/10);
         UI_DisplayYScaleGraphFrame(Scale, &ScaleNewFrame.area, StatingPosition-5);
         GLCD_Line(37, StatingPosition, 42, StatingPosition);
       }

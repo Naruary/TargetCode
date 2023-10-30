@@ -198,7 +198,7 @@ void DrawPositiveNegativeQuadGammaGraph(INT16 X_max, INT16 X_min, INT16 Y_max, I
 		ScaleInt += X_Scale_Resolution;
 		if(ScaleLoop%5 == 0)
 		{
-			snprintf(Scale, 20, "%.0f", 10*ScaleInt);
+			snprintf(Scale, 20, "%.0f", (double)10*ScaleInt);
 			UI_DisplayXScaleGraphFrame(Scale, &ScaleNewFrame.area, StatingPosition-10);
 			GLCD_Line(StatingPosition, 188, StatingPosition, 193);
 		}
