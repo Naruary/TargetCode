@@ -20,3 +20,5 @@ List/
 TargetCode.code-workspace
 Libraries/Project/STM32F4xx_StdPeriph_Templates/EWARM/STM32F429_439xx/.ninja_deps
 Libraries/Project/STM32F4xx_StdPeriph_Templates/EWARM/STM32F429_439xx/.ninja_log
+MWD-uphole/Uphole/Uphole/.ninja_deps
+MWD-uphole/Uphole/Uphole/.ninja_log
