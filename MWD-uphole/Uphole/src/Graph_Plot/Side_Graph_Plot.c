@@ -96,7 +96,7 @@ void DrawPositiveQuadSideGraph(INT16 X_max, INT16 X_min, INT16 Y_max, INT16 Y_mi
       if(ScaleLoop%5 == 0)
       {
 //
-        snprintf(Scale, 20, "%.0f", ScaleInt*10);
+        snprintf(Scale, 20, "%.0f", (double)ScaleInt*10);
 //
         UI_DisplayXScaleGraphFrame(Scale, &ScaleNewFrame.area, StatingPosition-10);
         GLCD_Line(StatingPosition, 183, StatingPosition, 188);
@@ -117,7 +117,7 @@ void DrawPositiveQuadSideGraph(INT16 X_max, INT16 X_min, INT16 Y_max, INT16 Y_mi
       if(ScaleLoop%2 == 0)
       {
 //
-        snprintf(Scale, 20, "%.1f",  ScaleInt/10);
+          snprintf(Scale, 20, "%.1f", (double)ScaleInt / 10);
 //
         UI_DisplayYScaleGraphFrame(Scale, &ScaleNewFrame.area, StatingPosition-5);
         GLCD_Line(37, StatingPosition, 42, StatingPosition);
@@ -197,7 +197,7 @@ void DrawPositiveNegativeQuadSideGraph(INT16 X_max, INT16 X_min, INT16 Y_max, IN
       if(ScaleLoop%5 == 0)
       {
 //
-        snprintf(Scale, 20, "%.0f", ScaleInt*10);
+          snprintf(Scale, 20, "%.0f", (double)ScaleInt * 10);
 //
         UI_DisplayXScaleGraphFrame(Scale, &ScaleNewFrame.area, StatingPosition-10);
         GLCD_Line(StatingPosition, 188, StatingPosition, 193);
@@ -218,7 +218,7 @@ void DrawPositiveNegativeQuadSideGraph(INT16 X_max, INT16 X_min, INT16 Y_max, IN
       if(ScaleLoop%2 == 0)
       {
 //
-        snprintf(Scale, 20, "%.1f",  ScaleInt/10);
+          snprintf(Scale, 20, "%.1f", (double)ScaleInt / 10);
 //
         UI_DisplayYScaleGraphFrame(Scale, &ScaleNewFrame.area, StatingPosition-5);
         GLCD_Line(37, StatingPosition, 42, StatingPosition);
@@ -301,7 +301,7 @@ void DrawNegativeQuadSideGraph(INT16 X_max, INT16 X_min, INT16 Y_max, INT16 Y_mi
       if(ScaleLoop%5 == 0)
       {
 //
-        snprintf(Scale, 20, "%.0f", ScaleInt*10);
+          snprintf(Scale, 20, "%.0f", (double)ScaleInt * 10);
 //
         UI_DisplayXScaleGraphFrame(Scale, &ScaleNewFrame.area, StatingPosition-10);
         GLCD_Line(StatingPosition, 188, StatingPosition, 193);
@@ -322,7 +322,7 @@ void DrawNegativeQuadSideGraph(INT16 X_max, INT16 X_min, INT16 Y_max, INT16 Y_mi
       if(ScaleLoop%2 == 0)
       {
 //
-        snprintf(Scale, 20, "%.1f",  ScaleInt/10);
+          snprintf(Scale, 20, "%.1f", (double)ScaleInt / 10);
 //
         UI_DisplayYScaleGraphFrame(Scale, &ScaleNewFrame.area, StatingPosition-5);
         GLCD_Line(37, StatingPosition, 42, StatingPosition);

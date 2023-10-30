@@ -397,7 +397,7 @@ void RECORD_TakeSurveyMWD(void)
 			boreholeStatistics1.TotalLength += GetNewPipeLength();
 			SetChangePipeLengthFlag(false);
 			SetNewPipeLength(0);
- //// Can delete if removing shift function                      
+ //// Can delete if removing shift function
 			if(Shift_Button_Pushed_Flag)
 			{
 				boreholeStatistics1.TotalLength += 0;
@@ -410,7 +410,7 @@ void RECORD_TakeSurveyMWD(void)
 		}
 		else
 		{
- //// Can delete if removing shift function                    
+ //// Can delete if removing shift function
 			if(Shift_Button_Pushed_Flag)
 			{
 				boreholeStatistics1.TotalLength += 0;
@@ -423,7 +423,7 @@ void RECORD_TakeSurveyMWD(void)
 			else
 			{
 				boreholeStatistics1.TotalLength += GetDefaultPipeLength();
- //// delete outter most bracket below                       
+ //// delete outter most bracket below
 			}
 		}
 	}
@@ -504,14 +504,14 @@ static void MergeRecordCommon(STRUCT_RECORD_DATA* record)
 {
 	INT32 b, n, c, e, l;
 	float m;
-	
+
 	boreholeStatistics1.recordRetrieved = true;
 	boreholeStatistics1.LastSurvey.nAzimuth = record->nAzimuth;
 	boreholeStatistics1.LastSurvey.nPitch = record->nPitch;
 	boreholeStatistics1.LastSurvey.nRoll = record->nRoll;
 	boreholeStatistics1.LastSurvey.nTemperature = record->nTemperature;
 	boreholeStatistics1.LastSurvey.nGamma = record->nGamma;
-	boreholeStatistics1.LastSurvey.nGTF = record->nGTF;        
+	boreholeStatistics1.LastSurvey.nGTF = record->nGTF;
 	if (boreholeStatistics1.LastSurvey.nRecordNumber > 0)
 	{
 		EASTING_NORTHING_DATA_STRUCT result;
@@ -519,14 +519,14 @@ static void MergeRecordCommon(STRUCT_RECORD_DATA* record)
 		if(GetLoggingState() == SURVEY_REQUEST_SUCCESS) // changed from Logging as state machine is modified
 		{
 			m = (result.fDepth + 0.5)*1;
-			m = m/1;    
+			m = m/1;
 			boreholeStatistics1.TotalDepth += m; //result.fDepth;
 			boreholeStatistics1.TotalNorthings += result.fNorthing;
 			boreholeStatistics1.TotalEastings += result.fEasting;
 			b = (boreholeStatistics1.TotalDepth + 5)/10;
 			b = b*10;
 			//n = boreholeStatistics1.TotalNorthings*10;
-			n = roundf(boreholeStatistics1.TotalNorthings * 10.0f);
+			n = (int)roundf(boreholeStatistics1.TotalNorthings * 10.0f);
 			//c = llabs(n%10);
 			c = llabs(n % 10);
 			//n = n/10;
@@ -540,13 +540,13 @@ static void MergeRecordCommon(STRUCT_RECORD_DATA* record)
 				else
 				{
 					l = 10 - c;
-					n = n - l;     
+					n = n - l;
 				}
 			}
 			//n = (float)n/10;
-			n = roundf((float)n / 10.0f);
+			n = (INT32)roundf((float)n / 10.0f);
 			//e = boreholeStatistics1.TotalEastings*10;
-			e = roundf(boreholeStatistics1.TotalEastings * 10.0f);
+			e = (INT32)roundf(boreholeStatistics1.TotalEastings * 10.0f);
 			//c = llabs(e%10);
 			c = llabs(e % 10);
 			if(c >= 5)
@@ -559,11 +559,11 @@ static void MergeRecordCommon(STRUCT_RECORD_DATA* record)
 				else
 				{
 					l = 10 - c;
-					e = e - l;     
+					e = e - l;
 				}
 			}
 			//e = (float)e/10;
-			e = roundf((float)e / 10.0f);
+			e = (INT32)roundf((float)e / 10.0f);
 			boreholeStatistics1.LastSurvey.X = e; //boreholeStatistics1.TotalEastings;
 			boreholeStatistics1.LastSurvey.Y = n; //boreholeStatistics1.TotalNorthings;
 			boreholeStatistics1.LastSurvey.Z = b/10; //boreholeStatistics1.TotalDepth/10;
@@ -740,7 +740,7 @@ void RECORD_removeLastRecord(void)
 	boreholeStatistics1.TotalEastings  -= result.fEasting;
 	boreholeStatistics1.TotalDepth     -= result.fDepth;
         GammaTemp = boreholeStatistics1.PreviousSurvey.GammaShotNumCorrected;//
-        
+
 	RecordInit(&MostRecentSurvey);
 	memcpy(&m_WritePage.records[PageOffset(boreholeStatistics1.RecordCount--)], &MostRecentSurvey, sizeof(STRUCT_RECORD_DATA));
 	RECORD_GetRecord(&MostRecentSurvey, GetRecordCount() - 1);
@@ -772,7 +772,7 @@ void RECORD_removeLastRecord(void)
 }
 
 void RECORD_deleteRecord(U_INT32 index) {
-    if (index >= boreholeStatistics1.RecordCount || index < 0) {
+    if (index >= boreholeStatistics1.RecordCount) {
         // Invalid index
         return;
     }
@@ -1066,6 +1066,6 @@ U_INT16 CurrentBoreholeNumber(void)
 //        {
 //            newHole_tracker1.BoreholeNumber += 1;
 //        }
-  
+
 	return(newHole_tracker1.BoreholeNumber);
 }

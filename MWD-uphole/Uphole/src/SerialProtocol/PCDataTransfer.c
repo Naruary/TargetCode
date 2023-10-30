@@ -60,7 +60,7 @@ char csv_buffer[500]; // Buffer to store uploaded CSV lines
 int csv_buffer_index = 0; // Current index in csv_buffer
 char csv_line[500]; // Store a single CSV line for parsing
 BOOL csv_header_verified = false;
-bool CSV_FIRST_LINE_FLAG = false; // first line passed?
+bool bFirstLine = false; // first line passed?
 #define RECORD_AREA_BASE_ADDRESS    128
 #define RECORDS_PER_PAGE            (U_INT32)((FLASH_PAGE_SIZE-4)/sizeof(STRUCT_RECORD_DATA))
 #define FLASH_PAGE_FILLER           ((FLASH_PAGE_SIZE - 4) - (sizeof(STRUCT_RECORD_DATA) * RECORDS_PER_PAGE))
@@ -72,6 +72,7 @@ bool CSV_FIRST_LINE_FLAG = false; // first line passed?
 
 const char* BEGIN_CSV = "BEGIN_CSV";
 const char* END_CSV = "END_CSV";
+void ProcessCsvLine(char* line);
 
 // Changed above times from 7000, 1000, and 100 to speed up the download. MB 6/21/2021
 
@@ -81,68 +82,69 @@ const char* END_CSV = "END_CSV";
 
 static TIME_LR tPCDTGapTimer;
 static BOOL flag_start_dump = false;
-static BOOL flag_start_upload = false;
 
 
 typedef enum
 {
-  PCDT_STATE_IDLE, PCDT_STATE_SEND_INTRO, PCDT_STATE_SEND_LABELS1,
-  PCDT_STATE_SEND_LABELS2, PCDT_STATE_SEND_LABELS3, PCDT_STATE_GET_RECORD,
-  PCDT_STATE_SEND_LOG1, PCDT_STATE_SEND_LOG2, PCDT_STATE_SEND_LOG3,
-  PCDT_STATE_SEND_LOG4, UnmountUSB, Holdon
+    PCDT_STATE_IDLE, PCDT_STATE_SEND_INTRO, PCDT_STATE_SEND_LABELS1,
+    PCDT_STATE_SEND_LABELS2, PCDT_STATE_SEND_LABELS3, PCDT_STATE_GET_RECORD,
+    PCDT_STATE_SEND_LOG1, PCDT_STATE_SEND_LOG2, PCDT_STATE_SEND_LOG3,
+    PCDT_STATE_SEND_LOG4, UnmountUSB, Holdon
 } PCDT_states;
 static PCDT_states SendLogToPC_state = PCDT_STATE_IDLE;
 
 typedef enum
 {
-  PCDTU_STATE_FILE_IDLE, PCDTU_STATE_AWAIT_BEGIN_CSV, PCDTU_STATE_FILE_RETRIEVAL,
-  PCDTU_STATE_FILE_VERIFICATION, PCDTU_STATE_COMPLETED
+    PCDTU_STATE_FILE_IDLE,
+    PCDTU_STATE_FILE_RETRIEVAL,
+    PCDTU_STATE_FILE_VERIFICATION,
+    PCDTU_STATE_COMPLETED
 } PCDTU_states;
 static PCDTU_states RetrieveLogFromPC_state = PCDTU_STATE_FILE_IDLE;
 
 struct STRUCT_RECORD_DATA
 {
-  char BoreName[100];
-  int Rec;
-  int PipeLength;
-  float Azimuth;
-  float Pitch;
-  float Roll;
-  float X;
-  float Y;
-  float Z;
-  int Gamma;
-  int TimeStamp;
-  int WeekDay;
-  int Month;
-  int Day;
-  int Year;
-  int DefltPipeLen;
-  int Declin;
-  int DesiredAz;
-  int ToolFace;
-  int Statcode;
-  int Branch;
-  int BoreHole;
-  //struct DateType date;
+    char BoreName[100];
+    int Rec;
+    int PipeLength;
+    float Azimuth;
+    float Pitch;
+    float Roll;
+    float X;
+    float Y;
+    float Z;
+    int Gamma;
+    int TimeStamp;
+    int WeekDay;
+    int Month;
+    int Day;
+    int Year;
+    int DefltPipeLen;
+    int Declin;
+    int DesiredAz;
+    int ToolFace;
+    int Statcode;
+    int Branch;
+    int BoreHole;
+    //struct DateType date;
 };
 
 struct NEWHOLE_INFO
 {
-  char BoreholeName[100]; // Name of the new borehole
-  int DefaultPipeLength;  // Default length of the pipe for the new borehole
-  int Declination;        // Declination angle for the new borehole
-  int DesiredAzimuth;     // Desired azimuth angle for the new borehole
-  int Toolface;           // Tool face angle for the new borehole
-  int BoreholeNumber;     // Borehole number for the new hole
+    char BoreholeName[100]; // Name of the new borehole
+    int DefaultPipeLength;  // Default length of the pipe for the new borehole
+    int Declination;        // Declination angle for the new borehole
+    int DesiredAzimuth;     // Desired azimuth angle for the new borehole
+    int Toolface;           // Tool face angle for the new borehole
+    int BoreholeNumber;     // Borehole number for the new hole
 };
 
 typedef struct Date
 {
-  int RTC_WeekDay;
-  int RTC_Month;
-  int RTC_Date;
-  int RTC_Year;
+    int RTC_WeekDay;
+    int RTC_Month;
+    int RTC_Date;
+    int RTC_Year;
 } Date;
 
 char nBuffer[500];
@@ -155,25 +157,24 @@ void ShowUploadFinishedMessage(void);
 
 void CreateFile(MENU_ITEM* item)   // whs 27Jan2022 only called from UI_JobTab.c line 69
 {
-  ShowStatusMessage("Downloading, Please Wait...");
-  flag_start_dump = true; //also took these 2 lines out of
-  PCPORT_StateMachine(); // DownloadData from below
+    ShowStatusMessage("Downloading, Please Wait...");
+    flag_start_dump = true; //also took these 2 lines out of
+    PCPORT_StateMachine(); // DownloadData from below
 }
 
 void UploadFile(MENU_ITEM* item) //ZD 21September2023 This is the first action within the File upload process that will display to the user that they will be uploading data to the Magnestar
 {
-  ShowStatusMessage("Uploading Data To Uphole, Please Wait...");
-  flag_start_upload = true;
-  PCPORT_UPLOAD_StateMachine(); // ZD 21September2023 Data Retrieval leading to the csv parsing
+    ShowStatusMessage("Uploading Data To Uphole, Please Wait...");
+    PCPORT_UPLOAD_StateMachine(); // ZD 21September2023 Data Retrieval leading to the csv parsing
 }
 
 void ShowFinishedMessage(void)
 {
-  ShowStatusMessage("Xfer done - Please Remove USB Cable"); //ZDD 2Oct2023 changed
+    ShowStatusMessage("Xfer done - Please Remove USB Cable"); //ZDD 2Oct2023 changed
 }
 void ShowUploadFinishedMessage(void)
 {
-  ShowStatusMessage("Upload Finished - Please Remove USB Cable"); //ZDD 25Oct2023
+    ShowStatusMessage("Upload Finished - Please Remove USB Cable"); //ZDD 25Oct2023
 }
 /*******************************************************************************
 *   PCPORT is called from Main.c and above -- last line of DownloadData()
@@ -181,393 +182,355 @@ void ShowUploadFinishedMessage(void)
 void PCPORT_StateMachine(void)  // whs 26Jan2022 should be ThumbDrivePort
 {
   // Declaring static variables to hold state and data
-  static U_INT32 count;
-  static STRUCT_RECORD_DATA record;
-  static NEWHOLE_INFO HoleInfoRecord;
-  static U_INT32 HoleNum = 0;
-  static U_INT16 recordNumber = 1;
-  // whs 26Jan2022 this should say SendLogToThumbDrive because this is where it happens
-  switch (SendLogToPC_state) // Switch statement to handle different states
-  {
+    static U_INT32 count;
+    static STRUCT_RECORD_DATA record;
+    static NEWHOLE_INFO HoleInfoRecord;
+    static U_INT32 HoleNum = 0;
+    static U_INT16 recordNumber = 1;
+    // whs 26Jan2022 this should say SendLogToThumbDrive because this is where it happens
+    switch (SendLogToPC_state) // Switch statement to handle different states
+    {
 
-    // Idle state; waiting for actions
-    case PCDT_STATE_IDLE:
-    // If dump flag is set, reset it and start dump process
-      if (flag_start_dump == true)
-      {
-        flag_start_dump = false;
-
-        HoleNum += 1; // Increment Hole Number
-        if (HoleNum > HoleInfoRecord.BoreholeNumber) // If HoleNum exceeds BoreholeNumber, set state to IDLE
-        {
-          SendLogToPC_state = PCDT_STATE_IDLE;
-        }
-
-        NewHole_Info_Read(&HoleInfoRecord, HoleNum); // Read New Hole Information
-
-        if (HoleNum <= HoleInfoRecord.BoreholeNumber + 1)
-        {
-          SendLogToPC_state = PCDT_STATE_SEND_INTRO; // If condition met, change state to send intro
-        }
-      }
-      if (FinishedMessage == 1) // If FinishedMessage is set, show the message and reset flag
-      {
-        FinishedMessage = 0;
-        ShowFinishedMessage();
-      }
-      break;
-
-    // Initial state to start data transfer
-    case PCDT_STATE_SEND_INTRO:
-      count = GetRecordCount(); // Get the count of records to send
-      tPCDTGapTimer = ElapsedTimeLowRes((TIME_LR)0); // Initialize timer
-      SendLogToPC_state = PCDT_STATE_SEND_LABELS1; // Move to next state
-      break;
-
-    // Sending the first set of labels
-    case PCDT_STATE_SEND_LABELS1:
-      if (ElapsedTimeLowRes(tPCDTGapTimer) >= PCDT_DELAY3) // Check for elapsed time before proceeding
-      {
-        snprintf(nBuffer, 500, "BoreName, Rec#, PipeLength, Azimuth, Pitch, Roll, X, Y, "); // Prepare message with labels
-        UART_SendMessage(CLIENT_PC_COMM, (U_BYTE const*)nBuffer, strlen(nBuffer)); // Send the message over UART
-        tPCDTGapTimer = ElapsedTimeLowRes((TIME_LR)0); // Reset timer
-        SendLogToPC_state = PCDT_STATE_SEND_LABELS2; // Move to next state
-      }
-      break;
-
-    // Sending the Second set of labels
-    case PCDT_STATE_SEND_LABELS2:
-      if (ElapsedTimeLowRes(tPCDTGapTimer) >= PCDT_DELAY3) // Check for elapsed time before proceeding
-      {
-        snprintf(nBuffer, 500, "Z, Gamma, TimeStamp, WeekDay, Month, Day, Year, DefltPipeLen, "); // Prepare message with labels
-        UART_SendMessage(CLIENT_PC_COMM, (U_BYTE const*)nBuffer, strlen(nBuffer)); // Send the message over UART
-        tPCDTGapTimer = ElapsedTimeLowRes((TIME_LR)0); // Reset timer
-        SendLogToPC_state = PCDT_STATE_SEND_LABELS3; // Move to next state
-      }
-      break;
-
-    // Sending the Third set of labels
-    case PCDT_STATE_SEND_LABELS3:
-      if (ElapsedTimeLowRes(tPCDTGapTimer) >= PCDT_DELAY3) // Check for elapsed time before proceeding
-      {
-        snprintf(nBuffer, 500, "Declin, DesiredAz, ToolFace, Statcode, #Branch, #BoreHole \r\n"); // Prepare message with labels
-        UART_SendMessage(CLIENT_PC_COMM, (U_BYTE const*)nBuffer, strlen(nBuffer)); // Send the message over UART
-        tPCDTGapTimer = ElapsedTimeLowRes((TIME_LR)0); // Reset timer
-        SendLogToPC_state = PCDT_STATE_GET_RECORD; // Move to next state
-      }
-      break;
-
-    // State for fetching a record to send over the port
-    case PCDT_STATE_GET_RECORD:
-      if (ElapsedTimeLowRes(tPCDTGapTimer) >= PCDT_DELAY3) // Check elapsed time to ensure pacing between operations
-      {
-        if (RECORD_GetRecord(&record, recordNumber)) // Fetch the record corresponding to the 'recordNumber'
-        {
-          if (recordNumber > HoleInfoRecord.EndingRecordNumber)  // Check if recordNumber exceeds the EndingRecordNumber for the current hole
-          {
-            if (HoleNum >= HoleInfoRecord.BoreholeNumber + 1) // Additional logic to decide if dumping should continue or reset
+      // Idle state; waiting for actions
+        case PCDT_STATE_IDLE:
+        // If dump flag is set, reset it and start dump process
+            if (flag_start_dump == true)
             {
-              if (HoleNum == HoleInfoRecord.BoreholeNumber + 1)
-              {
-                NewHole_Info_Read(&HoleInfoRecord, HoleNum); // Read new hole information based on the incremented HoleNum
-                //SendLogToPC_state = Holdon; // Update the state to 'Holdon' (possibly a waiting state)
-                SendLogToPC_state = PCDT_STATE_SEND_LOG1;
+                flag_start_dump = false;
+
+                HoleNum += 1; // Increment Hole Number
+                if (HoleNum > HoleInfoRecord.BoreholeNumber) // If HoleNum exceeds BoreholeNumber, set state to IDLE
+                {
+                    SendLogToPC_state = PCDT_STATE_IDLE;
+                }
+
+                NewHole_Info_Read(&HoleInfoRecord, HoleNum); // Read New Hole Information
+
+                if (HoleNum <= HoleInfoRecord.BoreholeNumber + 1)
+                {
+                    SendLogToPC_state = PCDT_STATE_SEND_INTRO; // If condition met, change state to send intro
+                }
+            }
+            if (FinishedMessage == 1) // If FinishedMessage is set, show the message and reset flag
+            {
+                FinishedMessage = 0;
+                ShowFinishedMessage();
+            }
+            break;
+
+          // Initial state to start data transfer
+        case PCDT_STATE_SEND_INTRO:
+            count = GetRecordCount(); // Get the count of records to send
+            tPCDTGapTimer = ElapsedTimeLowRes((TIME_LR)0); // Initialize timer
+            SendLogToPC_state = PCDT_STATE_SEND_LABELS1; // Move to next state
+            break;
+
+          // Sending the first set of labels
+        case PCDT_STATE_SEND_LABELS1:
+            if (ElapsedTimeLowRes(tPCDTGapTimer) >= PCDT_DELAY3) // Check for elapsed time before proceeding
+            {
+                snprintf(nBuffer, 500, "BoreName, Rec#, PipeLength, Azimuth, Pitch, Roll, X, Y, "); // Prepare message with labels
+                UART_SendMessage(CLIENT_PC_COMM, (U_BYTE const*)nBuffer, strlen(nBuffer)); // Send the message over UART
+                tPCDTGapTimer = ElapsedTimeLowRes((TIME_LR)0); // Reset timer
+                SendLogToPC_state = PCDT_STATE_SEND_LABELS2; // Move to next state
+            }
+            break;
+
+          // Sending the Second set of labels
+        case PCDT_STATE_SEND_LABELS2:
+            if (ElapsedTimeLowRes(tPCDTGapTimer) >= PCDT_DELAY3) // Check for elapsed time before proceeding
+            {
+                snprintf(nBuffer, 500, "Z, Gamma, TimeStamp, WeekDay, Month, Day, Year, DefltPipeLen, "); // Prepare message with labels
+                UART_SendMessage(CLIENT_PC_COMM, (U_BYTE const*)nBuffer, strlen(nBuffer)); // Send the message over UART
+                tPCDTGapTimer = ElapsedTimeLowRes((TIME_LR)0); // Reset timer
+                SendLogToPC_state = PCDT_STATE_SEND_LABELS3; // Move to next state
+            }
+            break;
+
+          // Sending the Third set of labels
+        case PCDT_STATE_SEND_LABELS3:
+            if (ElapsedTimeLowRes(tPCDTGapTimer) >= PCDT_DELAY3) // Check for elapsed time before proceeding
+            {
+                snprintf(nBuffer, 500, "Declin, DesiredAz, ToolFace, Statcode, #Branch, #BoreHole \r\n"); // Prepare message with labels
+                UART_SendMessage(CLIENT_PC_COMM, (U_BYTE const*)nBuffer, strlen(nBuffer)); // Send the message over UART
+                tPCDTGapTimer = ElapsedTimeLowRes((TIME_LR)0); // Reset timer
+                SendLogToPC_state = PCDT_STATE_GET_RECORD; // Move to next state
+            }
+            break;
+
+          // State for fetching a record to send over the port
+        case PCDT_STATE_GET_RECORD:
+            if (ElapsedTimeLowRes(tPCDTGapTimer) >= PCDT_DELAY3) // Check elapsed time to ensure pacing between operations
+            {
+                if (RECORD_GetRecord(&record, recordNumber)) // Fetch the record corresponding to the 'recordNumber'
+                {
+                    if (recordNumber > HoleInfoRecord.EndingRecordNumber)  // Check if recordNumber exceeds the EndingRecordNumber for the current hole
+                    {
+                        if (HoleNum >= HoleInfoRecord.BoreholeNumber + 1) // Additional logic to decide if dumping should continue or reset
+                        {
+                            if (HoleNum == HoleInfoRecord.BoreholeNumber + 1)
+                            {
+                                NewHole_Info_Read(&HoleInfoRecord, HoleNum); // Read new hole information based on the incremented HoleNum
+                                //SendLogToPC_state = Holdon; // Update the state to 'Holdon' (possibly a waiting state)
+                                SendLogToPC_state = PCDT_STATE_SEND_LOG1;
+                                tPCDTGapTimer = ElapsedTimeLowRes((TIME_LR)0); // Reset the timer
+                                flag_start_dump = true; // Set flag to start the dumping process again
+                                break;
+                            }
+                            else
+                            {
+                                flag_start_dump = false; // If condition not met, reset the flag
+                            }
+                        }
+                        else
+                        {
+                            flag_start_dump = true; // If HoleNum is not the last, set the flag to dump the next hole
+                        }
+
+                        SendLogToPC_state = PCDT_STATE_IDLE; // Reset to the idle state
+                    }
+                    else
+                    {
+                        SendLogToPC_state = PCDT_STATE_SEND_LOG1; // Set the state to 'Holdon' (possibly a waiting state)
+                        tPCDTGapTimer = ElapsedTimeLowRes((TIME_LR)0);  // Reset the timer
+                    }
+                }
+                else
+                {
+                    SendLogToPC_state = PCDT_STATE_IDLE; // If the record could not be fetched, set the state to idle
+                }
+            }
+            break;
+
+          // Sending the first set of Logs
+        case PCDT_STATE_SEND_LOG1:
+            if (ElapsedTimeLowRes(tPCDTGapTimer) >= PCDT_DELAY3) // Check if enough time has elapsed based on the low-res timer
+            {
+                if (strlen(HoleInfoRecord.BoreholeName)) // Check if the Borehole Name exists
+                {
+                    snprintf(nBuffer, 500, "%s, %d, %d, %.1f, %.1f, %.1f, ", // Create the message for the first part of the log data
+                        HoleInfoRecord.BoreholeName,    // 1
+                        record.nRecordNumber,           // 2
+                        record.nTotalLength,            // 3
+                        (REAL32)record.nAzimuth / 10.0, // 4
+                        (REAL32)record.nPitch / 10.0,   // 5
+                        (REAL32)record.nRoll / 10.0);   // 6
+                }
+                else
+                { //whs 17Feb2022 added GetBoreholeName below
+                    snprintf(nBuffer, 500, "%s, %d, %d, %.1f, %.1f, %.1f, ", // If Borehole Name doesn't exist, use the function GetBoreholeName
+                        GetBoreholeName(),
+                        record.nRecordNumber,
+                        record.nTotalLength,
+                        (REAL32)record.nAzimuth / 10.0,
+                        (REAL32)record.nPitch / 10.0,
+                        (REAL32)record.nRoll / 10.0);
+                }
+                UART_SendMessage(CLIENT_PC_COMM, (U_BYTE const*)nBuffer, strlen(nBuffer)); // Send the prepared message via UART
                 tPCDTGapTimer = ElapsedTimeLowRes((TIME_LR)0); // Reset the timer
-                flag_start_dump = true; // Set flag to start the dumping process again
-                break;
-              }
-              else
-              {
-                flag_start_dump = false; // If condition not met, reset the flag
-              }
+                // Move to the next state for sending the second part of the log data
+                SendLogToPC_state = PCDT_STATE_SEND_LOG2; // whs 27Jan2022 put a break point here when dumping data to a thumb drive to see each record in sequence here i.e rec 1, rec 2, rec 3 etc...
             }
-            else
+            break; // above increments on each pass through this code ist pass rec 1, 2n pass rec 2 etc.. cool
+
+      // State for sending the second set of log data
+        case PCDT_STATE_SEND_LOG2: //set a live watch window on nBuffer[500] structure maybe also pUARTx
+            if (ElapsedTimeLowRes(tPCDTGapTimer) >= PCDT_DELAY2) // Check if enough time has elapsed based on the low-res timer
             {
-              flag_start_dump = true; // If HoleNum is not the last, set the flag to dump the next hole
+                snprintf(nBuffer, 500, "%.1f, %.1f, %.1f, %d, %d, %d, %d, ", // Create the message for the second part of the log data
+                    (REAL32)(record.X) / 10.0,      // 7
+                    (REAL32)(record.Y / 100),       // 8
+                    (REAL32)(record.Z / 10),        // 9
+                    record.nGamma,                  // 10
+                    record.tSurveyTimeStamp,        // 11
+                    record.date.RTC_WeekDay,        // 12
+                    record.date.RTC_Month);         // 13
+                UART_SendMessage(CLIENT_PC_COMM, (U_BYTE const*)nBuffer, strlen(nBuffer)); // Send the message via UART
+                tPCDTGapTimer = ElapsedTimeLowRes((TIME_LR)0); // Reset the timer
+                SendLogToPC_state = PCDT_STATE_SEND_LOG3;// Move to the next state for sending the third part of the log data
+
             }
+                      // Update the UI to show the current status
+            RepaintNow(&WindowFrame); //whs 15Feb2022 added these 3 lines
+            ShowStatusMessage("Data transfering to Thumb drive");
+            DelayHalfSecond();
+            break;
 
-            SendLogToPC_state = PCDT_STATE_IDLE; // Reset to the idle state
-          }
-          else
-          {
-            SendLogToPC_state = PCDT_STATE_SEND_LOG1; // Set the state to 'Holdon' (possibly a waiting state)
-            tPCDTGapTimer = ElapsedTimeLowRes((TIME_LR)0);  // Reset the timer
-          }
-        }
-        else
-        {
-          SendLogToPC_state = PCDT_STATE_IDLE; // If the record could not be fetched, set the state to idle
-        }
-      }
-      break;
+          // State for sending the Third set of log data
+        case PCDT_STATE_SEND_LOG3:
+            if (ElapsedTimeLowRes(tPCDTGapTimer) >= PCDT_DELAY2) // Check if enough time has elapsed based on the low-res timer
+            {
+                snprintf(nBuffer, 1000, "%d, %d, %d, %d, %d, %d, %d, %d, %d\n\r", // Create the message for the second part of the log data
+                    record.date.RTC_Date,                   // 14
+                    record.date.RTC_Year,                   // 15
+                    HoleInfoRecord.DefaultPipeLength,       // 16
+                    HoleInfoRecord.Declination,             // 17
+                    HoleInfoRecord.DesiredAzimuth,          // 18
+                    HoleInfoRecord.Toolface,                // 19
+                    record.StatusCode,                      // 20
+                    record.NumOfBranch,                     // 21
+                    HoleInfoRecord.BoreholeNumber);         // 22
+                UART_SendMessage(CLIENT_PC_COMM, (U_BYTE const*)nBuffer, strlen(nBuffer)); // Send the message via UART
+                tPCDTGapTimer = ElapsedTimeLowRes((TIME_LR)0); // Reset the timer
+                SendLogToPC_state = PCDT_STATE_SEND_LOG4; // Move to the next state for sending the fourth part of the log data
+            }
+            break;
 
-    // Sending the first set of Logs
-    case PCDT_STATE_SEND_LOG1:
-      if (ElapsedTimeLowRes(tPCDTGapTimer) >= PCDT_DELAY3) // Check if enough time has elapsed based on the low-res timer
-      {
-        if (strlen(HoleInfoRecord.BoreholeName)) // Check if the Borehole Name exists
-        {
-          snprintf(nBuffer, 500, "%s, %d, %d, %.1f, %.1f, %.1f, ", // Create the message for the first part of the log data
-            HoleInfoRecord.BoreholeName,
-            record.nRecordNumber,
-            record.nTotalLength,
-            (REAL32)record.nAzimuth / 10.0,
-            (REAL32)record.nPitch / 10.0,
-            (REAL32)record.nRoll / 10.0);
-        }
-        else
-        { //whs 17Feb2022 added GetBoreholeName below
-          snprintf(nBuffer, 500, "%s, %d, %d, %.1f, %.1f, %.1f, ", // If Borehole Name doesn't exist, use the function GetBoreholeName
-            GetBoreholeName(),
-            record.nRecordNumber,
-            record.nTotalLength,
-            (REAL32)record.nAzimuth / 10.0,
-            (REAL32)record.nPitch / 10.0,
-            (REAL32)record.nRoll / 10.0);
-        }
-        UART_SendMessage(CLIENT_PC_COMM, (U_BYTE const*)nBuffer, strlen(nBuffer)); // Send the prepared message via UART
-        tPCDTGapTimer = ElapsedTimeLowRes((TIME_LR)0); // Reset the timer
-        // Move to the next state for sending the second part of the log data
-        SendLogToPC_state = PCDT_STATE_SEND_LOG2; // whs 27Jan2022 put a break point here when dumping data to a thumb drive to see each record in sequence here i.e rec 1, rec 2, rec 3 etc...
-      }
-      break; // above increments on each pass through this code ist pass rec 1, 2n pass rec 2 etc.. cool
-
-// State for sending the second set of log data
-    case PCDT_STATE_SEND_LOG2: //set a live watch window on nBuffer[500] structure maybe also pUARTx
-      if (ElapsedTimeLowRes(tPCDTGapTimer) >= PCDT_DELAY2) // Check if enough time has elapsed based on the low-res timer
-      {
-        snprintf(nBuffer, 500, "%.1f, %.1f, %.1f, %d, %d, %d, %d, ", // Create the message for the second part of the log data
-          (REAL32)(record.X) / 10.0,
-          (REAL32)(record.Y / 100),
-          (REAL32)(record.Z / 10),
-          record.nGamma,
-          record.tSurveyTimeStamp,
-          record.date.RTC_WeekDay,
-          record.date.RTC_Month);
-        UART_SendMessage(CLIENT_PC_COMM, (U_BYTE const*)nBuffer, strlen(nBuffer)); // Send the message via UART
-        tPCDTGapTimer = ElapsedTimeLowRes((TIME_LR)0); // Reset the timer
-        SendLogToPC_state = PCDT_STATE_SEND_LOG3;// Move to the next state for sending the third part of the log data
-
-      }
-                // Update the UI to show the current status
-      RepaintNow(&WindowFrame); //whs 15Feb2022 added these 3 lines
-      ShowStatusMessage("Data transfering to Thumb drive");
-      DelayHalfSecond();
-      break;
-
-    // State for sending the Third set of log data
-    case PCDT_STATE_SEND_LOG3:
-      if (ElapsedTimeLowRes(tPCDTGapTimer) >= PCDT_DELAY2) // Check if enough time has elapsed based on the low-res timer
-      {
-        snprintf(nBuffer, 1000, "%d, %d, %d, %d, %d, %d, %d, %d, %d\n\r", // Create the message for the second part of the log data
-          record.date.RTC_Date,
-          record.date.RTC_Year,
-          HoleInfoRecord.DefaultPipeLength,
-          HoleInfoRecord.Declination,
-          HoleInfoRecord.DesiredAzimuth,
-          HoleInfoRecord.Toolface,
-          record.StatusCode,
-          record.NumOfBranch,
-          HoleInfoRecord.BoreholeNumber);
-        UART_SendMessage(CLIENT_PC_COMM, (U_BYTE const*)nBuffer, strlen(nBuffer)); // Send the message via UART
-        tPCDTGapTimer = ElapsedTimeLowRes((TIME_LR)0); // Reset the timer
-        SendLogToPC_state = PCDT_STATE_SEND_LOG4; // Move to the next state for sending the fourth part of the log data
-      }
-      break;
-
-    // State for sending the Fourth set of log data
-    case PCDT_STATE_SEND_LOG4:
-      if (ElapsedTimeLowRes(tPCDTGapTimer) >= PCDT_DELAY3) // Check if enough time has elapsed based on the low-res timer
-      {
-        recordNumber++; // Increment the record number to fetch the next record
-        if (recordNumber < count) // Check if we have more records to process
-        {
-          SendLogToPC_state = PCDT_STATE_GET_RECORD; // If yes, change the state to fetch the next record
-        }
-        else
-        {
-          SendLogToPC_state = PCDT_STATE_IDLE; // If no more records, reset to idle state
-          RepaintNow(&WindowFrame); // Repaint the window frame to update the UI
-          FinishedMessage = 1; // Set the FinishedMessage flag to 1, indicating the process is complete
-        }
-      }
-      break;
-    default:
-      SendLogToPC_state = PCDT_STATE_IDLE; // Reset state to idle for unexpected cases
-      break;
-  }
+          // State for sending the Fourth set of log data
+        case PCDT_STATE_SEND_LOG4:
+            if (ElapsedTimeLowRes(tPCDTGapTimer) >= PCDT_DELAY3) // Check if enough time has elapsed based on the low-res timer
+            {
+                recordNumber++; // Increment the record number to fetch the next record
+                if (recordNumber < count) // Check if we have more records to process
+                {
+                    SendLogToPC_state = PCDT_STATE_GET_RECORD; // If yes, change the state to fetch the next record
+                }
+                else
+                {
+                    SendLogToPC_state = PCDT_STATE_IDLE; // If no more records, reset to idle state
+                    RepaintNow(&WindowFrame); // Repaint the window frame to update the UI
+                    FinishedMessage = 1; // Set the FinishedMessage flag to 1, indicating the process is complete
+                }
+            }
+            break;
+        default:
+            SendLogToPC_state = PCDT_STATE_IDLE; // Reset state to idle for unexpected cases
+            break;
+    }
 }
 
-
-int CSVmain()
-{
-  char line[] = "BH1, 1, 10, 0.5, 0.2, 0.1, 1.1, 2.2, 3.3, 100, 101, 5, 8, 23, 2022, 30, 15, 45, 12, 5, 1, 25";
-  //initialise the file in memory structure
-  initCSVStructure();
-  // Use pointer arrays
-  const char* input_string = "BoreName, Rec#, PipeLength, Azimuth, Pitch, Roll, X, Y, Z, Gamma, TimeStamp, WeekDay, Month, Day, Year, DefltPipeLeDeclin, DesiredAz, ToolFace, Statcode, #Branch, #BoreHole \n\nHOLE           , 1, 0, 161.9, 0.8, 0.0, 0.0, 0.0, 0.0, 0, 715229643, 2, 9, 1, 23, 0, 0, 0, 0, 0";
-  // Assuming ',' as the delimiter
-  // Add rows to the CSVFileStructure
-add_row_data(input_string, '\n'); 
-  // file split into different chunks to simulate serial send.
-  const char* input_string2 = ", 0, 0\n\nHOLE           , 2, 10, 161.9, 1.1, 0.0, -5.3, 0.2, 8.5, 0, 715229721, 2, 9, 1, 23, 0, 0, 0, 0, 0, 0, 0";
-  add_row_data(input_string2, '\n');
-  // not really necessary here
-  print_CSVFileStructure(getFileStructure());
-  freeCSV();
-  return 0;
-}
 
 char uart_message_buffer[256];  // A buffer to temporarily store received UART messages
 void PCPORT_UPLOAD_StateMachine(void)
 {
-  bool fullLine;
-  CSVRowStructure* current_row_pointer;
-  int expected_column_length = 14;
+    bool fullLine;
 
-      switch (RetrieveLogFromPC_state)
-  {
-    case PCDTU_STATE_FILE_IDLE:
-      if (flag_start_upload == true)
-      {
-        flag_start_upload = false;
-        UART_SendMessage(CLIENT_PC_COMM, (U_BYTE const*)"Awaiting CSV start command...\n\r", strlen("Awaiting CSV start command...\n\r"));
-        RetrieveLogFromPC_state = PCDTU_STATE_AWAIT_BEGIN_CSV;
-      if (UploadFinishedMessage == 1) // If FinishedMessage is set, show the message and reset flag
-      {
-        UploadFinishedMessage = 0;
-        ShowUploadFinishedMessage();
-      }
-      break;
+    switch (RetrieveLogFromPC_state)
+    {
+        case PCDTU_STATE_FILE_IDLE:
+            fullLine = UART_ReceiveMessage((U_BYTE*)uart_message_buffer);
 
-      }
-      break;
-
-    case PCDTU_STATE_AWAIT_BEGIN_CSV:
-
-      fullLine = UART_ReceiveMessage((U_BYTE*)uart_message_buffer);
-
-      if (fullLine)
-      {
-          // ECHO
-        UART_SendMessage(CLIENT_PC_COMM, (U_BYTE*)uart_message_buffer, sizeof(uart_message_buffer) - 1);
-        // UART_SendMessage(CLIENT_PC_COMM, (U_BYTE const *)"Awaiting CSV data...\n\r", strlen("Awaiting CSV data...\n\r"));
-        if (strstr(uart_message_buffer, "BEGIN_CSV") != NULL)
-        {
-          UART_SendMessage(CLIENT_PC_COMM, (U_BYTE const*)"Awaiting CSV data...\n\r", strlen("Awaiting CSV data...\n\r"));
-          RetrieveLogFromPC_state = PCDTU_STATE_FILE_RETRIEVAL;
-          // RESET BEFORE STATE UPDATE
-          CSV_FIRST_LINE_FLAG = false;
-        }
-      }
-      break;
-
-    case PCDTU_STATE_FILE_RETRIEVAL:
-         fullLine = UART_ReceiveMessage((U_BYTE*)csv_buffer + csv_buffer_index);
-        if (fullLine) {
-          if (!CSV_FIRST_LINE_FLAG) 
-          {
-              CSV_FIRST_LINE_FLAG = true;
-              if (verify_csv_header(csv_buffer)) 
+            if (fullLine)
+            {
+                if (strstr(uart_message_buffer, "BEGIN_CSV") != NULL)
                 {
-                // Go to verification state to handle subsequent lines
-                RetrieveLogFromPC_state = PCDTU_STATE_FILE_VERIFICATION;
-                } else 
-                      {
-                        UART_SendMessage(CLIENT_PC_COMM, (U_BYTE const*)"Incorrect CSV header format.\n\r", strlen("Incorrect CSV header format.\n\r"));
-                        RetrieveLogFromPC_state = PCDTU_STATE_FILE_IDLE;
-                      }
-                      memset(csv_buffer, 0, sizeof(csv_buffer)); // Clear the buffer after processing
-          } else 
-                {
-                  CSVRowStructure row;
-                  parseCsvString(csv_buffer, &row);
-                  // Now process the row immediately and send it wherever it needs to go
-                  ProcessCsvLine(&row);
-                  memset(csv_buffer, 0, sizeof(csv_buffer)); // Clear the buffer for the next line
+                    UART_SendMessage(CLIENT_PC_COMM, (U_BYTE const*)"BEGIN\r", strlen("BEGIN\r"));
+                    RetrieveLogFromPC_state = PCDTU_STATE_FILE_RETRIEVAL;
+                    bFirstLine = true;
                 }
+            }
+            break;
+
+        case PCDTU_STATE_FILE_RETRIEVAL:
+            fullLine = UART_ReceiveMessage((U_BYTE*)csv_buffer + csv_buffer_index);
+            if (fullLine)
+            {
+                if (!bFirstLine)
+                {
+                    if (strstr(uart_message_buffer, "END_CSV") != NULL)
+                    {
+                        // the file is sent completely
+                        UART_SendMessage(CLIENT_PC_COMM, (U_BYTE const*)"END\r", strlen("END\r"));
+                        RetrieveLogFromPC_state = PCDTU_STATE_COMPLETED;
+                    }
+                    else
+                    {
+                        // parse the line and add it
+                        ProcessCsvLine(csv_buffer);
+                        UART_SendMessage(CLIENT_PC_COMM, (U_BYTE const*)"ACK\r", strlen("ACK\r"));
+                    }
+                }
+                else
+                {
+                    // just skip this line
+                    bFirstLine = false;
+                }
+            }
+            break;
+
+        case PCDTU_STATE_COMPLETED:
+            RepaintNow(&WindowFrame);
+            ShowStatusMessage("Data Upload Success - Please Wait...");
+            DelayHalfSecond();
+            RetrieveLogFromPC_state = PCDTU_STATE_FILE_IDLE;
+            RepaintNow(&WindowFrame); // Repaint the window frame to update the UI
+            UploadFinishedMessage = 1;
+            break;
     }
-    break;
-
-    case PCDTU_STATE_FILE_VERIFICATION:
-        // Verify header here
-      current_row_pointer = &getFileStructure()->csvrows[0];
-      csv_header_verified = current_row_pointer->isheader;
-      // any custom implementation will do
-      // lets assume its right by using size
-      // replace with expected column length
-      csv_header_verified = current_row_pointer->size >= expected_column_length;
-      if (csv_header_verified)
-      {
-        RetrieveLogFromPC_state = PCDTU_STATE_COMPLETED;
-      }
-      else
-      {
-        //RepaintNow(&WindowFrame);
-        //ShowStatusMessage("Data Upload Failed - Please Try Again");
-       // DelayHalfSecond();
-        UART_SendMessage(CLIENT_PC_COMM, (U_BYTE const*)"Incorrect CSV format.\n\r", strlen("Incorrect CSV format.\n\r"));
-        RetrieveLogFromPC_state = PCDTU_STATE_FILE_IDLE;
-      }
-      break;
-
-    case PCDTU_STATE_COMPLETED:
-      UART_SendMessage(CLIENT_PC_COMM, (U_BYTE const*)"File received successfully.\n\r", strlen("File received successfully.\n\r"));
-      RepaintNow(&WindowFrame);
-      ShowStatusMessage("Data Upload Success - Please Wait...");
-      DelayHalfSecond();
-      RetrieveLogFromPC_state = PCDTU_STATE_FILE_IDLE;
-      // process csv lines
-      for (int i = 0; i < getFileStructure()->size; i++)
-      {
-        ProcessCsvLine(&(getFileStructure()->csvrows[i]));
-      }
-      RepaintNow(&WindowFrame); // Repaint the window frame to update the UI
-      UploadFinishedMessage = 1;
-      break;
-  }
 }
 
 
-void ProcessCsvLine(CSVRowStructure* row) {
-     if (row == NULL)
-  {
-    return;
-  }
-    for (int i = 0; i <= row->current_column; i++) {
-        UART_SendMessage(CLIENT_PC_COMM, (U_BYTE*)row->items[i], strlen(row->items[i]));
-        if (i < row->current_column) {
-            UART_SendMessage(CLIENT_PC_COMM, (U_BYTE const*)",", 1); // Column delimiter
-        }
-    }
-    UART_SendMessage(CLIENT_PC_COMM, (U_BYTE const*)"\r", 1); // Row delimiter
-}
-
-/*
-void ProcessCsvLine(const CSVRowStructure* line)
+void ProcessCsvLine(char* line)
 {
-// Assuming you have verified the header
-  if (line == NULL)
-  {
-    return;
-  }
-  
-  STRUCT_RECORD_DATA record;
-  sscanf(line->items[0], "%u",&record.nRecordNumber);
-  sscanf(line->items[1], "%d", &record.nTotalLength);
-  sscanf(line->items[2], "%d", &record.nAzimuth);
-  sscanf(line->items[3], "%.1f", &record.nPitch);
-  sscanf(line->items[4], "%.1f", &record.nRoll);
-  sscanf(line->items[5], "%.1f", &record.X);
-  sscanf(line->items[6], "%.1f", &record.Y);
-  sscanf(line->items[7], "%.1f", &record.Z);
-  sscanf(line->items[8], "%d", &record.nGamma);
-  sscanf(line->items[9], "%d", &record.tSurveyTimeStamp);
-  sscanf(line->items[10], "%d", &record.date.RTC_WeekDay);
-  sscanf(line->items[11], "%d", &record.date.RTC_Month);
-  sscanf(line->items[12], "%d", &record.date.RTC_Date);
-  sscanf(line->items[13], "%d", &record.date.RTC_Year);
+    STRUCT_RECORD_DATA record;
+    char* token;
+    double fTemp;
 
-   //RECORD_SetRecord(&record);
+    token = strtok((char*)line, ",");                   // 1
+    // the first token is the name
+
+    token = strtok(NULL, ",");                          // 2
+    sscanf(token, "%d", (int*)(&record.nRecordNumber));
+
+    token = strtok(NULL, ",");                          // 3
+    sscanf(token, "%d", (int*)(&record.nTotalLength));
+
+    token = strtok(NULL, ",");                          // 4
+    sscanf(token, "%lf", &fTemp);
+    record.nAzimuth = (INT16)(fTemp * 10.0);
+
+    token = strtok(NULL, ",");                          // 5
+    sscanf(token, "%lf", &fTemp);
+    record.nPitch = (INT16)(fTemp * 10.0);
+
+    token = strtok(NULL, ",");                          //6
+    sscanf(token, "%lf", &fTemp);
+    record.nRoll = (INT16)(fTemp * 10.0);
+
+    token = strtok(NULL, ",");                          // 7
+    sscanf(token, "%lf", &fTemp);
+    record.X = (INT16)(fTemp * 10.0);
+
+    token = strtok(NULL, ",");                          // 8
+    sscanf(token, "%lf", &fTemp);
+    record.Y = (INT16)(fTemp * 100.0);
+
+    token = strtok(NULL, ",");                          // 9
+    sscanf(token, "%lf", &fTemp);
+    record.Z = (INT16)(fTemp * 10.0);
+
+    token = strtok(NULL, ",");                          // 10
+    sscanf(token, "%d", (int*)(&record.nGamma));
+
+    token = strtok(NULL, ",");                          // 11
+    sscanf(token, "%d", (int*)(&record.tSurveyTimeStamp));
+
+    token = strtok(NULL, ",");                          // 12
+    sscanf(token, "%d", (int*)(&record.date.RTC_WeekDay));
+
+    token = strtok(NULL, ",");                          // 13
+    sscanf(token, "%d", (int*)&record.date.RTC_Month);
+
+    token = strtok(NULL, ",");                          // 14
+    sscanf(token, "%d", (int*)&record.date.RTC_Date);
+
+    token = strtok(NULL, ",");                          // 15
+    sscanf(token, "%d", (int*)&record.date.RTC_Year);
+
+    // throw the next 4 away
+    token = strtok(NULL, ",");                          // 16
+    token = strtok(NULL, ",");                          // 17
+    token = strtok(NULL, ",");                          // 18
+    token = strtok(NULL, ",");                          // 19
+    sscanf(token, "%d", (int*)(&record.date.RTC_Year));
+
+    token = strtok(NULL, ",");                          // 20
+    sscanf(token, "%d", (int*)(&record.StatusCode));
+
+    token = strtok(NULL, ",");                          // 21
+    sscanf(token, "%d", (int*)(&record.NumOfBranch));
+
+    // throw the next one awayt
+    token = strtok(NULL, ",");                          // 22
+    //RECORD_SetRecord(&record);
 }
-*/

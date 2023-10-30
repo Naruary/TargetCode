@@ -73,16 +73,16 @@ static MENU_ITEM LoggingMenu[] =
 //	CREATE_MENU_ITEM(TXT_UPDATE_DOWNHOLE,     &LabelFrame3, UpdateDownHoleData),
 	CREATE_MENU_ITEM(TXT_START_NEW_HOLE,      &LabelFrame3, StartNewHole),
 	CREATE_MENU_ITEM(TXT_CLEAR_ALL_HOLE_DATA, &LabelFrame4, ClearHoleData),
-	CREATE_MENU_ITEM(TXT_ENTER_SURVEY,        &LabelFrame5, EnterSurvey)       
+	CREATE_MENU_ITEM(TXT_ENTER_SURVEY,        &LabelFrame5, EnterSurvey)
 };
 
-PANEL MWDLogging = {	
+PANEL MWDLogging = {
 	GetLoggingMenu,
 	sizeof(LoggingMenu) / sizeof(MENU_ITEM),
 	LoggingPaint,
 	LoggingShow,
 	0,
-	TimerElapsed 
+	TimerElapsed
 };
 
 static GroupBox sensorGroup =
@@ -119,7 +119,7 @@ static GroupBox surveyGroup =
         { TXT_DOWNTRACK,             DisplayReal32Value,      .real32 = GetLastDepth },
         { TXT_LEFTRIGHT,             DisplayReal32Value,      .real32 = GetLastEasting },
         { TXT_UPDOWN,                DisplayReal32Value,      .real32 = GetLastNorthing },
-        { TXT_GAMMA,                 DisplaySurveyInt16Value, .int16  = GetLastGamma }, 
+        { TXT_GAMMA,                 DisplaySurveyInt16Value, .int16  = GetLastGamma },
         { TXT_GTF,                   DisplaySurveyInt16Value, .int16 = GetLastGTF },
     }
 };
@@ -127,13 +127,9 @@ static GroupBox surveyGroup =
 static TIME_LR tSurveyRequest = 0;
 static TIME_LR tDecisionState = 0;
 static TIME_LR tWaitingForDownhole = 0;
-static TIME_LR tDownholeStatus = 0;
 static BOOL bGetParam = false;
-static BOOL bDownholeOnStatus = false;
-static BOOL bDownholeOffStatus = false;
 volatile BOOL SystemArmedFlag = false;
 volatile BOOL SurveyTakenFlag = false;
-static U_INT16 TotalAwakeTime_secs;
 int DownLockOn = 0;
 
 
@@ -167,12 +163,12 @@ static void TakeSurvey(MENU_ITEM* item)
 	switch(TakeSurveyState)
 	{
 		case TSS_IDLE: // first Survey button press, we issue a 250K tone for 2 seconds - to wake up Down-hole
-			bGetParam = true; // whs 5Jan2022 turns on the Downhole power and the Yitrans should connect 
+			bGetParam = true; // whs 5Jan2022 turns on the Downhole power and the Yitrans should connect
 			tSurveyRequest = ElapsedTimeLowRes(0);
 			tone_generator_setstate(true);
 			PaintNow(&HomeFrame); // prevents us from getting stuck on from previous partial shot
 			SystemArmedFlag = false;
-			SurveyTakenFlag = false; // whs 3Dec2021 who uses this???? no one I can find >>  TotalAwakeTime_secs = GetAwakeTimeSetting(); 
+			SurveyTakenFlag = false; // whs 3Dec2021 who uses this???? no one I can find >>  TotalAwakeTime_secs = GetAwakeTimeSetting();
 			TakeSurveyState = TSS_ONE;
 			break;
 		case TSS_ONE: // a 2nd survey press got us here - if Ytran connected, allow message to turn on sensor
@@ -185,24 +181,24 @@ static void TakeSurvey(MENU_ITEM* item)
                         else
                         {
                                 if(LoggingManager_IsConnected() && SystemArmedFlag == false) // whs 10Dec2021 Yitran modem is connected to downhole
-                                {  
+                                {
                                   TargProtocol_SetSensorPowerState(true); //whs 5Jan2022 turns on Tensteer+Gamma+ puts stars on LCD Uphole box
-                                  SystemArmedFlag = true; // whs 6Dec2021 only ever set to true here - in all of Uphole code 
-                                        /*  
+                                  SystemArmedFlag = true; // whs 6Dec2021 only ever set to true here - in all of Uphole code
+                                        /*
                                           if(SystemArmedFlag == false)
                                         {
                                                 TargProtocol_SetSensorPowerState(true); //whs 5Jan2022 turns on Tensteer+Gamma+ puts stars on LCD Uphole box
-                                                SystemArmedFlag = true; // whs 6Dec2021 only ever set to true here - in all of Uphole code 
-                                        } 
+                                                SystemArmedFlag = true; // whs 6Dec2021 only ever set to true here - in all of Uphole code
+                                        }
                                       */
                                   TakeSurveyState = TSS_TWO;
                                  }
                         }
-			break; 
+			break;
 		case TSS_TWO: // 3rd survey press got us here - if survey data valid .. take it
 			if (GetSurveyCommsState() == true) // whs 6Jan2022 verifies data was received from downhole
                         { // whs 5Jan2022- if Tensteer and Gamma on take data and store it then turn Tensteer and Gamma turn off
-                         	LoggingManager_TakeSurvey();  // whs 5Jan2022 need test here to see if Tensteer and Gamma turned on 
+                         	LoggingManager_TakeSurvey();  // whs 5Jan2022 need test here to see if Tensteer and Gamma turned on
 				TakeSurvey_Time_Out_Seconds = 0;  // whs 5Jan2022 who normally turns it off?  I don't see it here???????
 				SurveyTakenFlag = true;
 				SystemArmedFlag = false;
@@ -256,7 +252,7 @@ static void LoggingPaint(TAB_ENTRY* tab)
 {
     char text[100];
     INT16 awakeTime;
-    
+
     TabWindowPaint(tab);
     GroupBoxPaint(&sensorGroup);
     GroupBoxPaint(&surveyGroup);
@@ -265,11 +261,11 @@ static void LoggingPaint(TAB_ENTRY* tab)
         awakeTime = GetAwakeTimeLeft(); //whs 10Dec2021 time left of max 30 second of Downhole power
         if(awakeTime < 0) (awakeTime = 0);
         if(awakeTime < 5)
-        {   
-// whs 3Dec2021 added the below GroupBoxPaint for testing purpose was to paint over sensor param with XXXs 
-//          GroupBoxPaint(&sensorGroupX); also sensorGroupX was only created for testing 
+        {
+// whs 3Dec2021 added the below GroupBoxPaint for testing purpose was to paint over sensor param with XXXs
+//          GroupBoxPaint(&sensorGroupX); also sensorGroupX was only created for testing
             snprintf(text, 100, "Too Late - Sleeps in : %d", awakeTime);
-            ShowStatusMessage(text); 
+            ShowStatusMessage(text);
         }
         else
         {
@@ -278,22 +274,22 @@ static void LoggingPaint(TAB_ENTRY* tab)
                 snprintf(text, 100, "***");
                ShowArmedStatusMessage(text);
                 snprintf(text, 100, "When data appears push Survey to record: %d", awakeTime);
-                ShowStatusMessage(text);               
+                ShowStatusMessage(text);
             }
-            else 
+            else
             {
                 snprintf(text, 100, "To get data push Survey - Sleeps in : %d", awakeTime);
                 ShowStatusMessage(text);
             }
         }
-// whs 18Nov2021. The next two lines Reads NVRAM directly where Downhole LockOn is stored.  Param for this is set 
-//in Box Tab and was created only for testing. it negates the Downhole pwr on time of 30 seconds but has ripple software 
+// whs 18Nov2021. The next two lines Reads NVRAM directly where Downhole LockOn is stored.  Param for this is set
+//in Box Tab and was created only for testing. it negates the Downhole pwr on time of 30 seconds but has ripple software
 //issues. But at least you dont't have to change the hardware for testing purposes
 //       DownLockOn = NVRAM_data.fKeyBeeperEnable;
 //       if ((awakeTime <= 10) && (DownLockOn)) tone_generator_setstate(true);
     }
 	else
-	{ //whs 10Nov2021 and 19Jan2022 changed message below 
+	{ //whs 10Nov2021 and 19Jan2022 changed message below
              ShowStatusMessage("Downhole Off - Push Survey to turn On");
 	}
 }
@@ -371,39 +367,6 @@ BOOL GetDownholeOffStatus(void)
 	return bDownholeOffStatus;
 }
 #endif
-/*******************************************************************************
-*       @details
-*******************************************************************************/
-void SetDownholeOnStatus(BOOL Status)
-{
-	bDownholeOnStatus = Status;
-}
-
-/*******************************************************************************
-*       @details
-*******************************************************************************/
-void SetDownholeOffStatus(BOOL Status)
-{
-	bDownholeOffStatus = Status;
-}
-
-#if 0
-/*******************************************************************************
-*       @details
-*******************************************************************************/
-TIME_LR GetDownholeStatusTimer(void)
-{
-	return tDownholeStatus;
-}
-#endif
-
-/*******************************************************************************
-*       @details
-*******************************************************************************/
-void ClearDownholeStatusTimer(void)
-{
-	tDownholeStatus = ElapsedTimeLowRes(0);
-}
 
 /*******************************************************************************
 *       @details
@@ -433,13 +396,13 @@ static void EnterSurvey(MENU_ITEM* item)
 INT16 GetToolfaceOffset(void)
 {
 	INT16 TFOffset;
-	if (((float)GetToolFaceValue()/10) > 360)     
+	if (((float)GetToolFaceValue()/10) > 360)
 	{
 		TFOffset = (INT16)(((float)GetToolFaceValue()/10 - 360)*10);
-	}     
+	}
 	else
 	{
 		TFOffset = (INT16)(((float)GetToolFaceValue()/10)*10);
-	}  
+	}
 	return TFOffset;
 }

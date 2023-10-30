@@ -20,11 +20,10 @@
 extern "C" {
 #endif
 
-	void PCPORT_ReceiveData(U_BYTE nData);
-	void PCPORT_StateMachine(void);
-        void PCPORT_ReceiveDataUSB(void);
-	void PCPORT_UPLOAD_StateMachine(void);
-        void ProcessCsvLine(CSVRowStructure* row);
+    void PCPORT_ReceiveData(U_BYTE nData);
+    void PCPORT_StateMachine(void);
+    void PCPORT_ReceiveDataUSB(void);
+    void PCPORT_UPLOAD_StateMachine(void);
 #ifdef __cplusplus
 }
 #endif

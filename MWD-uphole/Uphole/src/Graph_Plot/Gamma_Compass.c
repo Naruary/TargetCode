@@ -68,7 +68,6 @@ void DrawGammaCompass(void);
 
 //static MENU_ITEM* GetMenu(U_BYTE index);
 static void TableTimeElapsed(TAB_ENTRY* tab);
-static void TimerElapsed(TAB_ENTRY* tab);
 static void TableKeyPressed(TAB_ENTRY* tab, BUTTON_VALUE key);
 
 //============================================================================//
@@ -80,7 +79,6 @@ const TAB_ENTRY GammaCompassTab = {&TabFrame10, TXT_GAMCOMP, ShowTab, GetGammaCo
 enum { UI_GAMMA_COMPASS, };
 
 U_INT16 panelIndex1 = UI_GAMMA_COMPASS;
-static REAL32 m_nGTF;
 REAL32 GTF1;
 REAL32 GTF2;
 REAL32 Toolface1;
@@ -91,20 +89,8 @@ REAL32 Toolface1;
 //      FUNCTION IMPLEMENTATIONS                                              //
 //============================================================================//
 
-static MENU_ITEM menuGamma[] = {
-//	CREATE_FIXED_FIELD(TXT_DOWNHOLE_OFF_TIME,		&LabelFrame1, &ValueFrame1,
-//		CurrrentLabelFrame,	GetDownholeOffTime,		SetDownholeOffTime, 4, 0, 0, 9999), //1000
-//	CREATE_FIXED_FIELD(TXT_DOWNHOLE_ON_TIME,		&LabelFrame1, &ValueFrame1,
-//		CurrrentLabelFrame,	GetAwakeTimeSetting,	SetAwakeTimeTarget,  4, 0, 0, 9999), //1000
-//  15Oct2019 whs Changes to the above two lines seem to have no effect on the code ????
-//	CREATE_YESNO_FIELD(TXT_DOWNHOLE_DEEP_SLEEP,	&LabelFrame3, &ValueFrame3,
-//		CurrrentLabelFrame,	GetDeepSleepMode,		SetDeepSleepMode),
-	CREATE_BOOLEAN_FIELD(TXT_GAMMA_ON_OFF,			&LabelFrame2, &ValueFrame2,
-		CurrrentLabelFrame,	GetGammaPoweredState,	TargProtocol_RequestSendGammaEnable),
-//	CREATE_MENU_ITEM(TXT_UPDATE_DOWNHOLE, &LabelFrame5, UpdateDownHoleSettings),
-};
 
-static PANEL *CurrentState(void)   
+static PANEL *CurrentState(void)
 {
 	switch(panelIndex1)
 	{
@@ -177,18 +163,6 @@ static void TableTimeElapsed(TAB_ENTRY* tab)
 	}
 #endif
 }
-
-static void TimerElapsed(TAB_ENTRY* tab)
-{
-	MENU_ITEM* time = &menuGamma[0];
-	if(time == NULL) return;
-//    if( (!time->editing) && (UI_GetActiveFrame()->eID != ALERT_FRAME) )
-    {
-        RepaintNow(time->valueFrame);
-    }
-}
-
-
 
 
 /*******************************************************************************
@@ -266,39 +240,32 @@ void DrawGammaRadarCompass(void)
 //	U_INT16 Y_Toolface_Tick1;
 //	U_INT16 X_Toolface_Tick2;
 //	U_INT16 Y_Toolface_Tick2;
-	U_INT16 X_Toolface_Offset; //Mechanical offset due to Gamma window
-	U_INT16 Y_Toolface_Offset;
-	REAL32 Toolface_Offset;
 	REAL32 GTF;
 //	REAL32 GTF1;
 //	REAL32 GTF2;
-        
+
 	Toolface = ((GetSurveyRoll()/10) - 90);
 
 	Toolface = Toolface * (PI / ONE_EIGHTY_DEGREES); //convert to radian
-        Toolface_Offset = ((GetToolFaceValue()/10)-90) * (PI / ONE_EIGHTY_DEGREES); //convert to radian
-         
-        
+
+
         GTF = (float)((GetSurveyRoll()/10)-90) + (float)GetToolFaceValue()/10;
-        
-        
+
+
         GTF = GTF * (PI / ONE_EIGHTY_DEGREES);
-        
-        
+
+
 
 	// sin/cos is double in, double out..
 	X_Toolface = TFCirXCent + (U_INT16)(Radii * cos(GTF)); //was Toolface in cos argument.
 	Y_Toolface = TFCirYCent + (U_INT16)(Radii * sin(GTF));
-        
-    X_Toolface_Offset = (U_INT16)(Radii * cos(Toolface_Offset));
-	Y_Toolface_Offset = (U_INT16)(Radii * sin(Toolface_Offset));
-        
+
 //        U_INT16 Gamma_Scale_Max = 500;
 //       U_INT16 Gamma_Compass_Offset;
 //        U_INT16 tmp;
-/*       
+/*
         tmp = GetSurveyGamma();
-          
+
         if (tmp < Gamma_Scale_Max/10)
         {
           Gamma_Compass_Offset = 10;
@@ -309,21 +276,21 @@ void DrawGammaRadarCompass(void)
         }
             X_Toolface_Tick1 = X_Toolface + (U_INT16)(Radii2 * cos(Toolface));
             Y_Toolface_Tick1 = Y_Toolface + (U_INT16)(Radii2 * sin(Toolface));
-            
+
             X_Toolface_Tick2 = X_Toolface_Tick1 + (U_INT16)(Gamma_Compass_Offset * cos(Toolface));
-            Y_Toolface_Tick2 = Y_Toolface_Tick1 + (U_INT16)(Gamma_Compass_Offset * sin(Toolface));     
-        
+            Y_Toolface_Tick2 = Y_Toolface_Tick1 + (U_INT16)(Gamma_Compass_Offset * sin(Toolface));
+
         if (Toolface_Offset == -90)
         {
             X_Toolface_Tick1 = (X_Toolface + (U_INT16)(Radii2 * cos(Toolface))) + X_Toolface_Offset;
             Y_Toolface_Tick1 = Y_Toolface + (U_INT16)(Radii2 * sin(Toolface)) + Y_Toolface_Offset + Y_Toolface;
-            
+
             X_Toolface_Tick2 = X_Toolface_Tick1 + (U_INT16)(Gamma_Compass_Offset * cos(Toolface_Offset));
             Y_Toolface_Tick2 = Y_Toolface_Tick1 + (U_INT16)(Gamma_Compass_Offset * sin(Toolface_Offset));
         }
 
  */
-        
+
 	//GLCD_Circle(TFCirXCent, TFCirYCent, Radii);
 	GLCD_Circle(TFCirXCent, TFCirYCent, Radii-3);
 	GLCD_Circle(TFCirXCent, TFCirYCent, Radii+3);
@@ -344,14 +311,14 @@ void DrawGammaRadarCompass(void)
 	GLCD_Circle(X_Toolface, Y_Toolface, 3);
 	GLCD_Circle(X_Toolface, Y_Toolface, 2);
 	GLCD_Circle(X_Toolface, Y_Toolface, 1);
-        
+
   //      GLCD_Line(X_Toolface_Tick1, Y_Toolface_Tick1, X_Toolface_Tick2, Y_Toolface_Tick2);
 
 
 
-        
 
-        
+
+
 	snprintf(Text, 20, "0");
 	UI_DisplayString(Text, &ScaleNewFrame.area, 70, 157);
 
@@ -366,19 +333,19 @@ void DrawGammaRadarCompass(void)
 
 	Toolface = (GetSurveyRoll()/10);
 
-	snprintf(Title, 20, "TF = %d", Toolface);
+	snprintf(Title, 20, "TF = %f", Toolface);
 	UI_DisplayString(Title, &ScaleNewFrame.area, 50, 10); //point 1 different by 15 to be symmetric
 
 	snprintf(Title, 20, "Gamma = %d", GetSurveyGamma());
 	UI_DisplayString(Title, &ScaleNewFrame.area, 35, 235); //35,235
-/*        
+/*
         snprintf(Title, 20, "Push Shift Button");              //////
 	UI_DisplayString(Title, &ScaleNewFrame.area, 5, 10);         //////
 
         snprintf(Title, 20, "to Record Gamma:");                     //////
 	UI_DisplayString(Title, &ScaleNewFrame.area, 5, 135);
-*/        
-  /*      
+*/
+  /*
         if (Toolface > (GetToolFaceValue()/10.0))
         {
             snprintf(Title, 20, "GTF = %.1f", (float)((GetToolFaceValue()/10.0)) + Toolface);    //////
@@ -387,22 +354,22 @@ void DrawGammaRadarCompass(void)
         else
         {
 */
-        
-/*               
+
+/*
         GTF = (float)((GetSurveyRoll()/10)) + (float)GetToolFaceValue()/10;
-        
+
      //  GTF = (GTF * (ONE_EIGHTY_DEGREES / PI)) + 90;
-        
-        
+
+
         if (GTF > 360)
         {
           GTF = GTF - 360; // (ONE_EIGHTY_DEGREES / PI))-90;
         }
         else
         {
-          
+
         }
-*/      
+*/
         if ((float)GetToolFaceValue()/10 > 360)
         {
           Toolface = (float)GetToolFaceValue()/10 - 360;
@@ -411,24 +378,22 @@ void DrawGammaRadarCompass(void)
         {
           Toolface = (float)GetToolFaceValue()/10;
         }
-        
+
         GTF1 = Toolface + (float)((GetSurveyRoll()/10));
    //     GTF = (GTF * (ONE_EIGHTY_DEGREES / PI)) + 90;
-        
+
         if (GTF1 >= 360)
         {
           GTF2 = GTF1 - 360;
-          m_nGTF = GTF2;
         }
         else
         {
           GTF2 = GTF1;
-          m_nGTF = GTF2;
         }
-        
+
         snprintf(Title, 20, "GTF = %.1f", GTF2);    //////
         UI_DisplayString(Title, &ScaleNewFrame.area, 35, 10);
-       
+
 	//GLCD_Line(38, 7, 123, 7);
 	//GLCD_Line(37, 6, 124, 6);
 	//GLCD_Line(38, 7, 38, 21);
@@ -452,19 +417,17 @@ INT16 GetGTF(void)
         {
           Toolface1 = (float)GetToolFaceValue()/10;
         }
-        
+
         GTF1 = Toolface1 + (float)((GetSurveyRoll()/10));
    //     GTF = (GTF * (ONE_EIGHTY_DEGREES / PI)) + 90;
-        
+
         if (GTF1 >= 360)
         {
           GTF2 = GTF1 - 360;
-          m_nGTF = GTF2;
         }
         else
         {
           GTF2 = GTF1;
-          m_nGTF = GTF2;
         }
         return (INT16)GTF2;
 }

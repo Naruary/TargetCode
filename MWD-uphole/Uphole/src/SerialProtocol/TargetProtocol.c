@@ -69,7 +69,6 @@ static void pushTXbuffer16(U_INT16 someTXData, U_BYTE addtoChecksum);
 //static void pushTXbufferi16(INT16 someTXData, U_BYTE addtoChecksum);
 //static void pushTXbuffer32(U_INT32 someTXData, U_BYTE addtoChecksum);
 static void TargProtocol_RequestSendDownholeAwakeTime(U_INT16 awakeTime);
-static void ClearDownholeCommsTimer(void);
 
 #define MAX_VERSION_LEN 7
 #define	DATE_STRING_LEN 16
@@ -95,12 +94,9 @@ void ProcessTargetRXMessage(U_BYTE *theData, U_INT16 nLength)
 	U_INT16 Temperature;
 	U_INT16 BatteryVoltage;
     U_INT16 SignalStrength;
-	U_INT32 TotalRunningTime;
 	U_INT16 CurrentOnTime;
-	U_INT16 AwakeTimeSetting;
 	char *pVersionString;
 	char *pDateString;
-	STRUCT_RECORD_DATA record;
 
 	if(nLength > 200) return;
 	index = 0;
@@ -112,10 +108,9 @@ void ProcessTargetRXMessage(U_BYTE *theData, U_INT16 nLength)
 			nNumberOfRXDataBytes = theData[index++];
 			if(nNumberOfRXDataBytes != 0x30)
 			{
-				ClearDownholeCommsTimer();
 				break;
 			}
-			// is compass data valid? whs 10dec201 how can you tell 
+			// is compass data valid? whs 10dec201 how can you tell
 			surveyCommsState = theData[index++];
 			// get azimuth, pitch, and roll, signed 16
 			Azimuth = GetSignedShort(&theData[index]);
@@ -141,7 +136,6 @@ void ProcessTargetRXMessage(U_BYTE *theData, U_INT16 nLength)
 			SignalStrength = GetUnsignedShort(&theData[index]);
 			index += 2;
 			// get total running time in seconds, unsigned 32 (not sleep time)
-			TotalRunningTime = GetUnsignedLong(&theData[index]);
 			index += 4;
 			// get the total awake time setting (target), u16
 			AwakeTimeSetting = GetUnsignedShort(&theData[index]);
@@ -166,7 +160,7 @@ void ProcessTargetRXMessage(U_BYTE *theData, U_INT16 nLength)
 			if(checksum == theData[index])
 			{
 	RX_message_receptions++;
-				SetSurveyCommsState(surveyCommsState); // whs 14dec2021 
+				SetSurveyCommsState(surveyCommsState); // whs 14dec2021
 				SetSurveyAzimuth(Azimuth);
 				SetSurveyPitch(Pitch);
 				SetSurveyRoll(Roll);
@@ -182,14 +176,12 @@ void ProcessTargetRXMessage(U_BYTE *theData, U_INT16 nLength)
 				SetDownholeSWDate(pDateString, DATE_STRING_LEN);
 				SetCurrentAwakeTime(CurrentOnTime);
 			}
-			ClearDownholeCommsTimer();
 			break;
 		case CMD_SEND_DOWNHOLE_ON_TIME:
 		case CMD_SEND_DOWNHOLE_GAMMA_ENABLE:
 			nNumberOfRXDataBytes = theData[index++];
 			if(nNumberOfRXDataBytes != 0)
 			{
-				ClearDownholeCommsTimer();
 				break;
 			}
 			checksum = 0;
@@ -199,7 +191,6 @@ void ProcessTargetRXMessage(U_BYTE *theData, U_INT16 nLength)
 				SetLoggingState(UPDATE_DOWNHOLE_SUCCESS);
 				tUpdateDownHoleSuccess = ElapsedTimeLowRes(0);
 				RepaintNow(&HomeFrame);
-				ClearDownholeCommsTimer();
 			}
 			break;
 		default:
@@ -360,12 +351,6 @@ void TargProtocol_RequestSendGammaEnable(BOOL bState)
 /*******************************************************************************
 *       @details
 *******************************************************************************/
-void ClearDownholeCommsTimer(void)
-{
-    ClearDownholeStatusTimer();
-	SetDownholeOnStatus(true);
-	SetDownholeOffStatus(false);
-}
 
 void SetAwakeTimeTarget(INT16 aTime)
 {
