@@ -36,7 +36,7 @@
 #define TAB_SPACING                 2
 #define MIN_TAB_COL(tab)            (((tab - 1) * (TAB_WIDTH + TAB_SPACING)) + 3)
 #define MAX_TAB_COL(tab)            (MIN_TAB_COL(tab) + TAB_WIDTH)
-#define TAB_FRAME(tab)              {TAB##tab, {{MIN_TAB_ROW, MIN_TAB_COL(tab)}, {MAX_TAB_ROW, MAX_TAB_COL(tab)}}, TabFrameHandler, TabPaint, TabInitialize}
+#define TAB_FRAME(tab)              {TAB##tab, {{(INT16)MIN_TAB_ROW, (INT16)MIN_TAB_COL(tab)}, {(INT16)MAX_TAB_ROW, (INT16)MAX_TAB_COL(tab)}}, TabFrameHandler, TabPaint, TabInitialize}
 
 #define MIN_MENU_ROW(item)          (30 + ((item - 1) * 15))
 #define MAX_MENU_ROW(item)          (MIN_MENU_ROW(item) + 14)
