@@ -210,14 +210,15 @@ static void Yes_DeleteLastSurvey_Decision(MENU_ITEM* item)
         if (lastRecoord.NumOfBranch != 0)
         {
             // If the survey is a branch point, show the error panel and do not delete it.
-            // Assuming there's a function to show the DeleteLastSurveyUnsuccessful panel:
             SetLoggingState(DELETE_LAST_SURVEY_NOT_SUCCESS);
-            return; // Do not proceed with deletion.
+            //return; // Do not proceed with deletion.
         }
         else 
         {
             // If the survey is not a branch point, proceed with deletion.
+            RECORD_StoreSelectSurvey(GetLastRecordNumber()-1);
             RECORD_removeLastRecord();
+            RecordDataPanelInit();
             SetLoggingState(DELETE_LAST_SURVEY_SUCCESS);
         }
     }

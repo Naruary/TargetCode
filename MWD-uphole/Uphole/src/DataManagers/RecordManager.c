@@ -724,7 +724,7 @@ void RECORD_removeLastRecord(void)
 	if(boreholeStatistics1.LastSurvey.PreviousBranchLoc)
 	{
 		RECORD_GetRecord(&ParentBranchSurvey, boreholeStatistics1.LastSurvey.PreviousBranchLoc);
-		//The exact page specified by PreviousBranchLoc was read (We perform a read-modify-write of the flash page where the barnch is set)
+		//The exact page specified by PreviousBranchLoc was read (We perform a read-modify-write of the flash page where the branch is set)
 		memcpy(m_WritePage.records, m_ReadPage.records, sizeof(m_WritePage.records));
 		ParentBranchSurvey.NextBranchLoc = 0;
 		ParentBranchSurvey.NumOfBranch = ParentBranchSurvey.NumOfBranch - 1;
