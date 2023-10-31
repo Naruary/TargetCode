@@ -414,6 +414,8 @@ void PCPORT_UPLOAD_StateMachine(void)
             {
                 if (strstr(uart_message_buffer, "BEGIN_CSV") != NULL)
                 {
+                    LoggingManager_StartLogging();
+                    SetLoggingState(CLEAR_ALL_HOLE);
                     UART_SendMessage(CLIENT_PC_COMM, (U_BYTE const*)"BEGIN\r", strlen("BEGIN\r"));
                     RetrieveLogFromPC_state = PCDTU_STATE_FILE_RETRIEVAL;
                     bFirstLine = true;
@@ -427,7 +429,7 @@ void PCPORT_UPLOAD_StateMachine(void)
             {
                 if (!bFirstLine)
                 {
-                    if (strstr(uart_message_buffer, "END_CSV") != NULL)
+                    if (strstr(csv_buffer, "END_CSV") != NULL)
                     {
                         // the file is sent completely
                         UART_SendMessage(CLIENT_PC_COMM, (U_BYTE const*)"END\r", strlen("END\r"));
@@ -438,10 +440,12 @@ void PCPORT_UPLOAD_StateMachine(void)
                         // parse the line and add it
                         ProcessCsvLine(csv_buffer);
                         UART_SendMessage(CLIENT_PC_COMM, (U_BYTE const*)"ACK\r", strlen("ACK\r"));
+                        ShowStatusMessage("Data Uploading - Please Wait...");
                     }
                 }
                 else
                 {
+                    UART_SendMessage(CLIENT_PC_COMM, (U_BYTE const*)"ACK\r", strlen("ACK\r"));
                     // just skip this line
                     bFirstLine = false;
                 }
@@ -533,4 +537,7 @@ void ProcessCsvLine(char* line)
     // throw the next one awayt
     token = strtok(NULL, ",");                          // 22
     //RECORD_SetRecord(&record);
+    RECORD_TakeSurveyMWD();
+	SetLoggingState(SURVEY_REQUEST_SUCCESS);
+	RECORD_MergeRecordMWD(&record);
 }

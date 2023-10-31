@@ -341,7 +341,7 @@ static void RecordData_Paint(TAB_ENTRY* tab)
 			RecordData_DisplayColumn(strValue, &rollColumn);
 			RecordData_IncrementColumn(&rollColumn);
                         
-                        snprintf(strValue, 50, "%d", record.nGamma);
+            snprintf(strValue, 50, "%d", record.nGamma);
 			RecordData_DisplayColumn(strValue, &gammaColumn);
 			RecordData_IncrementColumn(&gammaColumn);
                        
