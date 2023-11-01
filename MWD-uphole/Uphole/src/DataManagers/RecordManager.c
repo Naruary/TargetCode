@@ -596,13 +596,6 @@ void RECORD_MergeRecord(STRUCT_RECORD_DATA* record)
 void RECORD_MergeRecordMWD(STRUCT_RECORD_DATA* record)
 {
 	MergeRecordCommon(record);
-//	moved to RECORD_TakeSurveyMWD to correct the displayed pipe length
-//	if(boreholeStatistics1.RecordCount > 0)
-//	{
-//		boreholeStatistics1.TotalLength += GetDefaultPipeLength();
-//	}
-//	boreholeStatistics1.RecordCount++;
-//	++nNewHoleRecordCount;
 //	The next statement is rearragned since the write pointer was different from read pointer
 	PageWrite(PageNumber(boreholeStatistics1.RecordCount));
 	boreholeStatistics1.RecordCount++;
@@ -830,23 +823,23 @@ U_INT16 PreviousHoleEndingRecordNumber(void)
 static FLASH_PAGE New_Hole_page;
 void Get_Save_NewHole_Info(void)
 {
-	strcpy(newHole_tracker1.BoreholeName, GetBoreholeName());
-	newHole_tracker1.StartingRecordNumber = GetRecordCount() - boreholeStatistics1.LastSurvey.nRecordNumber;
-	newHole_tracker1.EndingRecordNumber = GetRecordCount()-1;
-	newHole_tracker1.DefaultPipeLength = GetDefaultPipeLength();
-	newHole_tracker1.Declination = GetDeclination();
-	newHole_tracker1.DesiredAzimuth = GetDesiredAzimuth();
-	newHole_tracker1.Toolface = GetToolface();
-	if(newHole_tracker1.EndingRecordNumber)
-	newHole_tracker1.BoreholeNumber++;
-	if(newHole_tracker1.BoreholeNumber)
+	strcpy(newHole_tracker.BoreholeName, GetBoreholeName());
+	newHole_tracker.StartingRecordNumber = GetRecordCount() - boreholeStatistics.LastSurvey.nRecordNumber;
+	newHole_tracker.EndingRecordNumber = GetRecordCount()-1;
+	newHole_tracker.DefaultPipeLength = GetDefaultPipeLength();
+	newHole_tracker.Declination = GetDeclination();
+	newHole_tracker.DesiredAzimuth = GetDesiredAzimuth();
+	newHole_tracker.Toolface = GetToolface();
+	if(newHole_tracker.EndingRecordNumber)
+	newHole_tracker.BoreholeNumber++;
+	if(newHole_tracker.BoreholeNumber)
 	{
-		if(newHole_tracker1.BoreholeNumber % NEW_HOLE_RECORDS_PER_PAGE == 0 && newHole_tracker1.BoreholeNumber != 1)
+		if(newHole_tracker.BoreholeNumber % NEW_HOLE_RECORDS_PER_PAGE == 0 && newHole_tracker.BoreholeNumber != 1)
 		NewHole_Info_PageInit(&m_New_hole_info_WritePage);
-		memcpy(&m_New_hole_info_WritePage.NewHole_record[newHole_tracker1.BoreholeNumber % NEW_HOLE_RECORDS_PER_PAGE], &newHole_tracker1, sizeof(NEWHOLE_INFO));
+		memcpy(&m_New_hole_info_WritePage.NewHole_record[newHole_tracker.BoreholeNumber % NEW_HOLE_RECORDS_PER_PAGE], &newHole_tracker, sizeof(NEWHOLE_INFO));
 		memcpy(&New_Hole_page, m_New_hole_info_WritePage.NewHole_record, sizeof(m_New_hole_info_WritePage.NewHole_record));
-		FLASH_WritePage(&New_Hole_page, (newHole_tracker1.BoreholeNumber / NEW_HOLE_RECORDS_PER_PAGE));
-		//NewHole_Info_Read(&selectedNewHoleInfo, newHole_tracker1.BoreholeNumber);
+		FLASH_WritePage(&New_Hole_page, (newHole_tracker.BoreholeNumber / NEW_HOLE_RECORDS_PER_PAGE));
+		//NewHole_Info_Read(&selectedNewHoleInfo, newHole_tracker.BoreholeNumber);
 	}
 }
 
@@ -939,42 +932,6 @@ U_INT32 RECORD_GetBranchPointIndex(void)
 /*******************************************************************************
 *       Branch point is set
 *******************************************************************************/
-/* void RECORD_InitBranchParam(void)
-{
-    U_INT32 count;
-
-    // Calculate the index for the branch point
-    count = RECORD_GetBranchPointIndex();
-
-    // Read the previous and current survey records
-    RECORD_GetRecord(&boreholeStatistics1.PreviousSurvey, count - 1);
-    RECORD_GetRecord(&boreholeStatistics1.LastSurvey, count+1);
-
-    // Update the total Eastings, Northings, Depth, and Length
-    boreholeStatistics1.TotalEastings = boreholeStatistics1.LastSurvey.X;
-    boreholeStatistics1.TotalNorthings = boreholeStatistics1.LastSurvey.Y;
-    boreholeStatistics1.TotalDepth = boreholeStatistics1.LastSurvey.Z * 10;
-    boreholeStatistics1.TotalLength = boreholeStatistics1.LastSurvey.nTotalLength;
-
-    // Update branch-related fields
-    boreholeStatistics1.LastSurvey.NumOfBranch++;
-    boreholeStatistics1.LastSurvey.NextBranchLoc = boreholeStatistics1.RecordCount;
-
-    // Perform a read-modify-write of the flash page where the branch is set
-    memcpy(m_WritePage.records, m_ReadPage.records, sizeof(m_WritePage.records));
-    RecordWrite(&boreholeStatistics1.LastSurvey, count);
-    PageWrite(PageNumber(count));
-
-    // Update the StatusCode to indicate the branch point
-    boreholeStatistics1.LastSurvey.StatusCode += BranchStatusCode;
-    BranchSet = true;
-
-    // Restore the original content of the Write_Page because of partial filled pages
-    PageRead(PageNumber(boreholeStatistics1.RecordCount));
-    memcpy(m_WritePage.records, m_ReadPage.records, sizeof(m_WritePage.records));
-
-}
-*/
 void RECORD_InitBranchParam(void)
 {
     U_INT32 count;
