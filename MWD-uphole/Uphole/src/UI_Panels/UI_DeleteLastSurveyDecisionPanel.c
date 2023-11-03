@@ -174,32 +174,6 @@ static MENU_ITEM* DeleteLastSurvey_Decision_Menu(U_BYTE index)
 ********************************************************************************
 *       @details
 *******************************************************************************/
-/*
-static void Yes_DeleteLastSurvey_Decision(MENU_ITEM* item)
-{
-    if((GetLastRecordNumber() == RECORD_getSelectSurveyRecordNumber()) && (IsSurveyBranchFirstNode() == false) && (IsBranchSet() == false))
-    {
-        RECORD_StoreSelectSurvey(GetLastRecordNumber()-1);
-        RECORD_removeLastRecord();
-        RecordDataPanelInit();
-
-        SetLoggingState(DELETE_LAST_SURVEY_SUCCESS);
-    }
-    else
-    {
-        if (GetLastRecordNumber() > 1) {
-            RECORD_StoreSelectSurvey(GetLastRecordNumber()-2);
-        }
-        RECORD_removeLastRecord();
-        RecordDataPanelInit();
-        
-        SetLoggingState(DELETE_LAST_SURVEY_NOT_SUCCESS);
-    }
-    setDeleteLastSurveyDecisionPanelActive(false);
-    tCallDeleteLastSurvey = ElapsedTimeLowRes(0);
-    RepaintNow(&WindowFrame);
-}
-*/
 static void Yes_DeleteLastSurvey_Decision(MENU_ITEM* item)
 {
     STRUCT_RECORD_DATA lastRecoord;
@@ -207,7 +181,7 @@ static void Yes_DeleteLastSurvey_Decision(MENU_ITEM* item)
     if(GetLastRecordNumber() == RECORD_getSelectSurveyRecordNumber()) 
     {
         RECORD_GetRecord(&lastRecoord, GetLastRecordNumber());
-        if (lastRecoord.NumOfBranch != 0)
+        if (lastRecoord.NumOfBranch != 0 || lastRecoord.InvalidDataFlag == true)
         {
             // If the survey is a branch point, show the error panel and do not delete it.
             SetLoggingState(DELETE_LAST_SURVEY_NOT_SUCCESS);

@@ -229,7 +229,7 @@ void PCPORT_StateMachine(void)  // whs 26Jan2022 should be ThumbDrivePort
         case PCDT_STATE_SEND_LABELS1:
             if (ElapsedTimeLowRes(tPCDTGapTimer) >= PCDT_DELAY3) // Check for elapsed time before proceeding
             {
-                snprintf(nBuffer, 500, "BoreName, Rec#, PipeLength, Azimuth, Pitch, Roll, X, Y, "); // Prepare message with labels
+                snprintf(nBuffer, 500, "BoreName, Rec#, SurveyDepth, Azimuth, Pitch, Roll, X, Y, "); // Prepare message with labels
                 UART_SendMessage(CLIENT_PC_COMM, (U_BYTE const*)nBuffer, strlen(nBuffer)); // Send the message over UART
                 tPCDTGapTimer = ElapsedTimeLowRes((TIME_LR)0); // Reset timer
                 SendLogToPC_state = PCDT_STATE_SEND_LABELS2; // Move to next state

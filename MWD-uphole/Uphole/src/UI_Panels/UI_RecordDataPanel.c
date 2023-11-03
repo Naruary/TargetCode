@@ -164,7 +164,6 @@ static void RecordData_Paint(TAB_ENTRY* tab)
     RECT recordColumn, lengthColumn, azimuthColumn, pitchColumn, rollColumn;
     RECT gammaColumn, upDownColumn, leftRightColumn, distanceColumn;
     RECT* area = (RECT*)&WindowFrame.area;
-    INT16 previous_branch;
 
     RecordData_InitializeColumn(area, 0, 32, &recordColumn);
     // a square just to the right of the index
@@ -198,16 +197,12 @@ static void RecordData_Paint(TAB_ENTRY* tab)
     lastRecord = RecordOffset + NUM_ROWS;
     if (lastRecord > GetRecordCount())
     {
-        lastRecord = GetRecordCount();c
+        lastRecord = GetRecordCount();
     }
     if (RECORD_GetRefreshSurveys())
     {
         LoggingManager_StartUpload();
         RECORD_SetRefreshSurveys(false);
-    }
-    if (RECORD_GetRecord(&record, RecordOffset))
-    {
-        previous_branch = record.NumOfBranch;
     }
     for (loopy = RecordOffset; loopy < lastRecord; loopy++)
     {
@@ -241,70 +236,15 @@ static void RecordData_Paint(TAB_ENTRY* tab)
 
 
             // if this is a branch hole, mark it
-            if (previous_branch != record.NumOfBranch)
+            if (record.NumOfBranch != 0)
             {
                 snprintf(strValue, 100, "%dB", record.nRecordNumber - record.GammaShotNumCorrected); //record.nRecordNumber);
 
             }
-//			else
-//			{
-//				snprintf(strValue, 100, "%d", record.nRecordNumber);
-//			}
-
-/*
-///
-                        else if(m - n > 0) //m < 100 && m > 0)
-                        {
-//                                record.StatusCode -= 1;
-//                                m -= 1;
-                snprintf(strValue, 100, "%dG", record.nRecordNumber);
-                                //GammaIndicatorUsed = 1;
-                        }
-            else
+            else if (record.InvalidDataFlag == true)
             {
-                                //if(PipeCheckPrevious - PipeCheckCurrent == 0)
-                                //{
-                                //     snprintf(strValue, 100, "%dG", record.nRecordNumber);
-                                //}
-                                //else
-                                //{
-                snprintf(strValue, 100, "%d", record.nRecordNumber);
-                                //}
+                snprintf(strValue, 100, "%dS", record.nRecordNumber - record.GammaShotNumCorrected); //S for sidetrack
             }
-                        n = m;
-*/
-/*
-                        else if (record.nTotalLength - PipeCheckPrevious == 0)
-            {
-                                if (record.PreviousBranchLoc > 0)
-                                {
-                snprintf(strValue, 100, "%d", record.nRecordNumber);
-                                }
-                                else
-                                {
-                snprintf(strValue, 100, "%dG", record.nRecordNumber);
-                                }
-            }
-
-            else
-            {
-                snprintf(strValue, 100, "%d", record.nRecordNumber);
-            }
-                        }
-                        PipeCheckPrevious = record.nTotalLength;
-
-
-
-                        if(loopy == lastRecord - 1)
-                        {
-
-                        }
-                        else
-                        {
-                            PipeCheckPrevious = record.nTotalLength;
-                        }
-*/
-///
             else if (record.GammaShotLock == 1)
             {
                 snprintf(strValue, 100, "-G%d", record.nRecordNumber - record.GammaShotNumCorrected);
@@ -313,8 +253,6 @@ static void RecordData_Paint(TAB_ENTRY* tab)
             {
                 snprintf(strValue, 100, "%d", record.nRecordNumber - record.GammaShotNumCorrected);
             }
-
-            previous_branch = record.NumOfBranch;
             RecordData_DisplayColumn(strValue, &recordColumn);
             RecordData_IncrementColumn(&recordColumn);
             //	    RecordData_IncrementColumn(&markerBox);

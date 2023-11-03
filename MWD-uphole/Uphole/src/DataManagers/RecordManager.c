@@ -711,21 +711,7 @@ REAL32 RECORD_GetSelectSurveyDepth(void)
 void RECORD_removeLastRecord(void)
 {
     STRUCT_RECORD_DATA MostRecentSurvey;
-    STRUCT_RECORD_DATA ParentBranchSurvey;
     EASTING_NORTHING_DATA_STRUCT result;
-
-    if (boreholeStatistics1.LastSurvey.PreviousBranchLoc)
-    {
-        RECORD_GetRecord(&ParentBranchSurvey, boreholeStatistics1.LastSurvey.PreviousBranchLoc);
-        //The exact page specified by PreviousBranchLoc was read (We perform a read-modify-write of the flash page where the branch is set)
-        memcpy(m_WritePage.records, m_ReadPage.records, sizeof(m_WritePage.records));
-        ParentBranchSurvey.NextBranchLoc = 0;
-        ParentBranchSurvey.NumOfBranch = ParentBranchSurvey.NumOfBranch - 1;
-        RecordWrite(&ParentBranchSurvey, boreholeStatistics1.LastSurvey.PreviousBranchLoc);
-        PageWrite(PageNumber(boreholeStatistics1.LastSurvey.PreviousBranchLoc));
-        PageRead(PageNumber(boreholeStatistics1.RecordCount));
-        memcpy(m_WritePage.records, m_ReadPage.records, sizeof(m_WritePage.records));
-    }
 
     DetermineUpDownLeftRight(&boreholeStatistics1.LastSurvey, &boreholeStatistics1.PreviousSurvey, &result);
     boreholeStatistics1.TotalLength -= (boreholeStatistics1.LastSurvey.nTotalLength - boreholeStatistics1.PreviousSurvey.nTotalLength);  // corrected(what if pipe length was other than default?)
