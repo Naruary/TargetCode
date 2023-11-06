@@ -137,9 +137,9 @@ void DrawPositiveQuadSideGraph(INT16 X_max, INT16 X_min, INT16 Y_max, INT16 Y_mi
     for (int i = StartRecord; i < (lastRecord-1); i++)
     {
       RECORD_GetRecord(&next_record, i+1);
-      if(next_record.PreviousBranchLoc)
+      if(next_record.PreviousBranchRecordNum)
       {
-        RECORD_GetRecord(&current_record, next_record.PreviousBranchLoc);
+        RECORD_GetRecord(&current_record, next_record.PreviousBranchRecordNum);
       }
       PipeLengthCurrent = current_record.nTotalLength;
       PipeLengthNext = next_record.nTotalLength;
@@ -242,9 +242,9 @@ void DrawPositiveNegativeQuadSideGraph(INT16 X_max, INT16 X_min, INT16 Y_max, IN
     for (int i = StartRecord; i < (lastRecord-1); i++)
     {
       RECORD_GetRecord(&next_record, i+1);
-      if(next_record.PreviousBranchLoc)
+      if(next_record.PreviousBranchRecordNum)
       {
-        RECORD_GetRecord(&current_record, next_record.PreviousBranchLoc);
+        RECORD_GetRecord(&current_record, next_record.PreviousBranchRecordNum);
       }
       PipeLengthCurrent = current_record.nTotalLength;
       PipeLengthNext = next_record.nTotalLength;
@@ -344,9 +344,9 @@ void DrawNegativeQuadSideGraph(INT16 X_max, INT16 X_min, INT16 Y_max, INT16 Y_mi
     for (int i = StartRecord; i < (lastRecord-1); i++)
     {
       RECORD_GetRecord(&next_record, i+1);
-      if(next_record.PreviousBranchLoc)
+      if(next_record.PreviousBranchRecordNum)
       {
-        RECORD_GetRecord(&current_record, next_record.PreviousBranchLoc);
+        RECORD_GetRecord(&current_record, next_record.PreviousBranchRecordNum);
       }
       PipeLengthCurrent = current_record.nTotalLength;
       PipeLengthNext = next_record.nTotalLength;

@@ -42,8 +42,8 @@ typedef struct __STRUCT_RECORD_DATA__
     RTC_DateTypeDef date;
     INT16 StatusCode;
     INT16 NumOfBranch;
-    INT16 NextBranchLoc;
-    INT16 PreviousBranchLoc;
+    INT16 NextBranchRecordNum;
+    INT16 PreviousBranchRecordNum;
     INT16 GammaShotLock;
     INT16 GammaShotNumCorrected;
     BOOL InvalidDataFlag;
@@ -58,7 +58,7 @@ typedef struct _BOREHOLE_STATISTICS
     INT32 TotalDepth;
     REAL32 TotalNorthings;
     REAL32 TotalEastings;
-    STRUCT_RECORD_DATA LastSurvey;
+    STRUCT_RECORD_DATA MostRecentSurvey;
     STRUCT_RECORD_DATA PreviousSurvey;
     U_INT32 MergeIndex;
     BOOL recordRetrieved;

@@ -93,7 +93,7 @@ BOOL Calc_AveAngleMinCurve(EASTING_NORTHING_DATA_STRUCT *nResult,
     fBetavalue = (fWorking - fBetavalue); // beta = a - b
     fBetavalue = acos(fBetavalue); // beta = cos inverse (beta) // dog leg severity calculate as in Functional Specification
 
-    fWorking = ((2 / fBetavalue) * tan(fBetavalue / 2)); // ratio factor // Rf=(2/ß) * tan(ß/2) // as in Functional Specification
+    fWorking = ((2 / fBetavalue) * tan(fBetavalue / 2)); // ratio factor // Rf=(2/ï¿½) * tan(ï¿½/2) // as in Functional Specification
 
     // Equations given by steve verified with AMT data. These formulas have to sum the previous Up/Down, Left/Right, DT, but thats done in record manager, In function MergeRecordCommon(), boreholeStatistics maintains total Up/Down, Left/Right, Down track (DT)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -117,7 +117,10 @@ BOOL Calc_AveAngleMinCurve(EASTING_NORTHING_DATA_STRUCT *nResult,
     
     // Store Depth delta distance between surveys (Down track or Vertical section)
     nResult->fDepth = (REAL32)((fWorking * fHalfMeasuredDepth * (cos(nStarting->nAzimuth.fRad - ((GetDesiredAzimuth() * (3.14159265358979323846 / 180)) / 10.0)) * cos(nStarting->nInclination.fRad) + cos(nEnding->nAzimuth.fRad - ((GetDesiredAzimuth() * (3.14159265358979323846 / 180)) / 10.0)) * cos(nEnding->nInclination.fRad))))*100; // verify if divide by 10 is needed. Check if the stored desired angle is multipled by 10
-
+    if (nResult->fDepth < 0.0)
+    {
+        nResult->fDepth = 0.0;
+    }
     //DT = (REAL32)((fWorking * fHalfMeasuredDepth * (cos(nStarting->nAzimuth.fRad - ((GetDesiredAzimuth() * (3.14159265358979323846 / 180)) / 10.0)) * cos(nStarting->nInclination.fRad) + cos(nEnding->nAzimuth.fRad - ((GetDesiredAzimuth() * (3.14159265358979323846 / 180)) / 10.0)) * cos(nEnding->nInclination.fRad))))*100;
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

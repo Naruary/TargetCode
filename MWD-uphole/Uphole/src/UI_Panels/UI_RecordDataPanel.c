@@ -1,12 +1,12 @@
 /*******************************************************************************
-*       @brief      This file contains the implementation for the Record Data
-*                   Panel on the Data tab. It display the current hole data on the screen
-*       @file       Uphole/src/UI_Panels/UI_RecordDataPanel.c
-*       @date       July 2014
-*       @copyright  COPYRIGHT (c) 2014 Target Drilling Inc. All rights are
-*                   reserved.  Reproduction in whole or in part is prohibited
-*                   without the prior written consent of the copyright holder.
-*******************************************************************************/
+ *       @brief      This file contains the implementation for the Record Data
+ *                   Panel on the Data tab. It display the current hole data on the screen
+ *       @file       Uphole/src/UI_Panels/UI_RecordDataPanel.c
+ *       @date       July 2014
+ *       @copyright  COPYRIGHT (c) 2014 Target Drilling Inc. All rights are
+ *                   reserved.  Reproduction in whole or in part is prohibited
+ *                   without the prior written consent of the copyright holder.
+ *******************************************************************************/
 
 //============================================================================//
 //      INCLUDES                                                              //
@@ -33,29 +33,29 @@
 //      CONSTANTS                                                             //
 //============================================================================//
 
-#define NUM_ROWS    16
-#define ROW_HEIGHT  10
+#define NUM_ROWS 16
+#define ROW_HEIGHT 10
 
 //============================================================================//
 //      FUNCTION PROTOTYPES                                                   //
 //============================================================================//
 
 //   Initializes Columns for Record Data Panel
-void RecordData_InitializeColumn(RECT* frame, U_INT16 offset, U_INT16 width, RECT* area);
+void RecordData_InitializeColumn(RECT *frame, U_INT16 offset, U_INT16 width, RECT *area);
 //   Prepares next column
-static void RecordData_IncrementColumn(RECT* rect);
+static void RecordData_IncrementColumn(RECT *rect);
 //   Displays column and value on screen
-void RecordData_DisplayColumn(char* strValue, RECT* rect);
+void RecordData_DisplayColumn(char *strValue, RECT *rect);
 //   Displays column header
-void RecordData_DisplayColumnHeader(TXT_VALUES text, RECT* rect);
+void RecordData_DisplayColumnHeader(TXT_VALUES text, RECT *rect);
 //   Displays tab data onto screen
-static void RecordData_Paint(TAB_ENTRY* tab);
+static void RecordData_Paint(TAB_ENTRY *tab);
 //   Reveals tab on screen
-static void RecordData_Show(TAB_ENTRY* tab);
+static void RecordData_Show(TAB_ENTRY *tab);
 //   Determines if a key was pressed
-static void RecordData_KeyPressed(TAB_ENTRY* tab, BUTTON_VALUE key);
+static void RecordData_KeyPressed(TAB_ENTRY *tab, BUTTON_VALUE key);
 //   Record Data Timer
-static void RecordData_TimerElapsed(TAB_ENTRY* tab);
+static void RecordData_TimerElapsed(TAB_ENTRY *tab);
 //   Gets selected survey variable
 static U_INT32 RecordData_RetrieveSelectSurveyIndex(void);
 static REAL32 RealValue(INT16 value);
@@ -65,37 +65,33 @@ static REAL32 RealValue32(INT32 value);
 //============================================================================//
 
 static U_INT32 RecordOffset = 0;
-//static U_INT32 SavedRecordOffset = 0;
+// static U_INT32 SavedRecordOffset = 0;
 static U_INT32 surveySelect = 0;
 static U_INT32 HoleIndex = 1;
 static U_INT32 storedSurveyIndex = 0;
 static STRUCT_RECORD_DATA static_record;
 /// Used to keep track as record offset for screen display
-//static U_INT16 record_count;
-PANEL RecordDataPanel = { 0, 0, RecordData_Paint, RecordData_Show, RecordData_KeyPressed, RecordData_TimerElapsed };
-
-
-
+// static U_INT16 record_count;
+PANEL RecordDataPanel = {0, 0, RecordData_Paint, RecordData_Show, RecordData_KeyPressed, RecordData_TimerElapsed};
 
 INT16 m = 0, n = 0;
-
 
 //============================================================================//
 //      FUNCTION IMPLEMENTATIONS                                              //
 //============================================================================//
 
 /*******************************************************************************
-*       @details
-*******************************************************************************/
+ *       @details
+ *******************************************************************************/
 void RecordDataPanelInit(void)
 {
     if (InitNewHole_KeyPress())
     {
-        memset((void*)&static_record, 0, sizeof(static_record)); // get zeros
+        memset((void *)&static_record, 0, sizeof(static_record)); // get zeros
         RecordOffset = GetRecordCount();
         surveySelect = GetRecordCount();
         HoleIndex = 1;
-        //record_count=0;
+        // record_count=0;
     }
     else
     {
@@ -103,14 +99,14 @@ void RecordDataPanelInit(void)
         RecordOffset = GetRecordCount() - static_record.nRecordNumber;
         surveySelect = GetRecordCount() - static_record.nRecordNumber;
         HoleIndex = 1;
-        //record_count=0;
+        // record_count=0;
     }
 }
 
 /*******************************************************************************
-*       @details
-*******************************************************************************/
-void RecordData_InitializeColumn(RECT* frame, U_INT16 offset, U_INT16 width, RECT* area)
+ *       @details
+ *******************************************************************************/
+void RecordData_InitializeColumn(RECT *frame, U_INT16 offset, U_INT16 width, RECT *area)
 {
     area->ptTopLeft.nCol = frame->ptTopLeft.nCol + 1 + offset;
     area->ptTopLeft.nRow = frame->ptTopLeft.nRow + 2;
@@ -119,18 +115,18 @@ void RecordData_InitializeColumn(RECT* frame, U_INT16 offset, U_INT16 width, REC
 }
 
 /*******************************************************************************
-*       @details
-*******************************************************************************/
-static void RecordData_IncrementColumn(RECT* rect)
+ *       @details
+ *******************************************************************************/
+static void RecordData_IncrementColumn(RECT *rect)
 {
     rect->ptTopLeft.nRow += ROW_HEIGHT;
     rect->ptBottomRight.nRow = rect->ptTopLeft.nRow + ROW_HEIGHT;
 }
 
 /*******************************************************************************
-*       @details
-*******************************************************************************/
-void RecordData_DisplayColumn(char* strValue, RECT* rect)
+ *       @details
+ *******************************************************************************/
+void RecordData_DisplayColumn(char *strValue, RECT *rect)
 {
     UI_DisplayStringCentered(strValue, rect);
     if (surveySelect == HoleIndex && rect->ptTopLeft.nCol < 25)
@@ -141,18 +137,18 @@ void RecordData_DisplayColumn(char* strValue, RECT* rect)
 }
 
 /*******************************************************************************
-*       @details
-*******************************************************************************/
-void RecordData_DisplayColumnHeader(TXT_VALUES text, RECT* rect)
+ *       @details
+ *******************************************************************************/
+void RecordData_DisplayColumnHeader(TXT_VALUES text, RECT *rect)
 {
     UI_DisplayStringCentered(GetTxtString(text), rect);
     UI_InvertLCDArea(rect, LCD_FOREGROUND_PAGE);
 }
 
 /*******************************************************************************
-*       @details
-*******************************************************************************/
-static void RecordData_Paint(TAB_ENTRY* tab)
+ *       @details
+ *******************************************************************************/
+static void RecordData_Paint(TAB_ENTRY *tab)
 {
     static char strValue[100];
     STRUCT_RECORD_DATA record;
@@ -163,15 +159,15 @@ static void RecordData_Paint(TAB_ENTRY* tab)
     RECT markerBox;
     RECT recordColumn, lengthColumn, azimuthColumn, pitchColumn, rollColumn;
     RECT gammaColumn, upDownColumn, leftRightColumn, distanceColumn;
-    RECT* area = (RECT*)&WindowFrame.area;
+    RECT *area = (RECT *)&WindowFrame.area;
 
     RecordData_InitializeColumn(area, 0, 32, &recordColumn);
     // a square just to the right of the index
     RecordData_InitializeColumn(area, 17, 8, &markerBox);
     RecordData_InitializeColumn(area, 33, 34, &lengthColumn);
-    RecordData_InitializeColumn(area, 66, 35, &azimuthColumn); //67,40
-    RecordData_InitializeColumn(area, 102, 35, &pitchColumn); //108,40
-    RecordData_InitializeColumn(area, 138, 22, &rollColumn); //149,40
+    RecordData_InitializeColumn(area, 66, 35, &azimuthColumn); // 67,40
+    RecordData_InitializeColumn(area, 102, 35, &pitchColumn);  // 108,40
+    RecordData_InitializeColumn(area, 138, 22, &rollColumn);   // 149,40
     RecordData_InitializeColumn(area, 161, 22, &gammaColumn);
     RecordData_InitializeColumn(area, 184, 42, &distanceColumn);
     RecordData_InitializeColumn(area, 227, 42, &leftRightColumn);
@@ -207,43 +203,24 @@ static void RecordData_Paint(TAB_ENTRY* tab)
     for (loopy = RecordOffset; loopy < lastRecord; loopy++)
     {
         // condition to take care that records from previous holes dont show up
-        //after all records from the current hole are deleted
+        // after all records from the current hole are deleted
         if (loopy <= PreviousHoleEndingRecordNumber())
         {
             break;
         }
         if (RECORD_GetRecord(&record, loopy))
         {
-//			commented to show all data after branch as requested by steve, Mat May 2016
-//			if(i > GetLastRecordNumber()+PreviousHoleEndingRecordNumber())
-//			{
-//				continue;
-//			}
             HoleIndex = loopy;
-
-
-///
             m = record.StatusCode % 10;
-//                        if(GammaIndicatorUsed == 1)
-            {
-//                            m -= 1;
-            }
-//                        if(loopy == lastRecord - 1)
-            {
-//                            m -= 1;
-            }
-///
-
 
             // if this is a branch hole, mark it
             if (record.NumOfBranch != 0)
             {
-                snprintf(strValue, 100, "%dB", record.nRecordNumber - record.GammaShotNumCorrected); //record.nRecordNumber);
-
+                snprintf(strValue, 100, "%dB", record.nRecordNumber - record.GammaShotNumCorrected); // record.nRecordNumber);
             }
             else if (record.InvalidDataFlag == true)
             {
-                snprintf(strValue, 100, "%dS", record.nRecordNumber - record.GammaShotNumCorrected); //S for sidetrack
+                snprintf(strValue, 100, "%dS", record.nRecordNumber - record.GammaShotNumCorrected); // S for sidetrack
             }
             else if (record.GammaShotLock == 1)
             {
@@ -255,20 +232,9 @@ static void RecordData_Paint(TAB_ENTRY* tab)
             }
             RecordData_DisplayColumn(strValue, &recordColumn);
             RecordData_IncrementColumn(&recordColumn);
-            //	    RecordData_IncrementColumn(&markerBox);
-            if (0)
-//			if (GetDefaultPipeLength() % 10)
-            {
-                snprintf(strValue, 100, "%5.1f", (double)(record.nTotalLength / 10.));
-                RecordData_DisplayColumn(strValue, &lengthColumn);
-                RecordData_IncrementColumn(&lengthColumn);
-            }
-            else
-            {
-                snprintf(strValue, 100, "%d", record.nTotalLength);/// 10);
-                RecordData_DisplayColumn(strValue, &lengthColumn);
-                RecordData_IncrementColumn(&lengthColumn);
-            }
+            snprintf(strValue, 100, "%d", record.nTotalLength); /// 10);
+            RecordData_DisplayColumn(strValue, &lengthColumn);
+            RecordData_IncrementColumn(&lengthColumn);
             snprintf(strValue, 100, "%4.1f", RealValue(record.nAzimuth));
             RecordData_DisplayColumn(strValue, &azimuthColumn);
             RecordData_IncrementColumn(&azimuthColumn);
@@ -293,37 +259,21 @@ static void RecordData_Paint(TAB_ENTRY* tab)
             RecordData_DisplayColumn(strValue, &upDownColumn);
             RecordData_IncrementColumn(&upDownColumn);
         }
-//		commented to show all data after branch as requested by steve, Mat May 2016
-//		if(record.NumOfBranch)
-//		{
-//			lastRecord = lastRecord + (record.NextBranchLoc - i) - 1;
-//			if (lastRecord > GetRecordCount())
-//			{
-//				lastRecord = GetRecordCount();
-//			}
-//			i = record.NextBranchLoc-1;
-//		}
         TotalLength = GetLastLength();
         RecordNumber = static_record.nRecordNumber;
     }
     snprintf(strValue, 100, "%s: Tot Surv=%d / Tot Len=%.0f",
-        GetBoreholeName(),
-        RecordNumber,
-        TotalLength);
-/*	snprintf(strValue, 100, "%s: %s=%d / %s=%.0f",
-        GetBoreholeName(),
-        GetTxtString(TXT_TOTAL_SURVEYS),
-        RecordNumber,
-        GetTxtString(TXT_TOTAL_LENGTH),
-        TotalLength);*/
+             GetBoreholeName(),
+             RecordNumber,
+             TotalLength);
     RecordData_Show(tab);
     TabWindowPaint(tab);
     ShowStatusMessage(strValue);
 }
 
 /*******************************************************************************
-*       @details
-*******************************************************************************/
+ *       @details
+ *******************************************************************************/
 static REAL32 RealValue(INT16 value)
 {
     return (REAL32)(value / 10.);
@@ -335,9 +285,9 @@ static REAL32 RealValue32(INT32 value)
 }
 
 /*******************************************************************************
-*       @details
-*******************************************************************************/
-static void RecordData_Show(TAB_ENTRY* tab)
+ *       @details
+ *******************************************************************************/
+static void RecordData_Show(TAB_ENTRY *tab)
 {
     UI_SetActiveFrame(tab->frame);
     SetActiveLabelFrame(NO_FRAME);
@@ -345,22 +295,113 @@ static void RecordData_Show(TAB_ENTRY* tab)
 }
 
 /*******************************************************************************
-*       @details
-*******************************************************************************/
-void RecordData_KeyPressed(TAB_ENTRY* tab, BUTTON_VALUE key)
+ *       @details
+ *******************************************************************************/
+void RecordData_KeyPressed(TAB_ENTRY *tab, BUTTON_VALUE key)
 {
     STRUCT_RECORD_DATA record;
 
     switch (key)
     {
-        case BUTTON_UP:
-            RecordOffset = surveySelect;
+    case BUTTON_UP:
+        RecordOffset = surveySelect;
+        if (RecordOffset > (GetRecordCount() - static_record.nRecordNumber))
+        {
+            RECORD_GetRecord(&record, RecordOffset);
+            if (record.PreviousBranchRecordNum)
+            {
+                RecordOffset = record.PreviousBranchRecordNum;
+            }
+            else
+            {
+                RecordOffset--;
+            }
+        }
+        if (surveySelect > (GetRecordCount() - static_record.nRecordNumber))
+        {
+            RECORD_GetRecord(&record, surveySelect);
+            if (record.PreviousBranchRecordNum)
+            {
+                surveySelect = record.PreviousBranchRecordNum;
+            }
+            else
+            {
+                surveySelect--;
+            }
+        }
+        RepaintNow(&WindowFrame);
+        n = record.StatusCode % 10;
+        if (GetRecordCount() - static_record.nRecordNumber == surveySelect)
+        {
+            n = 0;
+        }
+        break;
+    case BUTTON_DOWN:
+        RecordOffset = surveySelect;
+        if (surveySelect < (GetRecordCount() - 1))
+        {
+            if (surveySelect < GetLastRecordNumber() + PreviousHoleEndingRecordNumber())
+            {
+                RECORD_GetRecord(&record, surveySelect);
+                surveySelect++;
+                if (record.NumOfBranch)
+                {
+                    surveySelect = record.NextBranchRecordNum;
+                }
+                RECORD_GetRecord(&record, RecordOffset);
+                if (record.NumOfBranch)
+                {
+                    RecordOffset = record.NextBranchRecordNum;
+                }
+                else
+                {
+                    RecordOffset++;
+                }
+            }
+        }
+        RepaintNow(&WindowFrame);
+        n = record.StatusCode % 10;
+        break;
+    case BUTTON_ONE:
+        RecordOffset = surveySelect;
+        for (int page_record = 0; page_record < GetRecordCount() - 1; page_record++)
+        {
+            if (surveySelect < (GetRecordCount() - 1))
+            {
+                if (surveySelect < GetLastRecordNumber() + PreviousHoleEndingRecordNumber())
+                {
+                    // RecordOffset = surveySelect;
+                    RECORD_GetRecord(&record, surveySelect);
+                    surveySelect++;
+                    if (record.NumOfBranch)
+                    {
+                        surveySelect = record.NextBranchRecordNum;
+                    }
+                    RECORD_GetRecord(&record, RecordOffset);
+                    if (record.NumOfBranch)
+                    {
+                        RecordOffset = record.NextBranchRecordNum;
+                    }
+                    else
+                    {
+                        RecordOffset++;
+                    }
+                }
+            }
+            RepaintNow(&WindowFrame);
+        }
+        n = llabs(record.StatusCode % 10);
+        break;
+    case BUTTON_TWO:
+        RecordOffset = surveySelect;
+        for (int page_record = 0; page_record < 10; page_record++)
+        {
             if (RecordOffset > (GetRecordCount() - static_record.nRecordNumber))
             {
                 RECORD_GetRecord(&record, RecordOffset);
-                if (record.PreviousBranchLoc)
+                if (record.PreviousBranchRecordNum)
                 {
-                    RecordOffset = record.PreviousBranchLoc;
+                    RecordOffset = record.PreviousBranchRecordNum;
                 }
                 else
                 {
@@ -370,9 +411,9 @@ void RecordData_KeyPressed(TAB_ENTRY* tab, BUTTON_VALUE key)
             if (surveySelect > (GetRecordCount() - static_record.nRecordNumber))
             {
                 RECORD_GetRecord(&record, surveySelect);
-                if (record.PreviousBranchLoc)
+                if (record.PreviousBranchRecordNum)
                 {
-                    surveySelect = record.PreviousBranchLoc;
+                    surveySelect = record.PreviousBranchRecordNum;
                 }
                 else
                 {
@@ -380,184 +421,92 @@ void RecordData_KeyPressed(TAB_ENTRY* tab, BUTTON_VALUE key)
                 }
             }
             RepaintNow(&WindowFrame);
-            n = record.StatusCode % 10;
-            if (GetRecordCount() - static_record.nRecordNumber == surveySelect)
-            {
-                n = 0;
-            }
-            break;
-        case BUTTON_DOWN:
-            RecordOffset = surveySelect;
-            if (surveySelect < (GetRecordCount() - 1))
-            {
-                if (surveySelect < GetLastRecordNumber() + PreviousHoleEndingRecordNumber())
-                {
-                    RECORD_GetRecord(&record, surveySelect);
-                    surveySelect++;
-                    if (record.NumOfBranch)
-                    {
-                        surveySelect = record.NextBranchLoc;
-                    }
-                    RECORD_GetRecord(&record, RecordOffset);
-                    if (record.NumOfBranch)
-                    {
-                        RecordOffset = record.NextBranchLoc;
-                    }
-                    else
-                    {
-                        RecordOffset++;
-                    }
-                }
-            }
-            RepaintNow(&WindowFrame);
-            n = record.StatusCode % 10;
-            break;
-        case BUTTON_ONE:
-            RecordOffset = surveySelect;
-            for (int page_record = 0; page_record < GetRecordCount() - 1; page_record++)
-            {
-                if (surveySelect < (GetRecordCount() - 1))
-                {
-                    if (surveySelect < GetLastRecordNumber() + PreviousHoleEndingRecordNumber())
-                    {
-                        //RecordOffset = surveySelect;
-                        RECORD_GetRecord(&record, surveySelect);
-                        surveySelect++;
-                        if (record.NumOfBranch)
-                        {
-                            surveySelect = record.NextBranchLoc;
-                        }
-                        RECORD_GetRecord(&record, RecordOffset);
-                        if (record.NumOfBranch)
-                        {
-                            RecordOffset = record.NextBranchLoc;
-                        }
-                        else
-                        {
-                            RecordOffset++;
-                        }
-                    }
-                }
-                RepaintNow(&WindowFrame);
-            }
-            n = llabs(record.StatusCode % 10);
-            break;
-        case BUTTON_TWO:
-            RecordOffset = surveySelect;
-            for (int page_record = 0; page_record < 10; page_record++)
-            {
-                if (RecordOffset > (GetRecordCount() - static_record.nRecordNumber))
-                {
-                    RECORD_GetRecord(&record, RecordOffset);
-                    if (record.PreviousBranchLoc)
-                    {
-                        RecordOffset = record.PreviousBranchLoc;
-                    }
-                    else
-                    {
-                        RecordOffset--;
-                    }
-                }
-                if (surveySelect > (GetRecordCount() - static_record.nRecordNumber))
-                {
-                    RECORD_GetRecord(&record, surveySelect);
-                    if (record.PreviousBranchLoc)
-                    {
-                        surveySelect = record.PreviousBranchLoc;
-                    }
-                    else
-                    {
-                        surveySelect--;
-                    }
-                }
-                RepaintNow(&WindowFrame);
-            }
-            break;
-        case BUTTON_THREE:
-            for (int page_record = 0; page_record < 10; page_record++)
-            {
-                if (RecordOffset < GetLastRecordNumber() + PreviousHoleEndingRecordNumber())
-                {
-                    RECORD_GetRecord(&record, RecordOffset);
-                    RecordOffset++;
-                }
-                RepaintNow(&WindowFrame);
-            }
-            break;
-        case BUTTON_FOUR:
-            for (int page_record = 0; page_record < 10; page_record++)
-            {
-                if (RecordOffset > (GetRecordCount() - static_record.nRecordNumber))
-                {
-                    RECORD_GetRecord(&record, RecordOffset);
-                    RecordOffset--;
-                }
-                RepaintNow(&WindowFrame);
-            }
-            break;
-        case BUTTON_DASH:
-            LoggingManager_StartUpload();
-            RepaintNow(&WindowFrame);
-            break;
-        case BUTTON_SELECT:
-            RECORD_StoreSelectSurvey(RecordData_RetrieveSelectSurveyIndex());
-            setSurveyEditPanelActive(true);
-            RepaintNow(&WindowFrame);
-            break;
-        case BUTTON_SHIFT:
-            RECORD_StoreSelectSurvey(RecordData_RetrieveSelectSurveyIndex());
-            setSurveyEditPanelActive(true);
-            RepaintNow(&WindowFrame);
-            break;
-        default:
-        {
-            // To fix the buzzer being continuously ON, since All Keypad key
-            // operations are not defined,
-            SetAllowKeypadActions(false);
-            PERIODIC_EVENT event;
-            event.Action.eFrameID = TAB2;
-            event.Action.eActionType = PUSH;
-            //      event.Action.eButtonType = KEYPAD;
-            //      event.Action.eDepressType = SHORT_DEPRESS;
-            event.Action.nValue = key;
-            event.tTriggerTime = TRIGGER_TIME_NOW;
-            AddPeriodicEvent(&event);
-            // To fix the buzzer being continuously ON
-            SetAllowKeypadActions(true);
         }
         break;
+    case BUTTON_THREE:
+        for (int page_record = 0; page_record < 10; page_record++)
+        {
+            if (RecordOffset < GetLastRecordNumber() + PreviousHoleEndingRecordNumber())
+            {
+                RECORD_GetRecord(&record, RecordOffset);
+                RecordOffset++;
+            }
+            RepaintNow(&WindowFrame);
+        }
+        break;
+    case BUTTON_FOUR:
+        for (int page_record = 0; page_record < 10; page_record++)
+        {
+            if (RecordOffset > (GetRecordCount() - static_record.nRecordNumber))
+            {
+                RECORD_GetRecord(&record, RecordOffset);
+                RecordOffset--;
+            }
+            RepaintNow(&WindowFrame);
+        }
+        break;
+    case BUTTON_DASH:
+        LoggingManager_StartUpload();
+        RepaintNow(&WindowFrame);
+        break;
+    case BUTTON_SELECT:
+        RECORD_StoreSelectSurvey(RecordData_RetrieveSelectSurveyIndex());
+        setSurveyEditPanelActive(true);
+        RepaintNow(&WindowFrame);
+        break;
+    case BUTTON_SHIFT:
+        RECORD_StoreSelectSurvey(RecordData_RetrieveSelectSurveyIndex());
+        setSurveyEditPanelActive(true);
+        RepaintNow(&WindowFrame);
+        break;
+    default:
+    {
+        // To fix the buzzer being continuously ON, since All Keypad key
+        // operations are not defined,
+        SetAllowKeypadActions(false);
+        PERIODIC_EVENT event;
+        event.Action.eFrameID = TAB2;
+        event.Action.eActionType = PUSH;
+        //      event.Action.eButtonType = KEYPAD;
+        //      event.Action.eDepressType = SHORT_DEPRESS;
+        event.Action.nValue = key;
+        event.tTriggerTime = TRIGGER_TIME_NOW;
+        AddPeriodicEvent(&event);
+        // To fix the buzzer being continuously ON
+        SetAllowKeypadActions(true);
+    }
+    break;
     }
 }
 
 /*******************************************************************************
-*       @details
-*******************************************************************************/
-static void RecordData_TimerElapsed(TAB_ENTRY* tab)
+ *       @details
+ *******************************************************************************/
+static void RecordData_TimerElapsed(TAB_ENTRY *tab)
 {
-//	RepaintNow(&WindowFrame);
+    //	RepaintNow(&WindowFrame);
 }
 
 /*******************************************************************************
-*       @details
-*******************************************************************************/
+ *       @details
+ *******************************************************************************/
 void RecordData_StoreSelectSurveyIndex(U_INT32 index)
 {
     storedSurveyIndex = index;
 }
 
 /*******************************************************************************
-*       @details
-*******************************************************************************/
+ *       @details
+ *******************************************************************************/
 static U_INT32 RecordData_RetrieveSelectSurveyIndex(void)
 {
     return storedSurveyIndex;
 }
 
 /*******************************************************************************
-*       @details
-*******************************************************************************/
+ *       @details
+ *******************************************************************************/
 U_INT16 GetStartRecordNumber(void)
 {
     return static_record.nRecordNumber;
 }
-
