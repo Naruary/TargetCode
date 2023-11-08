@@ -88,7 +88,7 @@ typedef enum
 {
     PCDT_STATE_IDLE, PCDT_STATE_SEND_INTRO, PCDT_STATE_SEND_LABELS1,
     PCDT_STATE_SEND_LABELS2, PCDT_STATE_SEND_LABELS3, PCDT_STATE_GET_RECORD,
-    PCDT_STATE_SEND_LOG1, PCDT_STATE_SEND_LOG2, PCDT_STATE_SEND_LOG3,
+    PCDT_STATE_SEND_LOG1, PCDT_STATE_SEND_LOG2, PCDT_STATE_SEND_LOG3, PCDT_STATE_SEND_LOG3B,
     PCDT_STATE_SEND_LOG4, UnmountUSB, Holdon
 } PCDT_states;
 static PCDT_states SendLogToPC_state = PCDT_STATE_IDLE;
@@ -360,7 +360,7 @@ void PCPORT_StateMachine(void)  // whs 26Jan2022 should be ThumbDrivePort
         case PCDT_STATE_SEND_LOG3:
             if (ElapsedTimeLowRes(tPCDTGapTimer) >= PCDT_DELAY2) // Check if enough time has elapsed based on the low-res timer
             {
-                snprintf(nBuffer, 1000, "%d, %d, %d, %d, %d, %d, %d, %d, %d\n\r", // Create the message for the second part of the log data
+                snprintf(nBuffer, 1000, "%d, %d, %d, %d, %d, %d, %d, %d, %d, ", // Create the message for the second part of the log data
                     record.date.RTC_Date,                   // 14
                     record.date.RTC_Year,                   // 15
                     HoleInfoRecord.DefaultPipeLength,       // 16
@@ -370,6 +370,26 @@ void PCPORT_StateMachine(void)  // whs 26Jan2022 should be ThumbDrivePort
                     record.StatusCode,                      // 20
                     record.NumOfBranch,                     // 21
                     HoleInfoRecord.BoreholeNumber);         // 22
+                UART_SendMessage(CLIENT_PC_COMM, (U_BYTE const*)nBuffer, strlen(nBuffer)); // Send the message via UART
+                tPCDTGapTimer = ElapsedTimeLowRes((TIME_LR)0); // Reset the timer
+                SendLogToPC_state = PCDT_STATE_SEND_LOG3B; // Move to the next state for sending the fourth part of the log data
+            }
+            break;
+
+          // State for sending the Third-part2 set of log data
+        case PCDT_STATE_SEND_LOG3B:
+            if (ElapsedTimeLowRes(tPCDTGapTimer) >= PCDT_DELAY2) // Check if enough time has elapsed based on the low-res timer
+            {
+                snprintf(nBuffer, 1000, "%d, %d, %d, %d, %d, %d, %d, %d, %d\n\r", // Create the message for the second part of the log data
+                    record.nTemperature,                                                   // 23
+                    record.nGTF,                                                           // 24
+                    record.NextBranchRecordNum,                                            // 25
+                    record.PreviousBranchRecordNum,                                        // 26
+                    record.PreviousRecordIndex,                                            // 27
+                    record.GammaShotLock,                                                  // 28
+                    record.GammaShotNumCorrected,                                          // 29
+                    record.InvalidDataFlag,                                                // 30
+                    record.branchWasSet);                                                  // 31
                 UART_SendMessage(CLIENT_PC_COMM, (U_BYTE const*)nBuffer, strlen(nBuffer)); // Send the message via UART
                 tPCDTGapTimer = ElapsedTimeLowRes((TIME_LR)0); // Reset the timer
                 SendLogToPC_state = PCDT_STATE_SEND_LOG4; // Move to the next state for sending the fourth part of the log data
@@ -534,10 +554,40 @@ void ProcessCsvLine(char* line)
     token = strtok(NULL, ",");                          // 21
     sscanf(token, "%d", (int*)(&record.NumOfBranch));
 
-    // throw the next one awayt
+    // throw the next one away
     token = strtok(NULL, ",");                          // 22
-    //RECORD_SetRecord(&record);
+
+    token = strtok(NULL, ",");                          // 23
+    sscanf(token, "%d", (int*)&record.nTemperature);
+
+    token = strtok(NULL, ",");                          // 24
+    sscanf(token, "%d", (int*)&record.nGTF);
+
+    token = strtok(NULL, ",");                          // 25
+    sscanf(token, "%d", (int*)&record.NextBranchRecordNum);
+
+    token = strtok(NULL, ",");                          // 26
+    sscanf(token, "%d", (int*)&record.PreviousBranchRecordNum);
+
+    token = strtok(NULL, ",");                          // 27
+    sscanf(token, "%d", (int*)&record.PreviousRecordIndex);
+
+    token = strtok(NULL, ",");                          // 28
+    sscanf(token, "%d", (int*)&record.GammaShotLock);
+
+    token = strtok(NULL, ",");                          // 29
+    sscanf(token, "%d", (int*)&record.GammaShotNumCorrected);
+
+    INT16 nTemp;
+    token = strtok(NULL, ",");                          // 30
+    sscanf(token, "%d", (int*)&nTemp);
+    record.InvalidDataFlag = nTemp > 0,true, false;
+
+    token = strtok(NULL, ",");                          // 31
+    sscanf(token, "%d", (int*)&nTemp);
+    record.branchWasSet = nTemp > 0,true, false;
+
     RECORD_TakeSurveyMWD();
-	SetLoggingState(SURVEY_REQUEST_SUCCESS);
-	RECORD_MergeRecordMWD(&record);
+    SetLoggingState(SURVEY_REQUEST_SUCCESS);
+    RECORD_MergeRecordMWD(&record);
 }
