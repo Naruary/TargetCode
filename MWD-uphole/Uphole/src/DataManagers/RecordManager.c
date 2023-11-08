@@ -374,12 +374,10 @@ void RECORD_TakeSurveyMWD(void)
     U_INT32 nRecordNumberTemp;
 
     nRecordNumberTemp = GetRecordCount() - newHole_tracker1.EndingRecordNumber - 1;
-    if (!IsBranchSet())
-    {
-        memcpy(&boreholeStats.PreviousSurvey, &boreholeStats.MostRecentSurvey, sizeof(STRUCT_RECORD_DATA));
-    }
-    
+    memcpy(&boreholeStats.PreviousSurvey, &boreholeStats.MostRecentSurvey, sizeof(STRUCT_RECORD_DATA));
+
     RecordInit(&boreholeStats.MostRecentSurvey);
+    boreholeStats.MostRecentSurvey.PreviousRecordIndex = boreholeStats.PreviousSurvey.nRecordNumber;
     boreholeStats.MostRecentSurvey.tSurveyTimeStamp = (TIME_RT)RTC_GetSeconds();
     RTC_GetDate(RTC_Format_BIN, &boreholeStats.MostRecentSurvey.date);
     if (boreholeStats.MostRecentSurvey.date.RTC_Date == 0 || boreholeStats.MostRecentSurvey.date.RTC_Month == 0 || boreholeStats.MostRecentSurvey.date.RTC_WeekDay == 0 || boreholeStats.MostRecentSurvey.date.RTC_Year == 0)
@@ -392,6 +390,7 @@ void RECORD_TakeSurveyMWD(void)
     boreholeStats.MostRecentSurvey.StatusCode = boreholeStats.PreviousSurvey.StatusCode;
     if (IsBranchSet())
     {
+        boreholeStats.MostRecentSurvey.branchWasSet = true;
         boreholeStats.MostRecentSurvey.PreviousBranchRecordNum = boreholeStats.PreviousSurvey.nRecordNumber + newHole_tracker1.EndingRecordNumber;
         BranchSet = false;
     }
@@ -722,6 +721,11 @@ void RECORD_removeLastRecord(void)
     STRUCT_RECORD_DATA survey;
     EASTING_NORTHING_DATA_STRUCT result;
 
+    if (boreholeStats.MostRecentSurvey.branchWasSet)
+    {
+        BranchSet = true;
+    }
+
     DetermineUpDownLeftRight(&boreholeStats.MostRecentSurvey, &boreholeStats.PreviousSurvey, &result);
     boreholeStats.TotalLength -= (boreholeStats.MostRecentSurvey.nTotalLength - boreholeStats.PreviousSurvey.nTotalLength);  // corrected(what if pipe length was other than default?)
     boreholeStats.TotalNorthings -= result.fNorthing;
@@ -731,15 +735,10 @@ void RECORD_removeLastRecord(void)
 
     RecordInit(&survey);
     memcpy(&m_WritePage.records[PageOffset(boreholeStats.RecordCount--)], &survey, sizeof(STRUCT_RECORD_DATA));
-    RECORD_GetRecord(&survey, GetRecordCount() - 1);
+    RECORD_GetRecord(&survey, boreholeStats.MostRecentSurvey.PreviousRecordIndex);
     memcpy(&boreholeStats.MostRecentSurvey, &survey, sizeof(STRUCT_RECORD_DATA));
-    RECORD_GetRecord(&survey, GetRecordCount() - 2);
-
-    /* Don't overwrite if the previous survey is a branch */
-    if (!survey.NumOfBranch)
-    {
-        memcpy(&boreholeStats.PreviousSurvey, &survey, sizeof(STRUCT_RECORD_DATA));
-    }
+    RECORD_GetRecord(&survey, boreholeStats.MostRecentSurvey.PreviousRecordIndex);
+    memcpy(&boreholeStats.PreviousSurvey, &survey, sizeof(STRUCT_RECORD_DATA));
 
 
     if (nNewHoleRecordCount)
@@ -928,8 +927,10 @@ void RECORD_InitBranchParam(void)
     STRUCT_RECORD_DATA tempSurvey;
     RECORD_GetRecord(&branchSurvey, branchIndex);
 
+
     // Read the previous survey record
-    RECORD_GetRecord(&boreholeStats.PreviousSurvey, branchIndex);
+    RECORD_GetRecord(&boreholeStats.MostRecentSurvey, branchIndex);
+    RECORD_GetRecord(&boreholeStats.PreviousSurvey, boreholeStats.MostRecentSurvey.PreviousRecordIndex);
 
     // Update the total Eastings, Northings, Depth, and Length
     boreholeStats.TotalEastings = branchSurvey.X;

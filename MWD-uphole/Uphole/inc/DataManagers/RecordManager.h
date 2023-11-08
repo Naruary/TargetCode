@@ -44,9 +44,11 @@ typedef struct __STRUCT_RECORD_DATA__
     INT16 NumOfBranch;
     INT16 NextBranchRecordNum;
     INT16 PreviousBranchRecordNum;
+    INT16 PreviousRecordIndex;
     INT16 GammaShotLock;
     INT16 GammaShotNumCorrected;
     BOOL InvalidDataFlag;
+    BOOL branchWasSet;
 } STRUCT_RECORD_DATA;
 
 // a struct to hold info about the borehole
