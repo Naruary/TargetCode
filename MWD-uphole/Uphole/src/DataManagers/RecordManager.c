@@ -1021,3 +1021,29 @@ U_INT16 CurrentBoreholeNumber(void)
 
     return(newHole_tracker1.BoreholeNumber);
 }
+
+void GetBoreholeStats(BOREHOLE_STATISTICS* stats)
+{
+    stats->TotalDepth = boreholeStats.TotalDepth;
+    stats->TotalLength = boreholeStats.TotalLength;
+    stats->TotalNorthings = boreholeStats.TotalNorthings;
+    stats->TotalEastings = boreholeStats.TotalEastings;
+}
+
+void SetBoreholeStats(BOREHOLE_STATISTICS* stats)
+{
+    boreholeStats.TotalDepth = stats->TotalDepth;
+    boreholeStats.TotalLength = stats->TotalLength;
+    boreholeStats.TotalEastings = stats->TotalEastings;
+    boreholeStats.TotalNorthings = stats->TotalNorthings;
+}
+
+void StoreUploadedRecord(STRUCT_RECORD_DATA* record)
+{
+    memcpy(&boreholeStats.PreviousSurvey, &boreholeStats.MostRecentSurvey, sizeof(STRUCT_RECORD_DATA));
+    memcpy(&boreholeStats.MostRecentSurvey, record, sizeof(STRUCT_RECORD_DATA));
+    RecordWrite(record, boreholeStats.RecordCount);
+    PageWrite(PageNumber(boreholeStats.RecordCount));
+    boreholeStats.RecordCount++;
+    ++nNewHoleRecordCount;
+}

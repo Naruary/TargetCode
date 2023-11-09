@@ -188,6 +188,11 @@ extern "C" {
     void Get_Hole_Info_To_PC(void);
     extern volatile BOOL USBDownloadFlag;
     void RECORD_removeLastRecord(void);
+    void StoreUploadedRecord(STRUCT_RECORD_DATA* record);
+    void GetBoreholeStats(BOREHOLE_STATISTICS* stats);
+    void SetBoreholeStats(BOREHOLE_STATISTICS* stats);
+
+
 
 
 #ifdef __cplusplus
