@@ -3,5 +3,39 @@
     // Hover to view descriptions of existing attributes.
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
-    "configurations": []
+    "configurations": [
+        {
+            "type": "cspy",
+            "request": "launch",
+            "name": "Launch: UpHole.Uphole",
+            "target": "arm",
+            "program": "${workspaceFolder}\\Uphole\\Exe\\BDL_Uphole.out",
+            "driver": "J-Link/J-Trace",
+            "stopOnSymbol": "main",
+            "workbenchPath": "${command:iar-config.toolchain}",
+            "projectPath": "${workspaceFolder}\\Uphole\\UpHole.ewp",
+            "projectConfiguration": "Uphole",
+            "driverOptions": [
+                "--crun=disabled",
+                "--endian=little",
+                "--cpu=Cortex-M4",
+                "--fpu=VFPv4_SP",
+                "-p",
+                "$TOOLKIT_DIR$\\CONFIG\\debugger\\ST\\STM32F405VG.ddf",
+                "--semihosting",
+                "--device=STM32F405VG",
+                "--drv_communication=USB0",
+                "--drv_interface_speed=auto",
+                "--jlink_initial_speed=1000",
+                "--jlink_reset_strategy=0,0",
+                "--drv_catch_exceptions=0x000",
+                "--drv_swo_clock_setup=168000000,0,2000000"
+            ],
+            "download": {
+                "deviceMacros": [
+                    "$TOOLKIT_DIR$\\config\\debugger\\ST\\STM32F4xx.dmac"
+                ]
+            }
+        }
+    ]
 }
