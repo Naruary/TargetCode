@@ -191,10 +191,7 @@ INT16 GetDesiredAzimuth(void)
 *******************************************************************************/
 void SetDesiredAzimuth(INT16 value)
 {
-//	if(NVRAM_data.LoggingBranchSet == true || InitNewHole_KeyPress() == 1)
-//	{
 		NVRAM_data.nDesiredAzimuth = value;
-//	}
 }
 /*******************************************************************************
 *       @details

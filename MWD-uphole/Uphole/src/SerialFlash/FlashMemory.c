@@ -892,28 +892,22 @@ void Serflash_read_DID_data(void)
  ****************************************************************************/
 void Set_NV_data_to_defaults(void)
 {
-	memcpy(NVRAM_data.sModelNum, NVRAM_defaults.sModelNum, (MAX_MODEL_NUM_BYTES+2) );
-	memcpy(NVRAM_data.sSerialNum, NVRAM_defaults.sSerialNum, (MAX_SERIAL_NUM_BYTES+2) );
-	memcpy(NVRAM_data.sDeviceOwner, NVRAM_defaults.sDeviceOwner, (MAX_DEVICE_OWNER_BYTES+2) );
-	memcpy(NVRAM_data.sBoreholeName, NVRAM_defaults.sBoreholeName, (MAX_BOREHOLE_NAME_BYTES+2) );
-//	NVRAM_data.fGammaSensorEnable = NVRAM_defaults.fGammaSensorEnable;
-//	NVRAM_data.fDownholeDeepSleep = NVRAM_defaults.fDownholeDeepSleep;
-	NVRAM_data.fKeyBeeperEnable = NVRAM_defaults.fKeyBeeperEnable;
-	NVRAM_data.fCheckShot = NVRAM_defaults.fCheckShot;
-	NVRAM_data.nBacklightOnTime_sec = NVRAM_defaults.nBacklightOnTime_sec;
-	NVRAM_data.nLCDOnTime_sec = NVRAM_defaults.nLCDOnTime_sec;
-	NVRAM_data.nLanguage = NVRAM_defaults.nLanguage;
-	NVRAM_data.nLanguage = NVRAM_defaults.nLanguage;
-	NVRAM_data.nDefaultPipeLengthFeet = NVRAM_defaults.nDefaultPipeLengthFeet;
-	NVRAM_data.nDeclination = NVRAM_defaults.nDeclination;
-	NVRAM_data.nToolface = NVRAM_defaults.nToolface;
-	NVRAM_data.nDesiredAzimuth = NVRAM_defaults.nDesiredAzimuth;
-//	NVRAM_data.nDownholeOffTime = NVRAM_defaults.nDownholeOffTime;
-//	NVRAM_data.nDownholeOnTime = NVRAM_defaults.nDownholeOnTime;
-	NVRAM_data.nCheckPollTime_sec = NVRAM_defaults.nCheckPollTime_sec;
-	NVRAM_data.loggingState = NVRAM_defaults.loggingState;
+    memcpy(NVRAM_data.sModelNum, NVRAM_defaults.sModelNum, (MAX_MODEL_NUM_BYTES+2) );
+    memcpy(NVRAM_data.sSerialNum, NVRAM_defaults.sSerialNum, (MAX_SERIAL_NUM_BYTES+2) );
+    memcpy(NVRAM_data.sDeviceOwner, NVRAM_defaults.sDeviceOwner, (MAX_DEVICE_OWNER_BYTES+2) );
+    memcpy(NVRAM_data.sBoreholeName, NVRAM_defaults.sBoreholeName, (MAX_BOREHOLE_NAME_BYTES+2) );
+    NVRAM_data.fKeyBeeperEnable = NVRAM_defaults.fKeyBeeperEnable;
+    NVRAM_data.fCheckShot = NVRAM_defaults.fCheckShot;
+    NVRAM_data.nBacklightOnTime_sec = NVRAM_defaults.nBacklightOnTime_sec;
+    NVRAM_data.nLCDOnTime_sec = NVRAM_defaults.nLCDOnTime_sec;
+    NVRAM_data.nLanguage = NVRAM_defaults.nLanguage;
+    NVRAM_data.nDefaultPipeLengthFeet = NVRAM_defaults.nDefaultPipeLengthFeet;
+    NVRAM_data.nDeclination = NVRAM_defaults.nDeclination;
+    NVRAM_data.nToolface = NVRAM_defaults.nToolface;
+    // Do not reset nDesiredAzimuth to default here
+    NVRAM_data.nCheckPollTime_sec = NVRAM_defaults.nCheckPollTime_sec;
+    NVRAM_data.loggingState = NVRAM_defaults.loggingState;
 };
-
 /****************************************************************************
  * Function:   Check_NV_data_boundaries()
  ****************************************************************************/
@@ -950,9 +944,11 @@ void Check_NV_data_boundaries(void)
 //	if( (NVRAM_data.nToolface < NVRAM_min.nToolface) ||
 //		(NVRAM_data.nToolface > NVRAM_max.nToolface) )
 //		NVRAM_data.nToolface = NVRAM_defaults.nToolface;
-	if( (NVRAM_data.nDesiredAzimuth < NVRAM_min.nDesiredAzimuth) ||
-		(NVRAM_data.nDesiredAzimuth > NVRAM_max.nDesiredAzimuth) )
-		NVRAM_data.nDesiredAzimuth = NVRAM_defaults.nDesiredAzimuth;
+if( (NVRAM_data.nDesiredAzimuth < NVRAM_min.nDesiredAzimuth) ||
+        (NVRAM_data.nDesiredAzimuth > NVRAM_max.nDesiredAzimuth) )
+    {
+    	 NVRAM_data.nDesiredAzimuth = 0.0;
+    }
 //	if( (NVRAM_data.nDownholeOffTime < NVRAM_min.nDownholeOffTime) ||
 //		(NVRAM_data.nDownholeOffTime > NVRAM_max.nDownholeOffTime) )
 //		NVRAM_data.nDownholeOffTime = NVRAM_defaults.nDownholeOffTime;
