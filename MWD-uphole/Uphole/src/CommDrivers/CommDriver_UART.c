@@ -28,10 +28,10 @@
 
 typedef struct
 {
-	USART_TypeDef* pUART;         // UART peripheral
-	DMA_Stream_TypeDef* pTxDMA;        // DMA transmit stream
+	USART_TypeDef*       pUART;         // UART peripheral
+	DMA_Stream_TypeDef*  pTxDMA;        // DMA transmit stream
 	U_INT32              nTxDMAChannel; // DMA transmit channel
-	DMA_Stream_TypeDef* pRxDMA;        // DMA receive stream
+	DMA_Stream_TypeDef*  pRxDMA;        // DMA receive stream
 	U_INT32              nRxDMAChannel; // DMA receive channel
 	U_INT32              nBaudRate;     // Transmission speed of this stream
 	U_BYTE               nRxBufferDMA[BUFFER_SIZE_RX_DMA]; // DMA Receive Buffer
@@ -48,8 +48,8 @@ typedef struct
 //      FUNCTION PROTOTYPES                                                   //
 //============================================================================//
 
-static void uARTx_Configure(UART_SELECT* pUARTx);
-static void uARTx_IRQHandler(UART_SELECT* pUARTx);
+static void uARTx_Configure(UART_SELECT *pUARTx);
+static void uARTx_IRQHandler(UART_SELECT *pUARTx);
 
 //============================================================================//
 //      DATA DEFINITIONS                                                      //
@@ -86,32 +86,32 @@ volatile bool bufferOverrun = false;
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 void UART_InitPins(void)
 {
-	GPIO_InitTypeDef GPIO_InitStructure;
-	GPIO_StructInit(&GPIO_InitStructure);
+    GPIO_InitTypeDef GPIO_InitStructure;
+    GPIO_StructInit(&GPIO_InitStructure);
 
-	// Common UART set up parameters.
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;  // This was set to NOPULL; for UART RX you typically want the pin to be pulled up.
+    // Common UART set up parameters.
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;  // This was set to NOPULL; for UART RX you typically want the pin to be pulled up.
 
-	// UART1: This is the PC_COMM
-	// UART1: Pin A9 is TX to the PC_COMM
-	// UART1: Pin A10 is RX from the PC_COMM
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_10;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
+    // UART1: This is the PC_COMM
+    // UART1: Pin A9 is TX to the PC_COMM
+    // UART1: Pin A10 is RX from the PC_COMM
+    GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_9 | GPIO_Pin_10;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
 
-	GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_USART1);
-	GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_USART1);
+    GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_USART1);
+    GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_USART1);
 
-	// UART2: This is the DATALINK
-	// UART2: Pin A2 is TX to the downhole DATALINK
-	// UART2: Pin A3 is RX from the downhole DATALINK
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2 | GPIO_Pin_3;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
+    // UART2: This is the DATALINK
+    // UART2: Pin A2 is TX to the downhole DATALINK
+    // UART2: Pin A3 is RX from the downhole DATALINK
+    GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_2 | GPIO_Pin_3;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
 
-	GPIO_PinAFConfig(GPIOA, GPIO_PinSource2, GPIO_AF_USART2);
-	GPIO_PinAFConfig(GPIOA, GPIO_PinSource3, GPIO_AF_USART2);
+    GPIO_PinAFConfig(GPIOA, GPIO_PinSource2, GPIO_AF_USART2);
+    GPIO_PinAFConfig(GPIOA, GPIO_PinSource3, GPIO_AF_USART2);
 } // end UART_InitPins
 /*******************************************************************************
 *       @details
@@ -133,7 +133,7 @@ void UART_InitPins(void)
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 void UART_Init(void)
 {
-	UART_SELECT* pUARTx;
+	UART_SELECT *pUARTx;
 	NVIC_InitTypeDef NVIC_InitStructure;
 
 	// Configure UART1 for PC comm
@@ -220,13 +220,14 @@ void UART_ServiceRxBufferDMA(void)
 {
 	U_BYTE loopy;
 
-	for (loopy = 0; loopy < NUM_UART_STREAMS; loopy++)
+	//for (loopy = 0; loopy < NUM_UART_STREAMS; loopy++)
+	loopy = 0;
 	{
 		m_UART[loopy].nRxHeadDMA = BUFFER_SIZE_RX_DMA - (U_INT16)m_UART[loopy].pRxDMA->NDTR;
 		while (m_UART[loopy].nRxHeadDMA != m_UART[loopy].nRxTailDMA)
 		{
 			m_UART[loopy].nRxBuffer[m_UART[loopy].nRxHead] =
-				m_UART[loopy].nRxBufferDMA[m_UART[loopy].nRxTailDMA];
+			m_UART[loopy].nRxBufferDMA[m_UART[loopy].nRxTailDMA];
 			m_UART[loopy].nRxTailDMA++;
 			if (m_UART[loopy].nRxTailDMA >= BUFFER_SIZE_RX_DMA)
 			{
@@ -264,11 +265,11 @@ void UART_ServiceRxBufferDMA(void)
 
 void UART_ServiceRxBuffer(void)
 {
-	U_BYTE loopy, nRxChar;
+    U_BYTE loopy, nRxChar;
 
-	for (loopy = 0; loopy < NUM_UART_STREAMS; loopy++)
-	{
-		if (m_UART[loopy].eClient == CLIENT_DATA_LINK)
+    for (loopy = 0; loopy < NUM_UART_STREAMS; loopy++)
+    {
+ 		if (m_UART[loopy].eClient == CLIENT_DATA_LINK)
 		{
 			while (m_UART[loopy].nRxHead != m_UART[loopy].nRxTail)
 			{
@@ -279,22 +280,23 @@ void UART_ServiceRxBuffer(void)
 				{
 					m_UART[loopy].nRxTail = 0;
 				}
-				if (GetModemIsPresent())
+				if(GetModemIsPresent())
 				{
 					ModemData_ReceiveData(nRxChar);
-				}
+				}			
 			}
 		}
-	}
+    }
 }
+
 
 void UART_HandleReceivedData(void)
 {
-	U_BYTE loopy, nRxChar;
+    U_BYTE loopy, nRxChar;
 
-	for (loopy = 0; loopy < NUM_UART_STREAMS; loopy++)
-	{
-		if (m_UART[loopy].eClient == CLIENT_DATA_LINK)
+    for (loopy = 0; loopy < NUM_UART_STREAMS; loopy++)
+    {
+ 		if (m_UART[loopy].eClient == CLIENT_DATA_LINK)
 		{
 			while (m_UART[loopy].nRxHead != m_UART[loopy].nRxTail)
 			{
@@ -305,13 +307,13 @@ void UART_HandleReceivedData(void)
 				{
 					m_UART[loopy].nRxTail = 0;
 				}
-				if (GetModemIsPresent())
+				if(GetModemIsPresent())
 				{
 					ModemData_ReceiveData(nRxChar);
-				}
+				}			
 			}
 		}
-	}
+    }
 }
 /*******************************************************************************
 *       @details
@@ -340,7 +342,7 @@ void UART_ProcessRxData(void)
 		switch (m_UART[i].eClient)
 		{
 			case CLIENT_DATA_LINK:
-				if (GetModemIsPresent())
+				if(GetModemIsPresent())
 				{
 					// old way byte by byte
 					// ModemData_ProcessRxData();
@@ -377,10 +379,10 @@ void UART_ProcessRxData(void)
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 BOOL UART_SendMessage(
 	UART_CLIENT eClient,
-	const U_BYTE* pData,
+	const U_BYTE *pData,
 	U_INT16 nDataLen)
 {
-	UART_SELECT* pUARTx;
+	UART_SELECT *pUARTx;
 	if (pData == NULL)
 	{
 		return false;
@@ -422,7 +424,6 @@ BOOL UART_SendMessage(
 	}
 	return false;
 } // End UART_SendMessage()
-
 /**
  * Receives a message from the specified UART client, using DMA, and stores it in the specified buffer.
  *
@@ -466,7 +467,6 @@ bool UART_ReceiveMessage(U_BYTE* pData)
 
 	return crFound;
 }
-
 /*******************************************************************************
 *       @details
 *******************************************************************************/
@@ -485,7 +485,7 @@ bool UART_ReceiveMessage(U_BYTE* pData)
 ; Reentrancy:
 ;  Yes
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-static void uARTx_Configure(UART_SELECT* pUARTx)
+static void uARTx_Configure(UART_SELECT *pUARTx)
 {
 #define UART_DATA_REGISTER_OFFSET 0x04
 
@@ -514,10 +514,10 @@ static void uARTx_Configure(UART_SELECT* pUARTx)
 	DMA_InitStructure.DMA_Channel = (U_INT32)(pUARTx->nRxDMAChannel);
 	DMA_Init(pUARTx->pRxDMA, &DMA_InitStructure);
 	DMA_ITConfig(pUARTx->pRxDMA, (DMA_IT_HT | DMA_IT_TE), ENABLE);
-	DMA_ITConfig(pUARTx->pRxDMA, (DMA_IT_HT | DMA_IT_TE | DMA_IT_TC), ENABLE);
+        DMA_ITConfig(pUARTx->pRxDMA, (DMA_IT_HT | DMA_IT_TE | DMA_IT_TC), ENABLE);
 
-// Reconfiguring the DMA will reset the leading receive buffer index
-// and the trailing index must be reset manually to keep them synchronized
+	// Reconfiguring the DMA will reset the leading receive buffer index
+	// and the trailing index must be reset manually to keep them synchronized
 	pUARTx->nRxTailDMA = 0;
 
 	// DMA configuration for UARTx_TX (transmitting)
@@ -588,7 +588,7 @@ static void uARTx_Configure(UART_SELECT* pUARTx)
 ; Reentrancy:
 ;   Yes
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-static void uARTx_IRQHandler(UART_SELECT* pUARTx)
+static void uARTx_IRQHandler(UART_SELECT *pUARTx)
 {
 	// Handle UART errors, the following errors are cleared by a software
 	// sequence of a read of the status register followed by a read of the data
@@ -626,11 +626,11 @@ static void uARTx_IRQHandler(UART_SELECT* pUARTx)
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 void USART1_IRQHandler(void)
 {
-	if (USART_GetITStatus(USART1, USART_IT_ERR))
-	{
-		// Handle or log error here, or set a flag to indicate an error occurred
-		USART_ClearITPendingBit(USART1, USART_IT_ERR);
-	}
+      if(USART_GetITStatus(USART1, USART_IT_ERR))
+    {
+        // Handle or log error here, or set a flag to indicate an error occurred
+        USART_ClearITPendingBit(USART1, USART_IT_ERR);
+    }
 	uARTx_IRQHandler(&m_UART[INDEX_UART_PC_COMM]);
 }// End USART1_IRQHandler()
 
@@ -705,22 +705,22 @@ void DMA2_Stream5_IRQHandler(void)
 	{
 		DMA_ClearITPendingBit(DMA2_Stream5, DMA_IT_TCIF5);
 	}
-	if (DMA_GetITStatus(DMA2_Stream5, DMA_IT_TCIF5))
-	{
-		DMA_ClearITPendingBit(DMA2_Stream5, DMA_IT_TCIF5);
-		// Check for overflow and handle wrap-around if the buffer is circular
-		if ((Process_Rx_Buffer_Index + BUFFER_SIZE_RX_DMA) >= BUFFER_SIZE_RX)
-		{
-			bufferOverrun = true;
+        if (DMA_GetITStatus(DMA2_Stream5, DMA_IT_TCIF5))
+        {
+        DMA_ClearITPendingBit(DMA2_Stream5, DMA_IT_TCIF5);
+        // Check for overflow and handle wrap-around if the buffer is circular
+        if ((Process_Rx_Buffer_Index + BUFFER_SIZE_RX_DMA) >= BUFFER_SIZE_RX)
+          {
+            bufferOverrun = true;
 			// reset buffer option
+          }
+        // Copy data from DMA buffer to processing buffer
+        for (uint32_t i = 0; i < BUFFER_SIZE_RX_DMA; i++)
+          {
+            Process_Rx_Buffer[Process_Rx_Buffer_Index] = DMA_Rx_Buffer[i];
+            Process_Rx_Buffer_Index++;
+          }
 		}
-	  // Copy data from DMA buffer to processing buffer
-		for (uint32_t i = 0; i < BUFFER_SIZE_RX_DMA; i++)
-		{
-			Process_Rx_Buffer[Process_Rx_Buffer_Index] = DMA_Rx_Buffer[i];
-			Process_Rx_Buffer_Index++;
-		}
-	}
 } // End DMA2_Channel5_IRQHandler()
 
 /*******************************************************************************
@@ -803,44 +803,44 @@ void DMA1_Stream6_IRQHandler(void)
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 void DMA1_Stream5_IRQHandler(void)
 {
-	// Transfer Error Interrupt
-	if (DMA_GetITStatus(DMA1_Stream5, DMA_IT_TEIF5))
-	{
-		DMA_ClearITPendingBit(DMA1_Stream5, DMA_IT_TEIF5);
-		// TODO: Handle transfer error (logging, resetting, etc.)
-	}
+    // Transfer Error Interrupt
+    if (DMA_GetITStatus(DMA1_Stream5, DMA_IT_TEIF5))
+    {
+        DMA_ClearITPendingBit(DMA1_Stream5, DMA_IT_TEIF5);
+        // TODO: Handle transfer error (logging, resetting, etc.)
+    }
 
-	// Half Transfer Interrupt
-	if (DMA_GetITStatus(DMA1_Stream5, DMA_IT_HTIF5))
-	{
-		DMA_ClearITPendingBit(DMA1_Stream5, DMA_IT_HTIF5);
-		// TODO: Begin processing the first half of the data, if applicable
-	}
+    // Half Transfer Interrupt
+    if (DMA_GetITStatus(DMA1_Stream5, DMA_IT_HTIF5))
+    {
+        DMA_ClearITPendingBit(DMA1_Stream5, DMA_IT_HTIF5);
+        // TODO: Begin processing the first half of the data, if applicable
+    }
 
-	// Transfer Complete Interrupt
-	if (DMA_GetITStatus(DMA1_Stream5, DMA_IT_TCIF5))
-	{
-		DMA_ClearITPendingBit(DMA1_Stream5, DMA_IT_TCIF5);
+    // Transfer Complete Interrupt
+    if (DMA_GetITStatus(DMA1_Stream5, DMA_IT_TCIF5))
+    {
+        DMA_ClearITPendingBit(DMA1_Stream5, DMA_IT_TCIF5);
 
-		// Copy data from DMA_Rx_Buffer to Process_Rx_Buffer
-		for (int i = 0; i < BUFFER_SIZE_RX_DMA; i++)
-		{
-			Process_Rx_Buffer[Process_Rx_Buffer_Index] = DMA_Rx_Buffer[i];
-			Process_Rx_Buffer_Index++;
+        // Copy data from DMA_Rx_Buffer to Process_Rx_Buffer
+        for (int i = 0; i < BUFFER_SIZE_RX_DMA; i++)
+        {
+            Process_Rx_Buffer[Process_Rx_Buffer_Index] = DMA_Rx_Buffer[i];
+            Process_Rx_Buffer_Index++;
 
-			// Check for overflow in Process_Rx_Buffer and reset the index if needed
-			if (Process_Rx_Buffer_Index >= BUFFER_SIZE_RX)
-			{
-				Process_Rx_Buffer_Index = 0;
-			}
-			if ((Process_Rx_Buffer_Index + BUFFER_SIZE_RX_DMA) >= BUFFER_SIZE_RX)
-			{
-				bufferOverrun = true;  // Set the flag if an overrun is about to happen.
-			}
-			if (strstr((char*)Process_Rx_Buffer, "BEGIN_CSV") != NULL)
+            // Check for overflow in Process_Rx_Buffer and reset the index if needed
+            if (Process_Rx_Buffer_Index >= BUFFER_SIZE_RX)
+            {
+                Process_Rx_Buffer_Index = 0;
+            }
+            if ((Process_Rx_Buffer_Index + BUFFER_SIZE_RX_DMA) >= BUFFER_SIZE_RX)
+            {
+              bufferOverrun = true;  // Set the flag if an overrun is about to happen.
+            }
+			if (strstr((char *)Process_Rx_Buffer, "BEGIN_CSV") != NULL)
 			{
 				// Respond back for testing
-				UART_SendMessage(CLIENT_PC_COMM, (U_BYTE*)"Received BEGIN_CSV", strlen("Received BEGIN_CSV"));
+				UART_SendMessage(CLIENT_PC_COMM, (U_BYTE *)"Received BEGIN_CSV", strlen("Received BEGIN_CSV"));
 			}
 			else
 			{
@@ -848,5 +848,5 @@ void DMA1_Stream5_IRQHandler(void)
 				UART_SendMessage(CLIENT_PC_COMM, (U_BYTE*)"BEGIN_CSV not received", strlen("BEGIN_CSV not received"));
 			}
 		}
-	}
+    }
 }
