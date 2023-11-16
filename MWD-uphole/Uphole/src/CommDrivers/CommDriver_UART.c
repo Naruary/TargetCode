@@ -57,7 +57,7 @@ static void uARTx_IRQHandler(UART_SELECT *pUARTx);
 
 static UART_SELECT m_UART[NUM_UART_STREAMS];
 volatile uint8_t DMA_Rx_Buffer[64];
-uint8_t Process_Rx_Buffer[128];
+uint8_t Process_Rx_Buffer[BUFFER_SIZE_RX_DMA];
 uint32_t Process_Rx_Buffer_Index = 0;
 volatile bool bufferOverrun = false;
 
