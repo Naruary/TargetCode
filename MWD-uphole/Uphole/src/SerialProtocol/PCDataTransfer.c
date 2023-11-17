@@ -509,15 +509,18 @@ void ProcessCsvLine(char* line)
     BOREHOLE_STATISTICS bs;
     char* token;
     double fTemp;
+    int iTemp;
 
     token = strtok((char*)line, ",");                   // 1
     // the first token is the name
 
     token = strtok(NULL, ",");                          // 2
-    sscanf(token, "%d", (int*)(&record.nRecordNumber));
+    sscanf(token, "%d", &iTemp);
+    record.nRecordNumber = iTemp;
 
     token = strtok(NULL, ",");                          // 3
-    sscanf(token, "%d", (int*)(&record.nTotalLength));
+    sscanf(token, "%d", &iTemp);
+    record.nTotalLength = iTemp;
 
     token = strtok(NULL, ",");                          // 4
     sscanf(token, "%lf", &fTemp);
@@ -544,59 +547,75 @@ void ProcessCsvLine(char* line)
     record.Z = (INT16)(fTemp * 10.0);
 
     token = strtok(NULL, ",");                          // 10
-    sscanf(token, "%d", (int*)(&record.nGamma));
+    sscanf(token, "%d", &iTemp);
+    record.nGamma = iTemp;
 
     token = strtok(NULL, ",");                          // 11
-    sscanf(token, "%d", (int*)(&record.tSurveyTimeStamp));
+    sscanf(token, "%d", &iTemp);
+    record.tSurveyTimeStamp = iTemp;
 
     token = strtok(NULL, ",");                          // 12
-    sscanf(token, "%d", (int*)(&record.date.RTC_WeekDay));
+    sscanf(token, "%d", &iTemp);
+    record.date.RTC_WeekDay = iTemp;
 
     token = strtok(NULL, ",");                          // 13
-    sscanf(token, "%d", (int*)&record.date.RTC_Month);
+    sscanf(token, "%d", &iTemp);
+    record.date.RTC_Month = iTemp;
 
     token = strtok(NULL, ",");                          // 14
-    sscanf(token, "%d", (int*)&record.date.RTC_Date);
+    sscanf(token, "%d", &iTemp);
+    record.date.RTC_Date = iTemp;
 
     token = strtok(NULL, ",");                          // 15
-    sscanf(token, "%d", (int*)&record.date.RTC_Year);
+    sscanf(token, "%d", &iTemp);
+    record.date.RTC_Year = iTemp;
 
     // throw the next 4 away
     token = strtok(NULL, ",");                          // 16
     token = strtok(NULL, ",");                          // 17
     token = strtok(NULL, ",");                          // 18
     token = strtok(NULL, ",");                          // 19
-    sscanf(token, "%d", (int*)(&record.date.RTC_Year));
+    sscanf(token, "%d", &iTemp);
+    record.date.RTC_Year = iTemp;
 
     token = strtok(NULL, ",");                          // 20
-    sscanf(token, "%d", (int*)(&record.StatusCode));
+    sscanf(token, "%d", &iTemp);
+    record.StatusCode = iTemp;
 
     token = strtok(NULL, ",");                          // 21
-    sscanf(token, "%d", (int*)(&record.NumOfBranch));
+    sscanf(token, "%d", &iTemp);
+    record.NumOfBranch = iTemp;
 
     // throw the next one away
     token = strtok(NULL, ",");                          // 22
 
     token = strtok(NULL, ",");                          // 23
-    sscanf(token, "%d", (int*)&record.nTemperature);
+    sscanf(token, "%d", &iTemp);
+    record.nTemperature = iTemp;
 
     token = strtok(NULL, ",");                          // 24
-    sscanf(token, "%d", (int*)&record.nGTF);
+    sscanf(token, "%d", &iTemp);
+    record.nGTF = iTemp;
 
     token = strtok(NULL, ",");                          // 25
-    sscanf(token, "%d", (int*)&record.NextBranchRecordNum);
+    sscanf(token, "%d", &iTemp);
+    record.NextBranchRecordNum = iTemp;
 
     token = strtok(NULL, ",");                          // 26
-    sscanf(token, "%d", (int*)&record.PreviousBranchRecordNum);
+    sscanf(token, "%d", &iTemp);
+    record.PreviousBranchRecordNum = iTemp;
 
     token = strtok(NULL, ",");                          // 27
-    sscanf(token, "%d", (int*)&record.PreviousRecordIndex);
+    sscanf(token, "%d", &iTemp);
+    record.PreviousRecordIndex = iTemp;
 
     token = strtok(NULL, ",");                          // 28
-    sscanf(token, "%d", (int*)&record.GammaShotLock);
+    sscanf(token, "%d", &iTemp);
+    record.GammaShotLock = iTemp;
 
     token = strtok(NULL, ",");                          // 29
-    sscanf(token, "%d", (int*)&record.GammaShotNumCorrected);
+    sscanf(token, "%d", &iTemp);
+    record.GammaShotNumCorrected = iTemp;
 
     INT16 nTemp;
     token = strtok(NULL, ",");                          // 30
@@ -608,17 +627,21 @@ void ProcessCsvLine(char* line)
     record.branchWasSet = nTemp > 0, true, false;
 
     token = strtok(NULL, ",");                          // 32
-    sscanf(token, "%d", (U_INT32*)&bs.TotalLength);
+    sscanf(token, "%d", &iTemp);
+    bs.TotalDepth = iTemp;
 
     token = strtok(NULL, ",");                          // 33
-    sscanf(token, "%d", (U_INT32*)&bs.TotalDepth);
+    sscanf(token, "%d", &iTemp);
+    bs.TotalDepth = iTemp;
 
     token = strtok(NULL, ",");                          // 34
-    sscanf(token, "%f", (REAL32*)&bs.TotalNorthings);
+    sscanf(token, "%d", &iTemp);
+    bs.TotalNorthings = iTemp;
 
     token = strtok(NULL, ",");                          // 35
-    sscanf(token, "%f", (REAL32*)&bs.TotalEastings);
-    SetBoreholeStats(&bs);
+    sscanf(token, "%f", &fTemp);
+    bs.TotalEastings = (REAL32)fTemp;
 
+    SetBoreholeStats(&bs);
     StoreUploadedRecord(&record);
 }
