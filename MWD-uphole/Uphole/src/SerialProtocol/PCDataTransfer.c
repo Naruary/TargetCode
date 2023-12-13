@@ -617,7 +617,7 @@ void ProcessCsvLine(char* line)
     sscanf(token, "%d", &iTemp);
     record.GammaShotNumCorrected = iTemp;
 
-    INT16 nTemp;
+    int nTemp;
     token = strtok(NULL, ",");                          // 30
     sscanf(token, "%d", (int*)&nTemp);
     record.InvalidDataFlag = nTemp > 0, true, false;
@@ -639,7 +639,7 @@ void ProcessCsvLine(char* line)
     bs.TotalNorthings = iTemp;
 
     token = strtok(NULL, ",");                          // 35
-    sscanf(token, "%f", &fTemp);
+    sscanf(token, "%lf", &fTemp);
     bs.TotalEastings = (REAL32)fTemp;
 
     SetBoreholeStats(&bs);

@@ -625,10 +625,10 @@ void RECORD_NextMergeRecord(EASTING_NORTHING_DATA_STRUCT* result)
 BOOL RECORD_GetRecord(STRUCT_RECORD_DATA* record, U_INT32 recordNumber)
 {
     U_INT32 pageNumber = PageNumber(recordNumber);
-//	if (m_ReadPage.number != pageNumber) // This work only if the whole page has valid data
-//	{
-    PageRead(pageNumber);
-//	}
+    if (m_ReadPage.number != pageNumber) // This work only if the whole page has valid data
+    {
+        PageRead(pageNumber);
+    }
     return RecordRead(record, recordNumber);
 }
 
