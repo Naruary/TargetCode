@@ -341,8 +341,8 @@ void PCPORT_StateMachine(void)  // whs 26Jan2022 should be ThumbDrivePort
             {
                 snprintf(nBuffer, 500, "%.1f, %.1f, %.1f, %d, %d, %d, %d, ", // Create the message for the second part of the log data
                     (REAL32)(record.X) / 10.0,      // 7
-                    (REAL32)(record.Y / 100),       // 8
-                    (REAL32)(record.Z / 10),        // 9
+                    (REAL32)(record.Y / 100.0),     // 8
+                    (REAL32)(record.Z / 10.0),      // 9
                     record.nGamma,                  // 10
                     record.tSurveyTimeStamp,        // 11
                     record.date.RTC_WeekDay,        // 12
@@ -628,15 +628,15 @@ void ProcessCsvLine(char* line)
 
     token = strtok(NULL, ",");                          // 32
     sscanf(token, "%d", &iTemp);
-    bs.TotalDepth = iTemp;
+    bs.TotalLength = iTemp;
 
     token = strtok(NULL, ",");                          // 33
     sscanf(token, "%d", &iTemp);
     bs.TotalDepth = iTemp;
 
     token = strtok(NULL, ",");                          // 34
-    sscanf(token, "%d", &iTemp);
-    bs.TotalNorthings = iTemp;
+    sscanf(token, "%lf", &fTemp);
+    bs.TotalNorthings = (REAL32)fTemp;
 
     token = strtok(NULL, ",");                          // 35
     sscanf(token, "%lf", &fTemp);
