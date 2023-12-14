@@ -197,7 +197,7 @@ void DMA2_Stream0_IRQHandler(void)
 		working_u32 /= 4095;
 		//Vin = (Vout (R1+R2))/R2; R2 = 1K Ohms, R1 = 5.6K Ohms
 		//Vin = Vout * 6.6
-		BatteryInputVoltage = ((REAL32)working_u32 * 6.6)/524.0; // ZD October 20 2023 Was originally divided by 1000 (not 524) for BV, but after boards were redesigned with new resistors the formula was edited to match the correct value.
+		BatteryInputVoltage = ((REAL32)working_u32 * 6.6)/1000.0; // ZD October 20 2023 Was originally divided by 1000 (not 524) for BV, but after boards were redesigned with new resistors the formula was edited to match the correct value.
 		//SetBatteryInputVoltage(BatteryInputVoltage);
 	}
 }// End DMA2_Stream0_IRQHandler()
