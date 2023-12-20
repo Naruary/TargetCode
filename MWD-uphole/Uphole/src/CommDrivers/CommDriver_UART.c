@@ -220,8 +220,7 @@ void UART_ServiceRxBufferDMA(void)
 {
 	U_BYTE loopy;
 
-	//for (loopy = 0; loopy < NUM_UART_STREAMS; loopy++)
-	loopy = 0;
+	for (loopy = 0; loopy < NUM_UART_STREAMS; loopy++)
 	{
 		m_UART[loopy].nRxHeadDMA = BUFFER_SIZE_RX_DMA - (U_INT16)m_UART[loopy].pRxDMA->NDTR;
 		while (m_UART[loopy].nRxHeadDMA != m_UART[loopy].nRxTailDMA)
