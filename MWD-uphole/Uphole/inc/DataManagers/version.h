@@ -61,8 +61,8 @@
 //#define VERSION "4.2.5" //ZD 9/7/2023 Updated some changes for Doug making the toolface set with removed decimal. This update also allows numbers over 1000 shown in full on the Main UI page
 //#define VERSION "4.2.7" //ZD 9/8/2023 Updated for the new circuit boards so no hardware modifications must be made. The Yitran must be grounded to turn on.
 //#define VERSION "5.0.0" //ZD 10/16/2023 Tetsting
-#define VERSION "5.0.3" //ZD 12/14/2023 Fixes with the uploading of Data to the Uphole Box & the allowance of Both the Upload and the Connection to Modem
-
+//#define VERSION "5.0.3" //ZD 12/14/2023 Fixes with the uploading of Data to the Uphole Box & the allowance of Both the Upload and the Connection to Modem
+#define VERSION "5.0.4" //ZD 12/22/2023 Fixes the Records from having branch issues.
 // 3.7, 3-21-2019, This version has new NV access and completely new
 //  Target Protocol for serial, and also serial terminal access to PC logging.
 

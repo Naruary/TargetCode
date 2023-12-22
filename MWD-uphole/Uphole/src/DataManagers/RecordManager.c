@@ -625,10 +625,7 @@ void RECORD_NextMergeRecord(EASTING_NORTHING_DATA_STRUCT* result)
 BOOL RECORD_GetRecord(STRUCT_RECORD_DATA* record, U_INT32 recordNumber)
 {
     U_INT32 pageNumber = PageNumber(recordNumber);
-    if (m_ReadPage.number != pageNumber) // This work only if the whole page has valid data
-    {
-        PageRead(pageNumber);
-    }
+    PageRead(pageNumber);
     return RecordRead(record, recordNumber);
 }
 
@@ -930,8 +927,7 @@ void RECORD_InitBranchParam(void)
 
     // Read the previous survey record
     RECORD_GetRecord(&boreholeStats.MostRecentSurvey, branchIndex);
-    RECORD_GetRecord(&boreholeStats.PreviousSurvey, boreholeStats.MostRecentSurvey.PreviousRecordIndex);
-
+    
     // Update the total Eastings, Northings, Depth, and Length
     boreholeStats.TotalEastings = branchSurvey.X;
     boreholeStats.TotalNorthings = branchSurvey.Y;
@@ -955,6 +951,7 @@ void RECORD_InitBranchParam(void)
     for (int i = branchIndex + 1; i < boreholeStats.RecordCount; i++)
     {
         RECORD_GetRecord(&tempSurvey, i);
+        memcpy(m_WritePage.records, m_ReadPage.records, sizeof(m_WritePage.records));
         tempSurvey.InvalidDataFlag = true;
         RecordWrite(&tempSurvey, i);
         PageWrite(PageNumber(i));
